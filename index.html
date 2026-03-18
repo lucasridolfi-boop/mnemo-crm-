@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+h<!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
@@ -19,7 +19,7 @@
 (function(){
   const manifest={
     name:'Mnemo',short_name:'Mnemo',
-    description:'La mémoire relationnelle pour dealmakers',
+    description:'La mémoire relationnelle pour dealmakers',h
     start_url:'./',display:'standalone',
     background_color:'#050507',theme_color:'#050507',
     orientation:'portrait-primary',
@@ -857,7 +857,7 @@ mark{background:rgba(251,191,36,.25);color:var(--amber);border-radius:2px;paddin
 <body>
 
 <!-- ══════════════ SETUP ══════════════ -->
-<div id="setup">
+<div id="setup" class="hide">
 <div class="setup-card">
   <div class="setup-logo">🧠 <span>Mnemo</span></div>
   <div class="setup-h">La mémoire relationnelle</div>
@@ -3497,9 +3497,9 @@ async function _whisperTranscribe(blob){
   const langMap = {fr:'fr', en:'en', ar:'ar'};
   const wLang = langMap[CFG.lang];
   if(wLang) fd.append('language', wLang);
-  const res = await fetch('https://api.openai.com/v1/audio/transcriptions', {
+  const res = await fetch('/.netlify/functions/openai', {
     method:'POST',
-    headers:{'Authorization':'Bearer '+CFG.oaKey},
+    headers:{},
     body: fd
   });
   if(!res.ok){
@@ -3518,7 +3518,7 @@ async function finishTranscription(blob, secs){
   let transcript = '';
 
   // ── Step 1 : Transcription ─────────────────────────────
-  if(CFG.oaKey){
+  if(true){
     notify('Transcription Whisper en cours…', 'inf');
     try{
       transcript = await _whisperTranscribe(blob);
@@ -4856,7 +4856,7 @@ function paletteKey(e){
 // ═══════════════════════════════════════════════════════════
 async function apiCall(body){
   // Clé locale → appel direct | Pas de clé → proxy Netlify (clé côté serveur)
-  const useProxy=!CFG.ak;
+  const useProxy=true;
   const url=useProxy?'/.netlify/functions/claude':'https://api.anthropic.com/v1/messages';
   const headers={'Content-Type':'application/json'};
   if(!useProxy){
