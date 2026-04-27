@@ -2478,7 +2478,6 @@ function setLang(lang){
   if(typeof renderLocView==='function')renderLocView();
   // Re-render followup list only if it has content already (don't trigger API call)
   const fuEl=document.getElementById('followup-list');
-  if(fuEl&&fuEl.innerHTML.trim()){}// user must re-click "Analyze"
   // Update static view headers
   _updateViewHeaders();
 }
@@ -3700,6 +3699,7 @@ async function syncFireflies(){
         }`
       })
     });
+    if(!res.ok)throw new Error(`Fireflies HTTP ${res.status}`);
     const data = await res.json();
     if(data.errors){ throw new Error(data.errors[0].message) }
     const transcripts = data?.data?.transcripts || [];
@@ -4226,6 +4226,7 @@ async function syncTeams(){
     await pca.initialize();
     const result=await pca.loginPopup({scopes:['OnlineMeetings.Read','Calendars.Read']});
     const r=await fetch('https://graph.microsoft.com/v1.0/me/onlineMeetings?$top=10',{headers:{Authorization:'Bearer '+result.accessToken}});
+    if(!r.ok)throw new Error(`Teams HTTP ${r.status}`);
     const data=await r.json();
     const c=clients.find(x=>x.id===selId);if(!c)return;
     (data.value||[]).forEach(m=>{
@@ -4244,6 +4245,7 @@ async function syncOutlook(){
     const result=await pca.loginPopup({scopes:['Mail.Read']});
     const c=clients.find(x=>x.id===selId);if(!c||!c.email)return;
     const r=await fetch(`https://graph.microsoft.com/v1.0/me/messages?$search="${c.email}"&$top=5`,{headers:{Authorization:'Bearer '+result.accessToken}});
+    if(!r.ok)throw new Error(`Outlook HTTP ${r.status}`);
     const data=await r.json();
     (data.value||[]).forEach(m=>{
       addInteraction(c,{id:Date.now()+Math.random(),title:m.subject||'Email',date:m.receivedDateTime||new Date().toISOString(),dur:null,tr:m.bodyPreview||'',sum:m.subject||'Email',src:'outlook'});
@@ -4291,6 +4293,7 @@ async function syncGmail(){
     const r=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?q='+q+'&maxResults=10',{
       headers:{Authorization:'Bearer '+token}
     });
+    if(!r.ok)throw new Error(`Gmail HTTP ${r.status}`);
     const data=await r.json();
     if(!data.messages?.length){notify('Aucun email Gmail trouvé pour ce contact','inf');return}
     let count=0;
@@ -4299,6 +4302,7 @@ async function syncGmail(){
       const mr=await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/'+msg.id+'?format=metadata&metadataHeaders=Subject&metadataHeaders=Date&metadataHeaders=From&metadataHeaders=To',{
         headers:{Authorization:'Bearer '+token}
       });
+      if(!mr.ok)continue;
       const md=await mr.json();
       const hdrs=md.payload?.headers||[];
       const subject=hdrs.find(h=>h.name==='Subject')?.value||'Email';
@@ -4848,11 +4852,13 @@ async function apiCall(body){
     headers['anthropic-dangerous-direct-browser-access']='true';
   }
   const res=await fetch(url,{method:'POST',headers,body:JSON.stringify(body)});
+  if(!res.ok)throw new Error(`HTTP ${res.status}`);
   const d=await res.json();
   if(d.error)throw new Error(d.error.message);
   return d.content[0].text;
 }
 function parseJSON(text){
+  if(!text)return{};
   try{return JSON.parse(text.replace(/```json|```/g,'').trim())}
   catch(e){return{}}
 }
@@ -5109,46 +5115,49 @@ function renderMeetings(){
   </div>`;
 }
 
-// Meeting audio recording
-let mtRecSec=0,mtRecInt=null;
+// Meeting audio recording — Whisper
+let mtRecSec=0,mtRecInt=null,_mtMr=null,_mtChunks=[],_mtStream=null;
 function startMeetingRecording(){
   const btn=document.getElementById('mt-rec-btn');
   const status=document.getElementById('mt-rec-status');
-  const SpeechRec=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SpeechRec){notify('Web Speech API non supportée sur ce navigateur','err');return}
   if(mtRecording){
-    // Stop
-    if(mtRecognition){mtRecognition.stop();mtRecognition=null}
     mtRecording=false;clearInterval(mtRecInt);
-    btn.textContent='🎙️ Enregistrer audio';btn.style.color='var(--red)';
-    status.textContent='';
-    // Put transcript in textarea
-    if(mtLiveTranscript){
-      const ta=document.getElementById('mt-transcript');
-      ta.value=(ta.value?ta.value+'\n\n':'')+mtLiveTranscript.trim();
-    }
-    mtLiveTranscript='';
-    notify('Enregistrement arrêté et transcrit ✓','ok');
+    if(_mtMr&&_mtMr.state!=='inactive')_mtMr.stop();
     return;
   }
-  mtLiveTranscript='';
-  mtRecognition=new SpeechRec();
-  mtRecognition.lang='fr-FR';mtRecognition.continuous=true;mtRecognition.interimResults=true;
-  mtRecognition.onresult=e=>{
-    let final='',interim='';
-    for(let i=e.resultIndex;i<e.results.length;i++){
-      const t=e.results[i][0].transcript;
-      if(e.results[i].isFinal)final+=t+' ';else interim+=t;
-    }
-    if(final)mtLiveTranscript+=final;
-    status.textContent='🔴 '+fmtT(mtRecSec)+' — '+((mtLiveTranscript+interim).slice(-60))+'…';
-  };
-  mtRecognition.onend=()=>{if(mtRecording)try{mtRecognition.start()}catch(e){}};
-  mtRecognition.start();
+  if(!navigator.mediaDevices?.getUserMedia){notify('Micro non supporté sur ce navigateur','err');return}
   mtRecording=true;mtRecSec=0;
-  mtRecInt=setInterval(()=>mtRecSec++,1000);
-  btn.innerHTML='⏹ Stop enregistrement';btn.style.color='var(--red)';
-  notify('Enregistrement démarré','inf');
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    _mtStream=stream;_mtChunks=[];
+    const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+    _mtMr=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+    _mtMr.ondataavailable=e=>{if(e.data.size>0)_mtChunks.push(e.data)};
+    _mtMr.onstop=async()=>{
+      _mtStream.getTracks().forEach(t=>t.stop());
+      const blob=new Blob(_mtChunks,{type:_mtMr.mimeType||'audio/webm'});
+      if(blob.size<1000){notify('Enregistrement trop court — réessayez','err');btn.innerHTML='🎙️ Enregistrer audio';btn.style.color='var(--red)';btn.disabled=false;_mtMr=null;return}
+      btn.innerHTML='⏳ Transcription…';btn.disabled=true;
+      status.textContent='⏳ Whisper transcrit l\'audio…';
+      try{
+        const text=await _whisperTranscribe(blob);
+        const ta=document.getElementById('mt-transcript');
+        ta.value=(ta.value?ta.value+'\n\n':'')+text.trim();
+        status.textContent='✓ Transcription Whisper terminée';
+        notify('Transcription Whisper terminée ✓','ok');
+      }catch(e){
+        status.textContent='Erreur transcription : '+e.message;
+        notify('Erreur Whisper : '+e.message,'err');
+      }finally{
+        btn.innerHTML='🎙️ Enregistrer audio';btn.style.color='var(--red)';btn.disabled=false;
+        _mtMr=null;
+      }
+    };
+    _mtMr.start(1000);
+    mtRecInt=setInterval(()=>{mtRecSec++;status.textContent='🔴 '+fmtT(mtRecSec)+' — Enregistrement en cours…';},1000);
+    btn.innerHTML='⏹ Stop';btn.style.color='var(--red)';
+    status.textContent='🔴 Enregistrement démarré…';
+    notify('Enregistrement démarré','inf');
+  }).catch(e=>{mtRecording=false;notify('Accès micro refusé : '+e.message,'err')});
 }
 
 async function startMeetingTranscription(meetingId){
@@ -5520,6 +5529,7 @@ async function geocodeLocation(loc){
   // Appel Nominatim
   try{
     const r = await fetch(`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(loc)}&format=json&limit=1&accept-language=fr`);
+    if(!r.ok)throw new Error(`Nominatim HTTP ${r.status}`);
     const data = await r.json();
     if(data?.[0]){
       const coord = {lat:parseFloat(data[0].lat), lng:parseFloat(data[0].lon), label:data[0].display_name.split(',').slice(0,2).join(', ')};
@@ -5781,7 +5791,7 @@ async function submitCall(){
 // ═══════════════════════════════════════════════════════════
 //  CRÉATION FICHE PAR DICTÉE VOCALE
 // ═══════════════════════════════════════════════════════════
-let vaRecognition=null;
+let vaRecognition=null,_vaMr=null,_vaChunks=[],_vaStream=null;
 function openVoiceAdd(){
   document.getElementById('va-content').value='';
   document.getElementById('va-status').textContent='';
@@ -5790,25 +5800,42 @@ function openVoiceAdd(){
   openModal('modal-voice-add');
 }
 function toggleVoiceDictation(){
-  const SpeechRecognition=window.SpeechRecognition||window.webkitSpeechRecognition;
   const btn=document.getElementById('va-mic-btn');
   const status=document.getElementById('va-status');
-  if(!SpeechRecognition){
-    status.textContent='Dictée non supportée sur ce navigateur — tapez directement.';
-    status.style.color='var(--amber)';return;
+  if(_vaMr&&_vaMr.state!=='inactive'){
+    _vaMr.stop();
+    return;
   }
-  if(vaRecognition){vaRecognition.stop();vaRecognition=null;if(btn)btn.style.color='var(--text3)';status.textContent='Dictée arrêtée.';return}
-  vaRecognition=new SpeechRecognition();
-  vaRecognition.continuous=true;vaRecognition.interimResults=true;
-  vaRecognition.lang='fr-FR';
-  vaRecognition.onstart=()=>{if(btn)btn.style.color='var(--red)';if(status){status.textContent='🔴 Dictée en cours…';status.style.color='var(--red)';}};
-  vaRecognition.onresult=(e)=>{
-    let final='';for(let i=e.resultIndex;i<e.results.length;i++){if(e.results[i].isFinal)final+=e.results[i][0].transcript+' ';}
-    if(final){const ta=document.getElementById('va-content');ta.value=(ta.value+final).trim();}
-  };
-  vaRecognition.onerror=()=>{vaRecognition=null;if(btn)btn.style.color='var(--text3)';if(status){status.textContent='Erreur micro.';status.style.color='var(--red)';}};
-  vaRecognition.onend=()=>{vaRecognition=null;if(btn)btn.style.color='var(--text3)';if(status&&status.textContent.includes('cours')){status.textContent='Dictée terminée.';status.style.color='var(--green)';}};
-  vaRecognition.start();
+  if(!navigator.mediaDevices?.getUserMedia){
+    if(status){status.textContent='Micro non supporté sur ce navigateur.';status.style.color='var(--amber)';}
+    return;
+  }
+  navigator.mediaDevices.getUserMedia({audio:true}).then(stream=>{
+    _vaStream=stream;_vaChunks=[];
+    const mime=['audio/webm;codecs=opus','audio/webm','audio/ogg','audio/mp4'].find(t=>MediaRecorder.isTypeSupported(t))||'';
+    _vaMr=new MediaRecorder(stream,mime?{mimeType:mime}:{});
+    _vaMr.ondataavailable=e=>{if(e.data.size>0)_vaChunks.push(e.data)};
+    _vaMr.onstop=async()=>{
+      _vaStream.getTracks().forEach(t=>t.stop());
+      const blob=new Blob(_vaChunks,{type:_vaMr.mimeType||'audio/webm'});
+      if(blob.size<1000){if(status){status.textContent='Enregistrement trop court.';status.style.color='var(--amber)';}  _vaMr=null;return}
+      if(btn)btn.style.color='var(--text3)';
+      if(status){status.textContent='⏳ Whisper transcrit…';status.style.color='var(--amber)';}
+      try{
+        const text=await _whisperTranscribe(blob);
+        const ta=document.getElementById('va-content');
+        ta.value=(ta.value?ta.value+' ':'')+text.trim();
+        if(status){status.textContent='✓ Transcrit par Whisper';status.style.color='var(--green)';}
+      }catch(e){
+        if(status){status.textContent='Erreur : '+e.message;status.style.color='var(--red)';}
+      }finally{_vaMr=null;}
+    };
+    _vaMr.start(1000);
+    if(btn)btn.style.color='var(--red)';
+    if(status){status.textContent='🔴 Enregistrement en cours… (cliquez pour arrêter)';status.style.color='var(--red)';}
+  }).catch(e=>{
+    if(status){status.textContent='Accès micro refusé.';status.style.color='var(--red)';}
+  });
 }
 function _parseContactText(text){
   // Extraction regex — fallback sans API
