@@ -290,6 +290,16 @@ input,select,textarea{font-family:var(--font)}
   display:flex;align-items:center;gap:5px;transition:all .2s;
 }
 .top-btn:hover{background:var(--glass2);color:var(--text);border-color:var(--border2)}
+.tb-drop{position:relative;display:inline-flex}
+.tb-drop-menu{position:absolute;top:calc(100% + 8px);right:0;background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 32px rgba(0,0,0,.22);z-index:999;opacity:0;pointer-events:none;transform:translateY(-6px);transition:opacity .15s,transform .15s}
+.tb-drop-menu.open{opacity:1;pointer-events:all;transform:translateY(0)}
+.tb-drop-item{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:8px;font-size:12px;font-weight:500;cursor:pointer;color:var(--text1);transition:background .12s;white-space:nowrap}
+.tb-drop-item:hover{background:var(--hover)}
+.tb-drop-item.active{font-weight:700}
+.tb-drop-divider{height:1px;background:var(--border);margin:4px 0}
+.tb-drop-label{padding:4px 10px 2px;font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
+.tb-drop-status{padding:4px 10px 2px;display:flex;align-items:center}
+#lang-btn::after,#team-btn::after{content:' ▾';font-size:9px;opacity:.5;font-family:sans-serif;font-weight:400}
 
 /* ═══════════════════════════════════════════
    MAIN LAYOUT
@@ -943,30 +953,25 @@ mark{background:rgba(251,191,36,.25);color:var(--amber);border-radius:2px;paddin
       <input id="cmd-input" placeholder="Smart search… (⌘K)" data-i18n="search_placeholder" onkeydown="if(event.key==='Enter')runGlobalSearch();else if(event.key==='Escape')document.getElementById('global-results').classList.remove('on')">
       <button id="search-btn" onclick="runGlobalSearch()">IA</button>
     </div>
-    <div class="top-badges">
-      <div class="badge badge-teams" id="badge-teams" style="cursor:pointer" onclick="CFG.msId?syncTeams():notify('Configurez votre Microsoft Client ID dans ⚙ Config pour activer Teams','inf')" title="Sync Teams">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M14.25 4.5a3 3 0 100 6 3 3 0 000-6zm3 6.375h-6A2.625 2.625 0 008.625 13.5v3.75A2.625 2.625 0 0011.25 19.875h6a2.625 2.625 0 002.625-2.625V13.5A2.625 2.625 0 0017.25 10.875z"/><circle cx="7.5" cy="7.5" r="2.25"/></svg>
-        Teams
-      </div>
-      <div class="badge badge-outlook" id="badge-outlook" style="cursor:pointer" onclick="CFG.msId?syncOutlook():notify('Configurez votre Microsoft Client ID dans ⚙ Config pour activer Outlook','inf')" title="Sync Outlook">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12v9.38q0 .46-.33.8H7.13V18H1q-.41 0-.7-.3Q0 17.41 0 17V7q0-.41.3-.7Q.58 6 1 6h6.5V2.55q0-.44.3-.75h12.9q.44 0 .75.3.3.3.3.75V10.85zM7.13 18H15V9.56H7.13zM24 10.85l-7.96-4.63q-.1-.06-.22-.06-.11 0-.2.05l-7.46 4.44v6.52H24V10.85z"/></svg>
-        Outlook
-      </div>
-      <div class="badge badge-gcal" id="badge-gcal" style="cursor:pointer" onclick="CFG.gcalId?syncGCal():notify('Configurez votre Google Client ID dans ⚙ Config pour activer Google Calendar','inf')" title="Sync Google Calendar">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-        GCal
-      </div>
-      <div class="badge badge-gmail" id="badge-gmail" style="cursor:pointer" onclick="CFG.gcalId?syncGmail():notify('Configurez votre Google Client ID dans ⚙ Config pour activer Gmail','inf')" title="Sync Gmail">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-        Gmail
-      </div>
-      <div class="badge badge-zoom" id="badge-zoom" style="cursor:pointer" onclick="CFG.zoomClientId?syncZoom():notify('Configurez Zoom dans ⚙ Config','inf')" title="Sync Zoom">
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
-        Zoom
-      </div>
-      <div class="badge badge-db offline" id="badge-db">
-        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/></svg>
-        DB
+    <div class="tb-drop" id="drop-sync">
+      <button class="top-btn" onclick="toggleDropdown('dd-sync',event)" style="gap:5px;padding:0 12px;font-size:11px;font-weight:600">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.12-9.36L23 10"/></svg>
+        Sync <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="tb-drop-menu" id="dd-sync">
+        <div class="tb-drop-label">Intégrations</div>
+        <div class="tb-drop-item" style="color:var(--teams)" onclick="closeDropdowns();CFG.msId?syncTeams():notify('Configurez votre Microsoft Client ID dans ⚙ Config pour activer Teams','inf')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14.25 4.5a3 3 0 100 6 3 3 0 000-6zm3 6.375h-6A2.625 2.625 0 008.625 13.5v3.75A2.625 2.625 0 0011.25 19.875h6a2.625 2.625 0 002.625-2.625V13.5A2.625 2.625 0 0017.25 10.875z"/><circle cx="7.5" cy="7.5" r="2.25"/></svg>Sync Teams</div>
+        <div class="tb-drop-item" style="color:var(--outlook)" onclick="closeDropdowns();CFG.msId?syncOutlook():notify('Configurez votre Microsoft Client ID dans ⚙ Config pour activer Outlook','inf')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12v9.38q0 .46-.33.8H7.13V18H1q-.41 0-.7-.3Q0 17.41 0 17V7q0-.41.3-.7Q.58 6 1 6h6.5V2.55q0-.44.3-.75h12.9q.44 0 .75.3.3.3.3.75V10.85zM7.13 18H15V9.56H7.13zM24 10.85l-7.96-4.63q-.1-.06-.22-.06-.11 0-.2.05l-7.46 4.44v6.52H24V10.85z"/></svg>Sync Outlook</div>
+        <div class="tb-drop-item" style="color:var(--gcal)" onclick="closeDropdowns();CFG.gcalId?syncGCal():notify('Configurez votre Google Client ID dans ⚙ Config pour activer Google Calendar','inf')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>Sync GCal</div>
+        <div class="tb-drop-item" style="color:#EA4335" onclick="closeDropdowns();CFG.gcalId?syncGmail():notify('Configurez votre Google Client ID dans ⚙ Config pour activer Gmail','inf')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Sync Gmail</div>
+        <div class="tb-drop-item" style="color:var(--zoom)" onclick="closeDropdowns();CFG.zoomClientId?syncZoom():notify('Configurez Zoom dans ⚙ Config','inf')">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>Sync Zoom</div>
+        <div class="tb-drop-divider"></div>
+        <div class="tb-drop-status"><div class="badge badge-db offline" id="badge-db" style="font-size:10px;padding:3px 8px"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="4"/></svg>DB</div></div>
       </div>
     </div>
     <div class="top-btns">
@@ -981,11 +986,28 @@ mark{background:rgba(251,191,36,.25);color:var(--amber);border-radius:2px;paddin
         <span id="user-av" style="width:20px;height:20px;border-radius:50%;background:var(--blue);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0"></span>
         <span id="user-name" style="font-size:11px;max-width:80px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
       </button>
-      <button class="top-btn" id="team-btn" onclick="openModal('modal-login')" title="Sign in to team" style="font-size:11px;gap:4px">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
-        Team
-      </button>
-      <button class="top-btn" id="lang-btn" onclick="cycleLang()" title="Change language / Changer de langue / تغيير اللغة" style="font-family:var(--mono);font-size:11px;font-weight:700;min-width:36px;padding:0 8px">EN</button>
+      <div class="tb-drop" id="drop-team">
+        <button class="top-btn" id="team-btn" onclick="toggleDropdown('dd-team',event)" title="Team" style="font-size:11px;gap:4px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          Team
+        </button>
+        <div class="tb-drop-menu" id="dd-team">
+          <div class="tb-drop-label">Équipe</div>
+          <div class="tb-drop-item" onclick="closeDropdowns();openModal('modal-login')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>Se connecter</div>
+          <div class="tb-drop-item" onclick="closeDropdowns();openModal('modal-login')">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Rejoindre l'équipe</div>
+        </div>
+      </div>
+      <div class="tb-drop" id="drop-lang">
+        <button class="top-btn" id="lang-btn" onclick="toggleDropdown('dd-lang',event)" title="Langue / Language" style="font-family:var(--mono);font-size:11px;font-weight:700;min-width:36px;padding:0 8px">EN</button>
+        <div class="tb-drop-menu" id="dd-lang" style="min-width:150px">
+          <div class="tb-drop-label">Langue</div>
+          <div class="tb-drop-item" id="lang-en" onclick="closeDropdowns();setLang('en')">🇬🇧 English</div>
+          <div class="tb-drop-item" id="lang-fr" onclick="closeDropdowns();setLang('fr')">🇫🇷 Français</div>
+          <div class="tb-drop-item" id="lang-ar" onclick="closeDropdowns();setLang('ar')">🇸🇦 العربية</div>
+        </div>
+      </div>
       <button class="top-btn" onclick="openSetup()">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <span data-i18n="btn_config">Config</span>
@@ -1197,8 +1219,13 @@ mark{background:rgba(251,191,36,.25);color:var(--amber);border-radius:2px;paddin
             </div>
           </div>
 
-          <!-- Bulles lieux (mode liste) -->
-          <div id="lv-map" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px"></div>
+          <!-- Dropdown lieux -->
+          <div class="tb-drop" id="lv-loc-drop" style="margin-bottom:20px">
+            <button id="lv-map-btn" onclick="toggleDropdown('lv-map',event)" style="padding:6px 14px;border-radius:99px;font-size:12px;font-weight:500;border:1px solid var(--border);background:var(--glass);color:var(--text2);cursor:pointer;display:flex;align-items:center;gap:6px;transition:all .15s">
+              📍 Lieux &amp; événements <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+            <div class="tb-drop-menu" id="lv-map" style="right:auto;left:0;min-width:230px;max-height:280px;overflow-y:auto"></div>
+          </div>
 
           <!-- Résultats liste -->
           <div id="lv-results"></div>
@@ -2455,6 +2482,17 @@ function srcLabel(src){
   const v=t('src_'+src);
   return(v&&v!=='src_'+src)?v:(SRC_LABELS[src]||src);
 }
+function toggleDropdown(id,e){
+  if(e)e.stopPropagation();
+  const menu=document.getElementById(id);
+  const isOpen=menu.classList.contains('open');
+  closeDropdowns();
+  if(!isOpen)menu.classList.add('open');
+}
+function closeDropdowns(){
+  document.querySelectorAll('.tb-drop-menu.open').forEach(m=>m.classList.remove('open'));
+}
+document.addEventListener('click',closeDropdowns);
 function cycleLang(){
   const langs=['en','fr','ar'];
   const curr=CFG.lang||'en';
@@ -2467,6 +2505,8 @@ function setLang(lang){
   document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   const btn=document.getElementById('lang-btn');
   if(btn)btn.textContent=lang.toUpperCase();
+  document.querySelectorAll('#dd-lang .tb-drop-item').forEach(el=>el.classList.remove('active'));
+  const _la=document.getElementById('lang-'+lang);if(_la)_la.classList.add('active');
   applyI18n();
   renderSidebar();
   renderDash();
@@ -5689,17 +5729,18 @@ function renderLocView(){
   const allLocs=[...new Set(clients.map(c=>c.location).filter(Boolean))];
   const mapEl=document.getElementById('lv-map');
   if(mapEl){
-    mapEl.innerHTML=allLocs.length?allLocs.map(loc=>{
-      const cnt=clients.filter(c=>c.location===loc).length;
-      const isActive=q&&loc.toLowerCase().includes(q);
-      return`<button onclick="document.getElementById('lv-loc').value='${esc(loc)}';renderLocView()"
-        style="padding:5px 13px;border-radius:99px;font-size:11px;font-weight:500;border:1px solid ${isActive?'var(--blue)':'var(--border)'};
-        background:${isActive?'var(--blue-dim)':'var(--glass)'};color:${isActive?'var(--blue)':'var(--text2)'};cursor:pointer;
-        display:flex;align-items:center;gap:5px;transition:all .15s"
-        onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='${isActive?'var(--blue)':'var(--border)'}'">
-        📍 ${esc(loc)} <span style="background:var(--surface3);border-radius:99px;padding:0 5px;font-size:9px">${cnt}</span>
-      </button>`;
-    }).join(''):'';
+    const lmBtn=document.getElementById('lv-map-btn');
+    if(allLocs.length){
+      mapEl.innerHTML='<div class="tb-drop-label">Lieux &amp; événements</div>'+allLocs.map(loc=>{
+        const cnt=clients.filter(c=>c.location===loc).length;
+        const isActive=q&&loc.toLowerCase().includes(q);
+        return`<div class="tb-drop-item${isActive?' active':''}" onclick="document.getElementById('lv-loc').value='${esc(loc)}';closeDropdowns();renderLocView()" style="${isActive?'color:var(--blue)':''}">📍 ${esc(loc)}<span style="margin-left:auto;background:var(--surface3);border-radius:99px;padding:1px 7px;font-size:10px;color:var(--text3)">${cnt}</span></div>`;
+      }).join('');
+      if(lmBtn){lmBtn.style.borderColor=q?'var(--blue)':'var(--border)';lmBtn.style.color=q?'var(--blue)':'var(--text2)';}
+    } else {
+      mapEl.innerHTML='<div class="tb-drop-label" style="padding:10px">Aucun lieu renseigné</div>';
+      if(lmBtn){lmBtn.style.borderColor='var(--border)';lmBtn.style.color='var(--text3)';}
+    }
   }
 
   // Résultats
@@ -6500,6 +6541,8 @@ _restoreAuth();
   document.documentElement.dir=lang==='ar'?'rtl':'ltr';
   const btn=document.getElementById('lang-btn');
   if(btn)btn.textContent=lang.toUpperCase();
+  document.querySelectorAll('#dd-lang .tb-drop-item').forEach(el=>el.classList.remove('active'));
+  const _la=document.getElementById('lang-'+lang);if(_la)_la.classList.add('active');
   applyI18n();
 })();
 // Toujours démarrer l'app directement — les clés API sont gérées côté serveur (Netlify Functions)
