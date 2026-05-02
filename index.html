@@ -1211,7 +1211,7 @@ mark{background:rgba(251,191,36,.25);color:var(--amber);border-radius:2px;paddin
               </div>
               <div>
                 <label class="field-label" data-i18n="loc_label_period">Période</label>
-                <input id="lv-date" class="modal-input" type="month" oninput="renderLocView()">
+                <select id="lv-date" class="modal-select" onchange="renderLocView()"></select>
               </div>
               <button onclick="renderLocView()" style="background:var(--blue);border:none;border-radius:var(--r-sm);padding:9px 18px;color:#fff;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;height:37px" data-i18n="loc_search_btn">
                 🔍 Rechercher
@@ -2859,7 +2859,7 @@ function gotoView(v){
   if(v==='analytics')renderAnalytics();
   if(v==='followup')runFollowupAI();
   if(v==='sequences')renderSequences();
-  if(v==='location')renderLocView();
+  if(v==='location'){initLocDateSelect();renderLocView();}
 }
 const v=id=>document.getElementById(id)?.value?.trim()||'';
 const setv=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||''};
@@ -5701,6 +5701,21 @@ async function renderMapView(){
 // ═══════════════════════════════════════════════════════════
 //  VUE RECHERCHE PAR LIEU / ÉVÉNEMENT / DATE
 // ═══════════════════════════════════════════════════════════
+function initLocDateSelect(){
+  const sel=document.getElementById('lv-date');
+  if(!sel||sel.options.length>1)return;
+  const months=['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'];
+  const now=new Date();
+  let opts='<option value="">Toutes périodes</option>';
+  // 18 mois passés + 3 mois futurs
+  for(let i=-18;i<=3;i++){
+    const d=new Date(now.getFullYear(),now.getMonth()+i,1);
+    const val=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const lbl=`${months[d.getMonth()]} ${d.getFullYear()}`;
+    opts+=`<option value="${val}">${lbl}</option>`;
+  }
+  sel.innerHTML=opts;
+}
 function renderLocView(){
   const q=(document.getElementById('lv-loc')?.value||'').toLowerCase().trim();
   const cat=(document.getElementById('lv-cat')?.value||'').trim();
