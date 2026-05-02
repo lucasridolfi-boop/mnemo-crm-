@@ -299,6 +299,8 @@ input,select,textarea{font-family:var(--font)}
 .tb-drop-divider{height:1px;background:var(--border);margin:4px 0}
 .tb-drop-label{padding:4px 10px 2px;font-size:10px;color:var(--text3);font-weight:600;letter-spacing:.05em;text-transform:uppercase}
 .tb-drop-status{padding:4px 10px 2px;display:flex;align-items:center}
+.tb-drop-up .tb-drop-menu{top:auto;bottom:calc(100% + 8px);transform:translateY(6px)}
+.tb-drop-up .tb-drop-menu.open{transform:translateY(0)}
 #lang-btn::after,#team-btn::after{content:' ▾';font-size:9px;opacity:.5;font-family:sans-serif;font-weight:400}
 
 /* ═══════════════════════════════════════════
@@ -1398,57 +1400,42 @@ mark{background:rgba(251,191,36,.25);color:var(--amber);border-radius:2px;paddin
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               Partager
             </button>
-            <div style="margin-left:auto;display:flex;gap:6px">
-              <button class="action-btn" style="color:var(--teams);border-color:rgba(98,100,167,.2)" onclick="syncTeams()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M14.25 4.5a3 3 0 100 6 3 3 0 000-6zm3 6.375h-6A2.625 2.625 0 008.625 13.5v3.75A2.625 2.625 0 0011.25 19.875h6a2.625 2.625 0 002.625-2.625V13.5A2.625 2.625 0 0017.25 10.875z"/><circle cx="7.5" cy="7.5" r="2.25"/></svg>
-                Teams
+            <div class="tb-drop tb-drop-up" style="margin-left:auto">
+              <button class="action-btn" onclick="toggleDropdown('dd-integrations',event)" style="gap:5px">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 2v2M12 20v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M2 12h2M20 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                Intégrations
+                <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
-              <button class="action-btn" style="color:var(--outlook);border-color:rgba(0,120,212,.2)" onclick="syncOutlook()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12v9.38q0 .46-.33.8H7.13V18H1q-.41 0-.7-.3Q0 17.41 0 17V7q0-.41.3-.7Q.58 6 1 6h6.5V2.55q0-.44.3-.75h12.9q.44 0 .75.3.3.3.3.75V10.85zM7.13 18H15V9.56H7.13zM24 10.85l-7.96-4.63q-.1-.06-.22-.06-.11 0-.2.05l-7.46 4.44v6.52H24V10.85z"/></svg>
-                Outlook
-              </button>
-              <button class="action-btn" style="color:#EA4335;border-color:rgba(234,67,53,.2)" onclick="syncGmail()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-                Gmail
-              </button>
-              <button class="action-btn" style="color:var(--gcal);border-color:rgba(66,133,244,.2)" onclick="syncGCal()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>
-                GCal
-              </button>
-              <button class="action-btn" style="color:var(--zoom);border-color:rgba(45,140,255,.2)" onclick="syncZoom()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>
-                Zoom
-              </button>
-              <button class="action-btn" style="color:#f97316;border-color:rgba(249,115,22,.2)" onclick="syncFireflies()">
-                🔥 Fireflies
-              </button>
-              <button class="action-btn" style="color:#8b5cf6;border-color:rgba(139,92,246,.2)" onclick="syncPlaud()">
-                🎙️ Plaud
-              </button>
-              <button class="action-btn" style="color:var(--aircall);border-color:rgba(0,179,136,.2)" onclick="syncAircall()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.15 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-                Aircall
-              </button>
-              <button class="action-btn" style="color:var(--teal);border-color:rgba(20,184,166,.2)" onclick="openCall()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.15 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>
-                <span data-i18n="ab_call">Call</span>
-              </button>
-              <button class="action-btn" style="color:#25d366;border-color:rgba(37,211,102,.2)" onclick="openWhatsapp()">
-                💬 WhatsApp
-              </button>
-              <button class="action-btn" style="color:#0a66c2;border-color:rgba(10,102,194,.2)" onclick="openLinkedInEnrich()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
-                LinkedIn
-              </button>
-              <button class="action-btn" style="color:#7C3AED;border-color:rgba(124,58,237,.2)" onclick="openSlack()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/></svg>
-                <span data-i18n="ab_slack">Slack</span>
-              </button>
-              <button class="action-btn" style="color:#14b8a6;border-color:rgba(20,184,166,.2)" onclick="openSMS()">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/><line x1="9" y1="10" x2="9" y2="10"/><line x1="12" y1="10" x2="12" y2="10"/><line x1="15" y1="10" x2="15" y2="10"/></svg>
-                <span data-i18n="ab_sms">SMS</span>
-              </button>
-              <button class="action-btn" style="color:var(--purple);border-color:rgba(168,85,247,.2)" onclick="enrichContact()" data-i18n="ab_enrich">✨ Enrich</button>
+              <div class="tb-drop-menu" id="dd-integrations" style="right:0;min-width:200px;max-height:360px;overflow-y:auto">
+                <div class="tb-drop-label">Sync</div>
+                <div class="tb-drop-item" style="color:var(--teams)" onclick="closeDropdowns();syncTeams()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M14.25 4.5a3 3 0 100 6 3 3 0 000-6zm3 6.375h-6A2.625 2.625 0 008.625 13.5v3.75A2.625 2.625 0 0011.25 19.875h6a2.625 2.625 0 002.625-2.625V13.5A2.625 2.625 0 0017.25 10.875z"/><circle cx="7.5" cy="7.5" r="2.25"/></svg>Teams</div>
+                <div class="tb-drop-item" style="color:var(--outlook)" onclick="closeDropdowns();syncOutlook()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12v9.38q0 .46-.33.8H7.13V18H1q-.41 0-.7-.3Q0 17.41 0 17V7q0-.41.3-.7Q.58 6 1 6h6.5V2.55q0-.44.3-.75h12.9q.44 0 .75.3.3.3.3.75V10.85zM7.13 18H15V9.56H7.13zM24 10.85l-7.96-4.63q-.1-.06-.22-.06-.11 0-.2.05l-7.46 4.44v6.52H24V10.85z"/></svg>Outlook</div>
+                <div class="tb-drop-item" style="color:#EA4335" onclick="closeDropdowns();syncGmail()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4C2.9 4 2 4.9 2 6v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>Gmail</div>
+                <div class="tb-drop-item" style="color:var(--gcal)" onclick="closeDropdowns();syncGCal()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19 4h-1V2h-2v2H8V2H6v2H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2V6a2 2 0 00-2-2zm0 16H5V10h14v10zm0-12H5V6h14v2z"/></svg>GCal</div>
+                <div class="tb-drop-item" style="color:var(--zoom)" onclick="closeDropdowns();syncZoom()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M17 10.5V7a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h12a1 1 0 001-1v-3.5l4 4v-11l-4 4z"/></svg>Zoom</div>
+                <div class="tb-drop-item" style="color:#f97316" onclick="closeDropdowns();syncFireflies()">🔥 Fireflies</div>
+                <div class="tb-drop-item" style="color:#8b5cf6" onclick="closeDropdowns();syncPlaud()">🎙️ Plaud</div>
+                <div class="tb-drop-item" style="color:var(--aircall)" onclick="closeDropdowns();syncAircall()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.15 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>Aircall</div>
+                <div class="tb-drop-divider"></div>
+                <div class="tb-drop-label">Communiquer</div>
+                <div class="tb-drop-item" style="color:var(--teal)" onclick="closeDropdowns();openCall()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81 19.79 19.79 0 01.22 1.15 2 2 0 012.22 0h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 7.91a16 16 0 006.18 6.18l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>Call</div>
+                <div class="tb-drop-item" style="color:#25d366" onclick="closeDropdowns();openWhatsapp()">💬 WhatsApp</div>
+                <div class="tb-drop-item" style="color:#14b8a6" onclick="closeDropdowns();openSMS()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>SMS</div>
+                <div class="tb-drop-item" style="color:#0a66c2" onclick="closeDropdowns();openLinkedInEnrich()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>LinkedIn</div>
+                <div class="tb-drop-item" style="color:#7C3AED" onclick="closeDropdowns();openSlack()">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M5.042 15.165a2.528 2.528 0 01-2.52 2.523A2.528 2.528 0 010 15.165a2.527 2.527 0 012.522-2.52h2.52v2.52zm1.271 0a2.527 2.527 0 012.521-2.52 2.527 2.527 0 012.521 2.52v6.313A2.528 2.528 0 018.834 24a2.528 2.528 0 01-2.521-2.522v-6.313zM8.834 5.042a2.528 2.528 0 01-2.521-2.52A2.528 2.528 0 018.834 0a2.528 2.528 0 012.521 2.522v2.52H8.834zm0 1.271a2.528 2.528 0 012.521 2.521 2.528 2.528 0 01-2.521 2.521H2.522A2.528 2.528 0 010 8.834a2.528 2.528 0 012.522-2.521h6.312zm10.122 2.521a2.528 2.528 0 012.522-2.521A2.528 2.528 0 0124 8.834a2.528 2.528 0 01-2.522 2.521h-2.522V8.834zm-1.268 0a2.528 2.528 0 01-2.523 2.521 2.527 2.527 0 01-2.52-2.521V2.522A2.527 2.527 0 0115.165 0a2.528 2.528 0 012.523 2.522v6.312zm-2.523 10.122a2.528 2.528 0 012.523 2.522A2.528 2.528 0 0115.165 24a2.527 2.527 0 01-2.52-2.522v-2.522h2.52zm0-1.268a2.527 2.527 0 01-2.52-2.523 2.526 2.526 0 012.52-2.52h6.313A2.527 2.527 0 0124 15.165a2.528 2.528 0 01-2.522 2.523h-6.313z"/></svg>Slack</div>
+                <div class="tb-drop-divider"></div>
+                <div class="tb-drop-item" style="color:var(--purple)" onclick="closeDropdowns();enrichContact()">✨ Enrich IA</div>
+              </div>
             </div>
           </div>
         </div>
