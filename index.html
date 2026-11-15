@@ -241,6 +241,8 @@ svg{display:block;flex-shrink:0}
 mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;border-radius:3px;padding:0 1px}
 #toast{position:fixed;bottom:28px;left:50%;transform:translate(-50%,20px);z-index:80;padding:11px 20px;border-radius:99px;background:var(--text);color:var(--bg);font-size:14px;font-weight:500;opacity:0;pointer-events:none;transition:all .25s;max-width:90vw;text-align:center}
 #toast.on{opacity:1;transform:translate(-50%,0)}
+#sync-btn.busy{color:var(--accent);animation:blink 1.2s ease-in-out infinite}#sync-btn.err{color:var(--red)}
+@keyframes blink{50%{opacity:.35}}
 #tabbar{display:none}
 @keyframes fade{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}}
@@ -286,6 +288,7 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
   <nav class="tabs" id="tabs"></nav>
   <div class="nav-r">
     <button class="search-btn" data-a="palette" id="search-btn"></button>
+    <button class="icon-btn" data-a="settings" id="sync-btn" hidden></button>
     <button class="btn primary sm" data-a="capture" id="capture-btn"></button>
     <button class="icon-btn" data-a="settings" id="settings-btn" aria-label="Settings"></button>
   </div>
@@ -298,7 +301,7 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 'use strict';
 // ═══ Mnemo 2 — state, storage, helpers ═══════════════════════════════════
 // Storage keys are shared with the classic version so existing data carries over.
-const LS={clients:'ncrm3_clients',deals:'ncrm3_deals',cfg:'ncrm3_cfg',theme:'ncrm3_theme',li:'mnemo_li'};
+const LS={clients:'ncrm3_clients',deals:'ncrm3_deals',cfg:'ncrm3_cfg',theme:'ncrm3_theme',li:'mnemo_li',sync:'mnemo_sync'};
 const MODEL={smart:'claude-sonnet-5-5',fast:'claude-haiku-5-5'};
 const S={clients:[],deals:[],li:[],cfg:{lang:'en',ak:'',cur:'USD'},view:'today',sel:null,q:'',filter:'all'};
 const STAGES=[['lead','Lead'],['qualified','Qualified'],['proposal','Proposal'],['negotiation','Negotiation'],['won','Won'],['lost','Lost']];
@@ -341,7 +344,7 @@ const ICON={
   whatsapp:'<path d="M4 20l1.3-4.2A8 8 0 1112 20a8 8 0 01-3.8-1z"/>',audio:'<path d="M4 10v4M8 6v12M12 9v6M16 5v14M20 10v4"/>',
   in:'<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 10.5V16M8 7.8v.1M12 16v-5.5M12 13a2 2 0 014 0v3"/>',
   back:'<path d="M14 6l-6 6 6 6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>',
-  up:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',trash:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'
+  up:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',cloud:'<path d="M7 18a4.5 4.5 0 01-.6-8.96A6 6 0 0118 10.2 3.9 3.9 0 0117.5 18z"/>',trash:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'
 };
 const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[n]||''}</svg>`;
 const ring=(v,size=30,label=false)=>{const r=size/2-2.5,c=2*Math.PI*r;return`<span class="ring" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--fill2)" stroke-width="2.5"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/100)}"/></svg>${label?`<b style="font-size:${size>50?17:11}px">${v}</b>`:''}</span>`};
@@ -487,7 +490,7 @@ const L={fr:{
 '{n} connections already imported. A new file replaces them.':'{n} relations déjà importées. Un nouveau fichier les remplace.','Sample connections are shown for now. Your file replaces them.':'Des relations d’exemple sont affichées pour l’instant. Votre fichier les remplacera.','Unzip the archive first, then drop Connections.csv.':'Décompressez d’abord l’archive, puis déposez Connections.csv.','This does not look like LinkedIn’s Connections.csv.':'Ce fichier ne ressemble pas au Connections.csv de LinkedIn.','{n} connections imported':'{n} relations importées',
 'This is not a Mnemo backup.':'Ce n’est pas une sauvegarde Mnemo.','Replace everything on this device with the backup ({n} people)?':'Remplacer toutes les données de cet appareil par la sauvegarde ({n} contacts) ?','Backup restored':'Sauvegarde restaurée','No rows found in this file.':'Aucune ligne trouvée dans ce fichier.','The file needs at least a name column.':'Le fichier doit contenir au moins une colonne nom.','{n} people imported':'{n} contacts importés',
 'Appearance':'Apparence','Auto':'Auto','Light':'Clair','Dark':'Sombre','Language':'Langue','Currency':'Devise','Intelligence':'Intelligence','Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.':'La transcription et l’IA passent par vos fonctions Netlify sécurisées (OPENAI_API_KEY et ANTHROPIC_API_KEY). Vous pouvez aussi utiliser une clé Anthropic personnelle, stockée uniquement sur cet appareil.','Access code':'Code d’accès','The code you set as MNEMO_ACCESS_CODE in Netlify':'Le code défini dans MNEMO_ACCESS_CODE sur Netlify','Personal Anthropic key (optional)':'Clé Anthropic personnelle (facultatif)','Enter your access code in Settings.':'Saisissez votre code d’accès dans les Réglages.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'Saisissez votre code d’accès dans les Réglages, puis réessayez. L’enregistrement est conservé tant que la page n’est pas rechargée.',
-'Your data':'Vos données','Everything is stored on this device. Export a backup regularly.':'Tout est stocké sur cet appareil. Exportez régulièrement une sauvegarde.','Export backup':'Exporter une sauvegarde','Restore backup':'Restaurer','Export CSV':'Exporter en CSV','Import CSV':'Importer un CSV','Remove sample data':'Supprimer les exemples','Open the classic version':'Ouvrir la version classique','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'Teams, Outlook, Gmail et les autres intégrations historiques s’y trouvent et partagent les mêmes données.','Saved':'Enregistré',
+'Sync':'Synchronisation','Stored on this device and synced to your account.':'Stocké sur cet appareil et synchronisé avec votre compte.','Your session expired. Sign in again.':'Votre session a expiré. Reconnectez-vous.','Offline — changes are kept on this device and will sync later.':'Hors ligne — les modifications restent sur cet appareil et seront synchronisées plus tard.','Signed in as':'Connecté en tant que','Syncing…':'Synchronisation…','Last synced':'Dernière synchronisation à','Not synced yet':'Pas encore synchronisé','Sync now':'Synchroniser','Sign out':'Se déconnecter','Sign in to keep your people, memories and deals in sync across your devices.':'Connectez-vous pour synchroniser vos contacts, souvenirs et deals entre vos appareils.','Password':'Mot de passe','Supabase project':'Projet Supabase','Project URL':'URL du projet','Publishable (anon) key':'Clé publique (anon)','Sign in':'Se connecter','Create account':'Créer un compte','Enter your Supabase project URL and publishable key.':'Saisissez l’URL de votre projet Supabase et sa clé publique.','Enter an email and a password of at least 6 characters.':'Saisissez un e-mail et un mot de passe d’au moins 6 caractères.','Account created. Confirm it from the email you just received, then sign in.':'Compte créé. Confirmez-le depuis l’e-mail que vous venez de recevoir, puis connectez-vous.','Signed in':'Connecté','Could not reach Supabase. Check the project URL.':'Supabase est injoignable. Vérifiez l’URL du projet.','Sign out? Your data stays on this device.':'Se déconnecter ? Vos données restent sur cet appareil.','Your data':'Vos données','Everything is stored on this device. Export a backup regularly.':'Tout est stocké sur cet appareil. Exportez régulièrement une sauvegarde.','Export backup':'Exporter une sauvegarde','Restore backup':'Restaurer','Export CSV':'Exporter en CSV','Import CSV':'Importer un CSV','Remove sample data':'Supprimer les exemples','Open the classic version':'Ouvrir la version classique','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'Teams, Outlook, Gmail et les autres intégrations historiques s’y trouvent et partagent les mêmes données.','Saved':'Enregistré',
 'Storage is full — export a backup from Settings.':'Stockage plein — exportez une sauvegarde depuis les Réglages.','AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.':'IA injoignable. Vérifiez ANTHROPIC_API_KEY sur Netlify, ou ajoutez votre clé dans les Réglages.',
 'Relationship map':'Carte des relations','Find a person or a company':'Trouver une personne ou une société','Zoom out':'Dézoomer','Reset':'Recentrer','Zoom in':'Zoomer','No company':'Sans société','You':'Vous','people in Mnemo':'contacts dans Mnemo','LinkedIn connections':'relations LinkedIn','Overview':'Vue d’ensemble','Place in your circle':'Place dans votre cercle','of':'sur','Strength':'Force','closer than {p}% of your people':'plus proche que {p} % de vos contacts','your closest relationship':'votre relation la plus proche',
 'Conversations':'Échanges','On LinkedIn':'Sur LinkedIn','since':'depuis','Connected':'Connecté','Introductions':'Présentations','Around them at':'Autour, chez','See all':'Tout voir','Open profile':'Ouvrir la fiche','LinkedIn connection':'Relation LinkedIn','Connected since':'En relation depuis le','Not in Mnemo yet — no shared memory.':'Pas encore dans Mnemo — aucun souvenir partagé.','Warm path':'Chemin d’introduction',
@@ -519,7 +522,7 @@ const L={fr:{
 '{n} connections already imported. A new file replaces them.':'تم استيراد {n} من المعارف. الملف الجديد يستبدلها.','Sample connections are shown for now. Your file replaces them.':'تُعرض الآن معارف تجريبية. ملفك سيستبدلها.','Unzip the archive first, then drop Connections.csv.':'فكّ ضغط الأرشيف أولاً ثم أسقط Connections.csv.','This does not look like LinkedIn’s Connections.csv.':'هذا الملف لا يبدو ملف Connections.csv من LinkedIn.','{n} connections imported':'تم استيراد {n} من المعارف',
 'This is not a Mnemo backup.':'هذه ليست نسخة احتياطية من Mnemo.','Replace everything on this device with the backup ({n} people)?':'استبدال كل البيانات على هذا الجهاز بالنسخة الاحتياطية ({n} جهة اتصال)؟','Backup restored':'تمت استعادة النسخة','No rows found in this file.':'لا توجد صفوف في هذا الملف.','The file needs at least a name column.':'يجب أن يحتوي الملف على عمود للاسم.','{n} people imported':'تم استيراد {n} جهة اتصال',
 'Appearance':'المظهر','Auto':'تلقائي','Light':'فاتح','Dark':'داكن','Language':'اللغة','Currency':'العملة','Intelligence':'الذكاء','Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.':'التفريغ والذكاء الاصطناعي يعملان عبر وظائف Netlify الآمنة (OPENAI_API_KEY و ANTHROPIC_API_KEY). يمكنك اختياريًا استخدام مفتاح Anthropic شخصي يُحفظ على هذا الجهاز فقط.',
-'Access code':'رمز الوصول','The code you set as MNEMO_ACCESS_CODE in Netlify':'الرمز المحدد في MNEMO_ACCESS_CODE على Netlify','Personal Anthropic key (optional)':'مفتاح Anthropic شخصي (اختياري)','Enter your access code in Settings.':'أدخل رمز الوصول في الإعدادات.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'أدخل رمز الوصول في الإعدادات ثم أعد المحاولة. التسجيل محفوظ ما لم تُعد تحميل الصفحة.','Your data':'بياناتك','Everything is stored on this device. Export a backup regularly.':'كل شيء محفوظ على هذا الجهاز. صدّر نسخة احتياطية بانتظام.','Export backup':'تصدير نسخة احتياطية','Restore backup':'استعادة','Export CSV':'تصدير CSV','Import CSV':'استيراد CSV','Remove sample data':'حذف البيانات التجريبية','Open the classic version':'فتح النسخة الكلاسيكية','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'تكاملات Teams و Outlook و Gmail وغيرها موجودة هناك وتشارك البيانات نفسها.','Saved':'تم الحفظ',
+'Access code':'رمز الوصول','The code you set as MNEMO_ACCESS_CODE in Netlify':'الرمز المحدد في MNEMO_ACCESS_CODE على Netlify','Personal Anthropic key (optional)':'مفتاح Anthropic شخصي (اختياري)','Enter your access code in Settings.':'أدخل رمز الوصول في الإعدادات.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'أدخل رمز الوصول في الإعدادات ثم أعد المحاولة. التسجيل محفوظ ما لم تُعد تحميل الصفحة.','Sync':'المزامنة','Stored on this device and synced to your account.':'محفوظة على هذا الجهاز ومُزامَنة مع حسابك.','Your session expired. Sign in again.':'انتهت الجلسة. سجّل الدخول مجددًا.','Offline — changes are kept on this device and will sync later.':'غير متصل — التغييرات محفوظة على هذا الجهاز وستتم مزامنتها لاحقًا.','Signed in as':'تم تسجيل الدخول باسم','Syncing…':'جارٍ المزامنة…','Last synced':'آخر مزامنة','Not synced yet':'لم تتم المزامنة بعد','Sync now':'مزامنة الآن','Sign out':'تسجيل الخروج','Sign in to keep your people, memories and deals in sync across your devices.':'سجّل الدخول لمزامنة جهات اتصالك وذكرياتك وصفقاتك بين أجهزتك.','Password':'كلمة المرور','Supabase project':'مشروع Supabase','Project URL':'رابط المشروع','Publishable (anon) key':'المفتاح العام (anon)','Sign in':'تسجيل الدخول','Create account':'إنشاء حساب','Enter your Supabase project URL and publishable key.':'أدخل رابط مشروع Supabase ومفتاحه العام.','Enter an email and a password of at least 6 characters.':'أدخل بريدًا إلكترونيًا وكلمة مرور من 6 أحرف على الأقل.','Account created. Confirm it from the email you just received, then sign in.':'تم إنشاء الحساب. أكّده من البريد الذي وصلك ثم سجّل الدخول.','Signed in':'تم تسجيل الدخول','Could not reach Supabase. Check the project URL.':'تعذّر الوصول إلى Supabase. تحقق من رابط المشروع.','Sign out? Your data stays on this device.':'تسجيل الخروج؟ بياناتك تبقى على هذا الجهاز.','Your data':'بياناتك','Everything is stored on this device. Export a backup regularly.':'كل شيء محفوظ على هذا الجهاز. صدّر نسخة احتياطية بانتظام.','Export backup':'تصدير نسخة احتياطية','Restore backup':'استعادة','Export CSV':'تصدير CSV','Import CSV':'استيراد CSV','Remove sample data':'حذف البيانات التجريبية','Open the classic version':'فتح النسخة الكلاسيكية','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'تكاملات Teams و Outlook و Gmail وغيرها موجودة هناك وتشارك البيانات نفسها.','Saved':'تم الحفظ',
 'Storage is full — export a backup from Settings.':'التخزين ممتلئ — صدّر نسخة احتياطية من الإعدادات.','AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.':'تعذّر الوصول إلى الذكاء الاصطناعي. تحقق من ANTHROPIC_API_KEY في Netlify أو أضف مفتاحك في الإعدادات.',
 'Relationship map':'خريطة العلاقات','Find a person or a company':'ابحث عن شخص أو شركة','Zoom out':'تصغير','Reset':'إعادة ضبط','Zoom in':'تكبير','No company':'بدون شركة','You':'أنت','people in Mnemo':'جهة اتصال في Mnemo','LinkedIn connections':'معارف LinkedIn','Overview':'نظرة عامة','Place in your circle':'موقعه في دائرتك','of':'من','Strength':'القوة','closer than {p}% of your people':'أقرب من {p}٪ من جهات اتصالك','your closest relationship':'أقرب علاقاتك',
 'Conversations':'المحادثات','On LinkedIn':'على LinkedIn','since':'منذ','Connected':'متصل','Introductions':'التعريفات','Around them at':'من حوله في','See all':'عرض الكل','Open profile':'فتح الملف','LinkedIn connection':'معرفة على LinkedIn','Connected since':'على اتصال منذ','Not in Mnemo yet — no shared memory.':'ليس في Mnemo بعد — لا ذكريات مشتركة.','Warm path':'طريق التعريف',
@@ -541,7 +544,7 @@ function nav(){
   $('#tabbar').innerHTML=TABS.map(([k,l])=>`<button class="${S.view===k?'on':''}" data-a="go" data-v="${k}">${ic(k,22)}${t(l)}</button>`).join('');
   $('#search-btn').innerHTML=`${ic('search',15)}<span>${t('Search or ask')}</span><kbd>${/Mac|iPhone|iPad/.test(navigator.platform)?'⌘K':'Ctrl K'}</kbd>`;
   $('#capture-btn').innerHTML=`${ic('plus',15)}${t('Capture')}`;
-  $('#settings-btn').innerHTML=ic('gear');
+  $('#settings-btn').innerHTML=ic('gear');syncBadge();
   document.documentElement.lang=S.cfg.lang;document.documentElement.dir=S.cfg.lang==='ar'?'rtl':'ltr';
 }
 const go=(view,id)=>{const h='#'+view+(id?'/'+id:'');if(location.hash===h)route();else location.hash=h};
@@ -872,7 +875,7 @@ function liMaps(){
 }
 const liOf=c=>{const m=liMaps();return(c.email&&m.e.get(c.email.toLowerCase()))||(c.linkedin&&m.u.get(normUrl(c.linkedin)))||m.n.get(norm(fn(c)))||null};
 const liInCrm=x=>liMaps().crm.has(x);
-const _save=save;save=function(){LIM=null;_save()};
+const _save=save;save=function(){LIM=null;_save();syncSoon()};
 function parseCSV(text){
   text=text.replace(/^﻿/,'');
   const head=text.split(/\r?\n/).find(l=>l.includes(',')||l.includes(';'))||'',delim=(head.match(/;/g)||[]).length>(head.match(/,/g)||[]).length?';':',';
@@ -935,7 +938,8 @@ A.settings=()=>{
     <h5>${t('Intelligence')}</h5><p class="hint">${t('Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.')}</p>
     <label class="field"><span>${t('Access code')}</span><input class="input" type="password" placeholder="${t('The code you set as MNEMO_ACCESS_CODE in Netlify')}" value="${esc(S.cfg.code||'')}" data-c="set-code" autocomplete="off"></label>
     <label class="field"><span>${t('Personal Anthropic key (optional)')}</span><input class="input" type="password" id="set-ak" placeholder="sk-ant-…" value="${esc(S.cfg.ak||'')}" data-c="set-ak" autocomplete="off"></label>
-    <h5>${t('Your data')}</h5><p class="hint">${t('Everything is stored on this device. Export a backup regularly.')}</p>
+    <h5>${t('Sync')}</h5>${syncPanel()}
+    <h5>${t('Your data')}</h5><p class="hint">${SYNC.s?t('Stored on this device and synced to your account.'):t('Everything is stored on this device. Export a backup regularly.')}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-a="li-import">${ic('in',15)}${t('Import LinkedIn')}</button><button class="btn sm" data-a="backup">${t('Export backup')}</button><label class="btn sm">${t('Restore backup')}<input type="file" accept=".json,application/json" hidden data-c="backup-file"></label><button class="btn sm" data-a="csv-export">${t('Export CSV')}</button><label class="btn sm">${t('Import CSV')}<input type="file" accept=".csv,text/csv" hidden data-c="csv-file"></label>${hasSample()?`<button class="btn sm" data-a="clear-sample">${t('Remove sample data')}</button>`:''}</div>
     <p class="hint"><a href="classic.html">${t('Open the classic version')}</a> — ${t('Teams, Outlook, Gmail and other legacy integrations live there and share the same data.')}</p>`);
 };
@@ -1168,8 +1172,114 @@ function netPanel(){
 }
 window.addEventListener('resize',()=>{if(S.view==='network'){netFit();netPanel();netAsk()}});
 
+// ═══ Cloud sync (Supabase) ═══════════════════════════════════════════════
+// Local-first: the app always works from localStorage. When signed in, every person,
+// deal and the LinkedIn list is mirrored as one row each; the newest edit of a record wins.
+const SB_DEFAULT={url:'https://bokgaovvctreikgcggwf.supabase.co',key:''};
+const SYNC={s:null,uid:'',meta:{},cursor:'',at:0,busy:false,again:false,timer:0,state:'off',err:''};
+const sbConf=()=>({url:String(S.cfg.syncUrl||SB_DEFAULT.url).trim().replace(/\/+$/,''),key:String(S.cfg.syncKey||SB_DEFAULT.key).trim()});
+function syncLoad(){try{const d=JSON.parse(localStorage.getItem(LS.sync)||'{}');Object.assign(SYNC,{s:d.s||null,uid:d.uid||'',meta:d.meta||{},cursor:d.cursor||'',at:d.at||0})}catch(e){}SYNC.state=SYNC.s?'idle':'off'}
+function syncStore(){try{localStorage.setItem(LS.sync,JSON.stringify({s:SYNC.s,uid:SYNC.uid,meta:SYNC.meta,cursor:SYNC.cursor,at:SYNC.at}))}catch(e){}}
+const h53=str=>{let a=0xdeadbeef,b=0x41c6ce57;for(let i=0;i<str.length;i++){const c=str.charCodeAt(i);a=Math.imul(a^c,2654435761);b=Math.imul(b^c,1597334677)}a=Math.imul(a^(a>>>16),2246822507)^Math.imul(b^(b>>>13),3266489909);b=Math.imul(b^(b>>>16),2246822507)^Math.imul(a^(a>>>13),3266489909);return(4294967296*(2097151&b)+(a>>>0)).toString(36)};
+function syncRecords(){
+  const m=new Map;
+  for(const c of S.clients)if(!c.sample)m.set('person:'+c.id,c);
+  for(const d of S.deals)if(!d.sample)m.set('deal:'+d.id,d);
+  const li=S.li.filter(x=>!x.sample);if(li.length)m.set('li:all',{list:li});
+  return m;
+}
+// Stamp what changed locally since the last sync, and leave a tombstone for what was deleted.
+function syncScan(){
+  // On a device's very first sync, what is already in the account wins over same-id local copies.
+  const now=Object.keys(SYNC.meta).length||SYNC.cursor?Date.now():1,recs=syncRecords();
+  for(const[k,v]of recs){const h=h53(JSON.stringify(v)),m=SYNC.meta[k];if(!m||m.x||m.h!==h)SYNC.meta[k]={h,u:now,d:1}}
+  for(const k in SYNC.meta)if(!recs.has(k)&&!SYNC.meta[k].x)SYNC.meta[k]={h:'',u:now,d:1,x:1};
+  return recs;
+}
+function syncApply(r){
+  const k=r.kind+':'+r.id,same=x=>String(x.id)===String(r.id);
+  if(r.kind==='li')S.li=r.deleted?S.li.filter(x=>x.sample):(Array.isArray(r.data?.list)?r.data.list:[]);
+  else{
+    const key=r.kind==='person'?'clients':'deals',i=S[key].findIndex(same);
+    if(r.deleted||!r.data){if(i>=0)S[key].splice(i,1)}
+    else{if(r.kind==='person'){r.data.ints=r.data.ints||[];r.data.tasks=r.data.tasks||[]}if(i>=0)S[key][i]=r.data;else S[key].unshift(r.data)}
+  }
+  SYNC.meta[k]=r.deleted||!r.data?{h:'',u:r.updated_ms,d:0,x:1}:{h:h53(JSON.stringify(r.kind==='li'?{list:S.li}:r.data)),u:r.updated_ms,d:0};
+}
+async function sbFetch(path,opt={}){
+  const{url,key}=sbConf();
+  const res=await fetch(url+path,{method:opt.method||'GET',body:opt.body,headers:{apikey:key,'Content-Type':'application/json',...(SYNC.s&&!opt.noAuth?{Authorization:'Bearer '+SYNC.s.access_token}:{}),...(opt.headers||{})}});
+  const txt=await res.text();let d=null;try{d=txt?JSON.parse(txt):null}catch(e){}
+  if(!res.ok)throw Object.assign(new Error(d?.error_description||d?.msg||d?.message||'HTTP '+res.status),{status:res.status});
+  return d;
+}
+function sbSession(d){SYNC.s={access_token:d.access_token,refresh_token:d.refresh_token,exp:Date.now()+(d.expires_in||3600)*1000,id:d.user?.id||SYNC.s?.id,email:d.user?.email||SYNC.s?.email};syncStore()}
+async function sbRefresh(){
+  if(SYNC.s.exp-Date.now()>90e3)return;
+  try{sbSession(await sbFetch('/auth/v1/token?grant_type=refresh_token',{method:'POST',noAuth:true,body:JSON.stringify({refresh_token:SYNC.s.refresh_token})}))}
+  catch(e){if(e.status>=400&&e.status<500){SYNC.s=null;throw new Error(t('Your session expired. Sign in again.'))}throw e}
+}
+function syncSet(state){SYNC.state=state;syncBadge();const el=$('#sync-panel');if(el)el.outerHTML=syncPanel()}
+function syncBadge(){const b=$('#sync-btn');if(!b)return;b.hidden=SYNC.state==='off'&&!SYNC.err;b.className='icon-btn'+(SYNC.state==='syncing'?' busy':SYNC.state==='error'||SYNC.err?' err':'');b.innerHTML=ic('cloud');b.setAttribute('aria-label',t('Sync'));b.title=SYNC.err||t('Sync')}
+function syncSoon(ms=1500){if(!SYNC.s)return;clearTimeout(SYNC.timer);SYNC.timer=setTimeout(syncRun,ms)}
+async function syncRun(){
+  if(!SYNC.s)return;if(SYNC.busy){SYNC.again=true;return}
+  SYNC.busy=true;syncSet('syncing');let changed=false;
+  try{
+    await sbRefresh();syncScan();
+    for(;;){
+      const rows=await sbFetch('/rest/v1/mnemo_items?select=kind,id,data,deleted,updated_ms,server_at&order=server_at.asc&limit=500'+(SYNC.cursor?'&server_at=gt.'+encodeURIComponent(SYNC.cursor):''));
+      for(const r of rows){
+        const m=SYNC.meta[r.kind+':'+r.id];SYNC.cursor=r.server_at;
+        if(m&&((m.d&&m.u>=r.updated_ms)||(!m.d&&m.u===r.updated_ms&&!!m.x===!!r.deleted)))continue;
+        syncApply(r);changed=true;
+      }
+      if(rows.length<500)break;
+    }
+    if(changed){if(hasSample()&&S.clients.some(c=>!c.sample)){const ids=new Set(S.clients.filter(c=>c.sample).map(c=>String(c.id)));S.clients=S.clients.filter(c=>!c.sample);S.deals=S.deals.filter(d=>!d.sample&&!ids.has(String(d.contactId)));S.li=S.li.filter(x=>!x.sample)}LIM=null;_save()}
+    const recs=syncRecords(),dirty=Object.keys(SYNC.meta).filter(k=>SYNC.meta[k].d);
+    for(let i=0;i<dirty.length;i+=50){
+      const rows=dirty.slice(i,i+50).map(k=>{const m=SYNC.meta[k],j=k.indexOf(':');return{user_id:SYNC.s.id,kind:k.slice(0,j),id:k.slice(j+1),data:m.x?null:recs.get(k)??null,deleted:!!m.x,updated_ms:m.u}});
+      await sbFetch('/rest/v1/mnemo_items?on_conflict=user_id,kind,id',{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=minimal'},body:JSON.stringify(rows)});
+      rows.forEach(r=>{const m=SYNC.meta[r.kind+':'+r.id];if(m&&m.u===r.updated_ms)m.d=0});
+    }
+    SYNC.at=Date.now();SYNC.err='';syncStore();syncSet('idle');
+  }catch(e){console.warn('sync',e);SYNC.err=e instanceof TypeError?t('Offline — changes are kept on this device and will sync later.'):e.message;syncStore();syncSet(SYNC.s?'error':'off')}
+  finally{SYNC.busy=false;if(changed){if(S.sel&&!person(S.sel))S.sel=null;render()}if(SYNC.again){SYNC.again=false;syncSoon(300)}}
+}
+function syncPanel(){
+  const c=sbConf(),inp=(id,l,x)=>`<label class="field"><span>${t(l)}</span><input class="input" id="${id}" ${x}></label>`;
+  if(SYNC.s)return`<div id="sync-panel" style="display:flex;flex-direction:column;gap:10px"><p class="hint">${t('Signed in as')} <b style="color:var(--text)">${esc(SYNC.s.email||'')}</b> · ${SYNC.state==='syncing'?t('Syncing…'):SYNC.err?`<span style="color:var(--red)">${esc(SYNC.err)}</span>`:SYNC.at?t('Last synced')+' '+new Date(SYNC.at).toLocaleTimeString(locale(),{hour:'2-digit',minute:'2-digit'}):t('Not synced yet')}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-a="sync-now">${t('Sync now')}</button><button class="btn sm" data-a="sync-out">${t('Sign out')}</button></div></div>`;
+  return`<div id="sync-panel" style="display:flex;flex-direction:column;gap:10px"><p class="hint">${t('Sign in to keep your people, memories and deals in sync across your devices.')}${SYNC.err?` <span style="color:var(--red)">${esc(SYNC.err)}</span>`:''}</p>
+    <div class="grid2">${inp('sync-email','Email','type="email" autocomplete="username"')}${inp('sync-pw','Password','type="password" autocomplete="current-password" data-enter="sync-in"')}</div>
+    <details ${c.key?'':'open'}><summary class="hint" style="cursor:pointer">${t('Supabase project')}</summary><div style="display:flex;flex-direction:column;gap:10px;margin-top:10px">${inp('sync-url','Project URL',`value="${esc(c.url)}" placeholder="https://xxxx.supabase.co"`)}${inp('sync-key','Publishable (anon) key',`type="password" value="${esc(c.key)}" autocomplete="off"`)}</div></details>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" data-a="sync-in">${t('Sign in')}</button><button class="btn sm" data-a="sync-up">${t('Create account')}</button></div></div>`;
+}
+async function syncAuth(signup){
+  const email=$('#sync-email').value.trim(),password=$('#sync-pw').value,url=$('#sync-url').value.trim(),key=$('#sync-key').value.trim();
+  if(!/^https:\/\/[\w.-]+$/.test(url.replace(/\/+$/,''))||!key){toast(t('Enter your Supabase project URL and publishable key.'));return}
+  if(!email||password.length<6){toast(t('Enter an email and a password of at least 6 characters.'));return}
+  S.cfg.syncUrl=url;S.cfg.syncKey=key;saveCfg();SYNC.err='';
+  try{
+    const d=await sbFetch(signup?'/auth/v1/signup':'/auth/v1/token?grant_type=password',{method:'POST',noAuth:true,body:JSON.stringify({email,password})});
+    if(!d?.access_token){toast(t('Account created. Confirm it from the email you just received, then sign in.'));return}
+    if(SYNC.uid&&SYNC.uid!==d.user?.id){SYNC.meta={};SYNC.cursor=''}
+    SYNC.uid=d.user?.id||'';SYNC.s=null;sbSession(d);syncSet('idle');toast(t('Signed in'));syncRun();
+  }catch(e){toast(e instanceof TypeError?t('Could not reach Supabase. Check the project URL.'):e.message)}
+}
+A['sync-in']=()=>syncAuth(false);
+A['sync-up']=()=>syncAuth(true);
+A['sync-now']=()=>syncRun();
+A['sync-out']=()=>{if(!confirm(t('Sign out? Your data stays on this device.')))return;const s=SYNC.s;if(s)sbFetch('/auth/v1/logout',{method:'POST'}).catch(()=>{});clearTimeout(SYNC.timer);Object.assign(SYNC,{s:null,uid:'',meta:{},cursor:'',at:0,err:''});syncStore();syncSet('off')};
+function syncBoot(){
+  syncLoad();syncBadge();if(SYNC.s)syncRun();
+  document.addEventListener('visibilitychange',()=>{if(!document.hidden)syncSoon(200)});
+  window.addEventListener('online',()=>syncSoon(200));
+  setInterval(()=>{if(!document.hidden)syncSoon(0)},60e3);
+}
+
 // ═══ Boot ════════════════════════════════════════════════════════════════
-load();applyTheme();route();
+load();applyTheme();syncLoad();route();syncBoot();
 
 </script>
 </body>

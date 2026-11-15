@@ -26,6 +26,7 @@
 | `classic.html` | Ancienne version (6 500 lignes) conservée : intégrations Teams/Outlook/Gmail/Zoom/etc. Partage les mêmes données |
 | `netlify/functions/whisper.js` | Proxy Whisper (JSON `{audioBase64, mimeType, language}`) |
 | `netlify/functions/claude.js` | Proxy Anthropic Messages API (`model`, `messages`, `system`, `max_tokens` ≤ 4096 uniquement) |
+| `supabase/schema.sql` | Schéma de synchronisation (table `mnemo_items` + RLS), à exécuter une fois dans Supabase |
 | `manifest.webmanifest`, `icon.svg` | Installation PWA |
 
 ## Mnemo 2 — architecture (`index.html`)
@@ -71,6 +72,16 @@ Chaque fonction (`guard()` dupliqué dans les deux fichiers, volontairement sans
 
 La vérification d'origine seule arrête les autres sites web, pas un script qui falsifie l'en-tête : c'est le code d'accès qui protège réellement les clés. Les deux apps envoient `cfg.code` (clé `code` de `ncrm3_cfg`).
 
+## Synchronisation Supabase (Mnemo 2)
+
+- Projet Supabase : « CRM », `https://bokgaovvctreikgcggwf.supabase.co` (valeur par défaut dans `SB_DEFAULT` ; la clé publique se saisit dans Settings, ou peut être inscrite dans `SB_DEFAULT.key` — elle est publique par conception, la protection vient de la RLS).
+- Local d'abord : l'app lit et écrit toujours dans localStorage. Connecté (e-mail + mot de passe Supabase), chaque contact, chaque deal et la liste LinkedIn sont répliqués en une ligne de `mnemo_items` (`user_id, kind, id, data jsonb, deleted, updated_ms, server_at`).
+- Algorithme (`syncRun`) : marquer les changements locaux (hash par enregistrement, tombstone pour les suppressions) → tirer les lignes modifiées depuis le curseur `server_at` → pousser les enregistrements modifiés. Conflit : **la modification la plus récente d'un enregistrement gagne** (par contact entier, pas par note). Au tout premier sync d'un appareil, la copie du compte gagne sur une copie locale de même identifiant.
+- Déclencheurs : 1,5 s après chaque `save()`, au chargement, au retour sur l'onglet, au retour en ligne, toutes les 60 s.
+- Jamais synchronisés : données d'exemple (`sample:true`), réglages, clés, code d'accès.
+- État local dans `mnemo_sync` (session, méta par enregistrement, curseur). Réglages dans `ncrm3_cfg` : `syncUrl`, `syncKey` (distincts de `sbUrl`/`sbKey` de la version classique, dont le schéma est différent).
+- Appels REST directs (`sbFetch`), sans bibliothèque supabase-js.
+
 ## Audit de l'ancienne version (novembre 2026)
 
 Bugs constatés dans `classic.html` : nom affiché en double (« Sophie Sophie Martin ») ; mobile inutilisable (sidebar fixe) ; langues mélangées ; `saveClients()` inexistant → notes d'équipe et import de contact partagé jamais enregistrés (corrigé) ; `addSequenceStep()` inexistant ; service worker enregistré depuis une URL `blob:` → jamais actif (pas de mode hors ligne) ; Zoom/Aircall/Plaud appelés depuis le navigateur (bloqués par CORS, secrets en localStorage) ; `esc()` n'échappait pas les guillemets et liens `javascript:` possibles ; sync Supabase partielle (tâches, deals, suppressions non synchronisés) ; enregistrements longs > 6 Mo rejetés par Netlify ; audio iPhone envoyé comme `.webm` → rejeté par Whisper (corrigé dans `whisper.js`).
@@ -82,7 +93,7 @@ Bugs constatés dans `classic.html` : nom affiché en double (« Sophie Sophie M
 | P0 | Fusionner `main-hd09fy` dans `main` pour mettre Mnemo 2 en production |
 | P0 | Vérifier `OPENAI_API_KEY` et `ANTHROPIC_API_KEY` sur Netlify, tester vocal + IA en réel |
 | P0 | Définir `MNEMO_ACCESS_CODE` sur Netlify puis le saisir dans Settings (sans lui, seule la vérification d'origine protège les fonctions) |
-| P1 | Synchronisation cloud + comptes (Supabase, avec RLS) — Mnemo 2 est 100 % local pour l'instant |
+| P0 | Exécuter `supabase/schema.sql` dans Supabase, puis valider la synchronisation en réel sur deux appareils (testée seulement contre un serveur simulé) |
 | P1 | Réintégrer dans Mnemo 2 les synchronisations utiles (Outlook/Gmail/Calendar) via fonctions serveur |
 | P2 | Multi-utilisateurs, export PDF, séquences email |
 
