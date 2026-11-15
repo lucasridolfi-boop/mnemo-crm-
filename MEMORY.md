@@ -17,15 +17,14 @@
 
 - Repo : `lucasridolfi-boop/mnemo-crm-` (tiret final). Production : https://crmlucasridolfi.netlify.app (Netlify, auto-deploy depuis `main`).
 - Branche de travail cloud : `main-hd09fy`. **Mnemo 2 n'est en production qu'après fusion dans `main`.**
-- Variables Netlify (côté serveur) : `OPENAI_API_KEY` (Whisper), `ANTHROPIC_API_KEY` (Claude).
+- Variables Netlify (côté serveur) : `OPENAI_API_KEY` (Whisper), `ANTHROPIC_API_KEY` (Claude), `MNEMO_ACCESS_CODE` (code d'accès aux fonctions, à saisir aussi dans Settings de l'app).
 
 | Fichier | Rôle |
 |---|---|
 | `index.html` | **Mnemo 2** — l'application actuelle (fichier unique, ~1 200 lignes) |
 | `classic.html` | Ancienne version (6 500 lignes) conservée : intégrations Teams/Outlook/Gmail/Zoom/etc. Partage les mêmes données |
 | `netlify/functions/whisper.js` | Proxy Whisper (JSON `{audioBase64, mimeType, language}`) |
-| `netlify/functions/claude.js` | Proxy Anthropic Messages API (corps transmis tel quel) |
-| `netlify/functions/openai.js` | Proxy Whisper multipart (non utilisé par Mnemo 2) |
+| `netlify/functions/claude.js` | Proxy Anthropic Messages API (`model`, `messages`, `system`, `max_tokens` ≤ 4096 uniquement) |
 | `manifest.webmanifest`, `icon.svg` | Installation PWA |
 
 ## Mnemo 2 — architecture (`index.html`)
@@ -62,6 +61,15 @@ LinkedIn n'offre **aucune API** pour lire les relations d'un membre. La voie off
 - Modèles IA dans la constante `MODEL` ; appels via `ai()` (proxy Netlify par défaut).
 - Valider après modification : extraire le `<script>` final et `new Function(js)`, puis test navigateur (Playwright).
 
+## Sécurité des fonctions Netlify
+
+Chaque fonction (`guard()` dupliqué dans les deux fichiers, volontairement sans module partagé) :
+1. refuse tout appel dont l'en-tête `Origin` n'est pas le site lui-même (hôte de la requête, `URL`/`DEPLOY_PRIME_URL` Netlify, ou `localhost`) — plus aucun en-tête CORS ;
+2. si `MNEMO_ACCESS_CODE` est défini, exige l'en-tête `X-Mnemo-Code` identique (comparaison à temps constant), sinon `401 {error:{code:'access_code'}}` ;
+3. `claude.js` ne transmet qu'une liste blanche de champs et plafonne `max_tokens` ; `whisper.js` valide type MIME et langue.
+
+La vérification d'origine seule arrête les autres sites web, pas un script qui falsifie l'en-tête : c'est le code d'accès qui protège réellement les clés. Les deux apps envoient `cfg.code` (clé `code` de `ncrm3_cfg`).
+
 ## Audit de l'ancienne version (novembre 2026)
 
 Bugs constatés dans `classic.html` : nom affiché en double (« Sophie Sophie Martin ») ; mobile inutilisable (sidebar fixe) ; langues mélangées ; `saveClients()` inexistant → notes d'équipe et import de contact partagé jamais enregistrés (corrigé) ; `addSequenceStep()` inexistant ; service worker enregistré depuis une URL `blob:` → jamais actif (pas de mode hors ligne) ; Zoom/Aircall/Plaud appelés depuis le navigateur (bloqués par CORS, secrets en localStorage) ; `esc()` n'échappait pas les guillemets et liens `javascript:` possibles ; sync Supabase partielle (tâches, deals, suppressions non synchronisés) ; enregistrements longs > 6 Mo rejetés par Netlify ; audio iPhone envoyé comme `.webm` → rejeté par Whisper (corrigé dans `whisper.js`).
@@ -72,7 +80,7 @@ Bugs constatés dans `classic.html` : nom affiché en double (« Sophie Sophie M
 |---|---|
 | P0 | Fusionner `main-hd09fy` dans `main` pour mettre Mnemo 2 en production |
 | P0 | Vérifier `OPENAI_API_KEY` et `ANTHROPIC_API_KEY` sur Netlify, tester vocal + IA en réel |
-| P0 | **Sécuriser les fonctions Netlify** : elles sont ouvertes à tous (CORS `*`, aucune authentification) → n'importe qui peut consommer les clés API |
+| P0 | Définir `MNEMO_ACCESS_CODE` sur Netlify puis le saisir dans Settings (sans lui, seule la vérification d'origine protège les fonctions) |
 | P1 | Synchronisation cloud + comptes (Supabase, avec RLS) — Mnemo 2 est 100 % local pour l'instant |
 | P1 | Réintégrer dans Mnemo 2 les synchronisations utiles (Outlook/Gmail/Calendar) via fonctions serveur |
 | P2 | Multi-utilisateurs, export PDF, séquences email |

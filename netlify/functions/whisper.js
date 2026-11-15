@@ -1,89 +1,61 @@
-// Netlify Function — Proxy OpenAI Whisper API
-// La clé API reste côté serveur, jamais exposée au navigateur
-exports.handler = async (event) => {
-  // CORS preflight
-  if (event.httpMethod === 'OPTIONS') {
-    return {
-      statusCode: 200,
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Access-Control-Allow-Headers': 'Content-Type',
-        'Access-Control-Allow-Methods': 'POST, OPTIONS'
-      },
-      body: ''
-    };
-  }
+// Netlify Function — OpenAI Whisper proxy. The API key stays on the server.
+const crypto = require('crypto');
 
-  if (event.httpMethod !== 'POST') {
-    return { statusCode: 405, body: 'Method Not Allowed' };
+const json = (statusCode, body) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(body) });
+const fail = (statusCode, message, code) => json(statusCode, { error: { message, code } });
+
+// Only this site's own pages may call the function, and — once MNEMO_ACCESS_CODE is set
+// in Netlify — only with that code. Returns an error response, or null when allowed.
+function guard(event) {
+  const h = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
+  const hosts = [h.host, h['x-forwarded-host'], process.env.URL, process.env.DEPLOY_PRIME_URL, process.env.DEPLOY_URL]
+    .filter(Boolean).map(v => String(v).replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase());
+  let origin = '';
+  try { origin = new URL(h.origin).host.toLowerCase(); } catch (e) {}
+  if (!origin || !(hosts.includes(origin) || /^localhost(:\d+)?$/.test(origin))) return fail(403, 'Forbidden origin', 'origin');
+  const expected = process.env.MNEMO_ACCESS_CODE;
+  if (expected) {
+    const digest = v => crypto.createHash('sha256').update(String(v || '')).digest();
+    if (!crypto.timingSafeEqual(digest(h['x-mnemo-code']), digest(expected))) return fail(401, 'Access code required', 'access_code');
   }
+  return null;
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod !== 'POST') return fail(405, 'Method not allowed');
+  const denied = guard(event);
+  if (denied) return denied;
 
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) {
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: { message: 'OPENAI_API_KEY not set in Netlify environment variables' } })
-    };
-  }
+  if (!apiKey) return fail(500, 'OPENAI_API_KEY not set in Netlify environment variables');
+
+  let audioBase64, mimeType, language;
+  try { ({ audioBase64, mimeType, language } = JSON.parse(event.body || '')); } catch (e) { return fail(400, 'Invalid JSON'); }
+  if (typeof audioBase64 !== 'string' || !audioBase64) return fail(400, 'No audio');
+
+  // Whisper detects the format from the file extension: iPhone/Safari records audio/mp4, not webm.
+  const type = /^audio\/[\w.+-]+$/.test(mimeType || '') ? mimeType : 'audio/webm';
+  const ext = { 'audio/mp4': 'mp4', 'audio/x-m4a': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/ogg': 'ogg' }[type] || 'webm';
 
   try {
-    const { audioBase64, mimeType, language } = JSON.parse(event.body);
-    const audioBuffer = Buffer.from(audioBase64, 'base64');
-
-    // Build multipart/form-data manually (no external dependencies needed)
-    const boundary = '----FormBoundary' + Date.now().toString(36);
-    const parts = [];
-
-    // Whisper detects the format from the file extension: iPhone/Safari records audio/mp4, not webm.
-    const type = /^audio\/[\w.+-]+$/.test(mimeType || '') ? mimeType : 'audio/webm';
-    const ext = { 'audio/mp4': 'mp4', 'audio/x-m4a': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/ogg': 'ogg' }[type] || 'webm';
-    parts.push(Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="recording.${ext}"\r\nContent-Type: ${type}\r\n\r\n`,
-      'utf8'
-    ));
-    parts.push(audioBuffer);
-    parts.push(Buffer.from('\r\n', 'utf8'));
-
-    // Model part
-    parts.push(Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="model"\r\n\r\nwhisper-1\r\n`,
-      'utf8'
-    ));
-
-    // Language part (optional)
-    if (/^[a-z]{2}$/.test(language || '')) {
-      parts.push(Buffer.from(
-        `--${boundary}\r\nContent-Disposition: form-data; name="language"\r\n\r\n${language}\r\n`,
-        'utf8'
-      ));
-    }
-
-    // Closing boundary
+    const boundary = '----MnemoBoundary' + crypto.randomBytes(12).toString('hex');
+    const field = (name, value) => Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="${name}"\r\n\r\n${value}\r\n`, 'utf8');
+    const parts = [
+      Buffer.from(`--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="recording.${ext}"\r\nContent-Type: ${type}\r\n\r\n`, 'utf8'),
+      Buffer.from(audioBase64, 'base64'),
+      Buffer.from('\r\n', 'utf8'),
+      field('model', 'whisper-1')
+    ];
+    if (/^[a-z]{2}$/.test(language || '')) parts.push(field('language', language));
     parts.push(Buffer.from(`--${boundary}--\r\n`, 'utf8'));
-
-    const body = Buffer.concat(parts);
 
     const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
       method: 'POST',
-      headers: {
-        'Authorization': 'Bearer ' + apiKey,
-        'Content-Type': `multipart/form-data; boundary=${boundary}`
-      },
-      body: body
+      headers: { Authorization: 'Bearer ' + apiKey, 'Content-Type': `multipart/form-data; boundary=${boundary}` },
+      body: Buffer.concat(parts)
     });
-
-    const data = await response.json();
-    return {
-      statusCode: response.status,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify(data)
-    };
+    return { statusCode: response.status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: await response.text() };
   } catch (err) {
-    return {
-      statusCode: 500,
-      headers: { 'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*' },
-      body: JSON.stringify({ error: { message: err.message } })
-    };
+    return fail(502, err.message);
   }
 };

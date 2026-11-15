@@ -3525,7 +3525,7 @@ async function _whisperTranscribe(blob){
   const langMap = {fr:'fr',en:'en',ar:'ar'};
   const res = await fetch('/.netlify/functions/whisper', {
     method:'POST',
-    headers:{'Content-Type':'application/json'},
+    headers:{'Content-Type':'application/json',...(CFG.code?{'X-Mnemo-Code':CFG.code}:{})},
     body: JSON.stringify({audioBase64, mimeType: blob.type||'audio/webm', language: langMap[CFG.lang]||''})
   });
   if(!res.ok){
@@ -4873,6 +4873,7 @@ async function apiCall(body){
   const useProxy=!CFG.ak;
   const url=useProxy?'/.netlify/functions/claude':'https://api.anthropic.com/v1/messages';
   const headers={'Content-Type':'application/json'};
+  if(useProxy&&CFG.code)headers['X-Mnemo-Code']=CFG.code;
   if(!useProxy){
     headers['x-api-key']=CFG.ak;
     headers['anthropic-version']='2023-06-01';
