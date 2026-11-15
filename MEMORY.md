@@ -15,7 +15,8 @@
 
 ## Dépôt et déploiement
 
-- Repo : `lucasridolfi-boop/mnemo-crm-` (tiret final). Production : https://crmlucasridolfi.netlify.app (Netlify, auto-deploy depuis `main`).
+- Repo : `lucasridolfi-boop/mnemo-crm-` (tiret final). Production : **https://mnemo-crm.netlify.app** (projet Netlify `mnemo-crm`, auto-deploy depuis `main`).
+- Autres projets Netlify : `mnemodeals` (déploie le même dépôt, doublon) ; `crmlucasridolfi` = ancien dépôt manuel de mars 2026 (« NexusCRM v2 »), **jamais mis à jour — ne pas l'utiliser**.
 - Branche de travail cloud : `main-hd09fy`. **Mnemo 2 n'est en production qu'après fusion dans `main`.**
 - Variables Netlify (côté serveur) : `OPENAI_API_KEY` (Whisper), `ANTHROPIC_API_KEY` (Claude), `MNEMO_ACCESS_CODE` (code d'accès aux fonctions, à saisir aussi dans Settings de l'app).
 
