@@ -303,6 +303,8 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 // Storage keys are shared with the classic version so existing data carries over.
 const LS={clients:'ncrm3_clients',deals:'ncrm3_deals',cfg:'ncrm3_cfg',theme:'ncrm3_theme',li:'mnemo_li',sync:'mnemo_sync'};
 const MODEL={smart:'claude-sonnet-5-5',fast:'claude-haiku-5-5'};
+// Inside the mobile app the page is not served by Netlify, so the functions are called by full address.
+const NATIVE=!!window.Capacitor?.isNativePlatform?.(),API=NATIVE?'https://mnemo-crm.netlify.app':'';
 const S={clients:[],deals:[],li:[],cfg:{lang:'en',ak:'',cur:'USD'},view:'today',sel:null,q:'',filter:'all'};
 const STAGES=[['lead','Lead'],['qualified','Qualified'],['proposal','Proposal'],['negotiation','Negotiation'],['won','Won'],['lost','Lost']];
 const KINDS={note:'Note',meeting:'Meeting',call:'Call',email:'Email',whatsapp:'WhatsApp',audio:'Voice note'};
@@ -409,7 +411,7 @@ async function ai(prompt,{system,max=800,fast=false}={}){
   if(system)body.system=system;
   const direct=!!S.cfg.ak,headers={'Content-Type':'application/json'};
   if(direct)Object.assign(headers,{'x-api-key':S.cfg.ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});else if(S.cfg.code)headers['X-Mnemo-Code']=S.cfg.code;
-  const res=await fetch(direct?'https://api.anthropic.com/v1/messages':'/.netlify/functions/claude',{method:'POST',headers,body:JSON.stringify(body)});
+  const res=await fetch(direct?'https://api.anthropic.com/v1/messages':API+'/.netlify/functions/claude',{method:'POST',headers,body:JSON.stringify(body)});
   const d=await res.json().catch(()=>null);
   if(!res.ok||!d||d.error)throw Object.assign(new Error(d?.error?.message||'HTTP '+res.status),{code:d?.error?.code});
   return(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
@@ -490,7 +492,7 @@ const L={fr:{
 '{n} connections already imported. A new file replaces them.':'{n} relations déjà importées. Un nouveau fichier les remplace.','Sample connections are shown for now. Your file replaces them.':'Des relations d’exemple sont affichées pour l’instant. Votre fichier les remplacera.','Unzip the archive first, then drop Connections.csv.':'Décompressez d’abord l’archive, puis déposez Connections.csv.','This does not look like LinkedIn’s Connections.csv.':'Ce fichier ne ressemble pas au Connections.csv de LinkedIn.','{n} connections imported':'{n} relations importées',
 'This is not a Mnemo backup.':'Ce n’est pas une sauvegarde Mnemo.','Replace everything on this device with the backup ({n} people)?':'Remplacer toutes les données de cet appareil par la sauvegarde ({n} contacts) ?','Backup restored':'Sauvegarde restaurée','No rows found in this file.':'Aucune ligne trouvée dans ce fichier.','The file needs at least a name column.':'Le fichier doit contenir au moins une colonne nom.','{n} people imported':'{n} contacts importés',
 'Appearance':'Apparence','Auto':'Auto','Light':'Clair','Dark':'Sombre','Language':'Langue','Currency':'Devise','Intelligence':'Intelligence','Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.':'La transcription et l’IA passent par vos fonctions Netlify sécurisées (OPENAI_API_KEY et ANTHROPIC_API_KEY). Vous pouvez aussi utiliser une clé Anthropic personnelle, stockée uniquement sur cet appareil.','Access code':'Code d’accès','The code you set as MNEMO_ACCESS_CODE in Netlify':'Le code défini dans MNEMO_ACCESS_CODE sur Netlify','Personal Anthropic key (optional)':'Clé Anthropic personnelle (facultatif)','Enter your access code in Settings.':'Saisissez votre code d’accès dans les Réglages.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'Saisissez votre code d’accès dans les Réglages, puis réessayez. L’enregistrement est conservé tant que la page n’est pas rechargée.',
-'Sync':'Synchronisation','Stored on this device and synced to your account.':'Stocké sur cet appareil et synchronisé avec votre compte.','Your session expired. Sign in again.':'Votre session a expiré. Reconnectez-vous.','Offline — changes are kept on this device and will sync later.':'Hors ligne — les modifications restent sur cet appareil et seront synchronisées plus tard.','Signed in as':'Connecté en tant que','Syncing…':'Synchronisation…','Last synced':'Dernière synchronisation à','Not synced yet':'Pas encore synchronisé','Sync now':'Synchroniser','Sign out':'Se déconnecter','Sign in to keep your people, memories and deals in sync across your devices.':'Connectez-vous pour synchroniser vos contacts, souvenirs et deals entre vos appareils.','Password':'Mot de passe','Supabase project':'Projet Supabase','Project URL':'URL du projet','Publishable (anon) key':'Clé publique (anon)','Sign in':'Se connecter','Create account':'Créer un compte','Enter your Supabase project URL and publishable key.':'Saisissez l’URL de votre projet Supabase et sa clé publique.','Enter an email and a password of at least 6 characters.':'Saisissez un e-mail et un mot de passe d’au moins 6 caractères.','Account created. Confirm it from the email you just received, then sign in.':'Compte créé. Confirmez-le depuis l’e-mail que vous venez de recevoir, puis connectez-vous.','Signed in':'Connecté','Could not reach Supabase. Check the project URL.':'Supabase est injoignable. Vérifiez l’URL du projet.','Sign out? Your data stays on this device.':'Se déconnecter ? Vos données restent sur cet appareil.','Your data':'Vos données','Everything is stored on this device. Export a backup regularly.':'Tout est stocké sur cet appareil. Exportez régulièrement une sauvegarde.','Export backup':'Exporter une sauvegarde','Restore backup':'Restaurer','Export CSV':'Exporter en CSV','Import CSV':'Importer un CSV','Remove sample data':'Supprimer les exemples','Open the classic version':'Ouvrir la version classique','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'Teams, Outlook, Gmail et les autres intégrations historiques s’y trouvent et partagent les mêmes données.','Saved':'Enregistré',
+'Sync':'Synchronisation','Stored on this device and synced to your account.':'Stocké sur cet appareil et synchronisé avec votre compte.','Your session expired. Sign in again.':'Votre session a expiré. Reconnectez-vous.','Offline — changes are kept on this device and will sync later.':'Hors ligne — les modifications restent sur cet appareil et seront synchronisées plus tard.','Signed in as':'Connecté en tant que','Syncing…':'Synchronisation…','Last synced':'Dernière synchronisation à','Not synced yet':'Pas encore synchronisé','Sync now':'Synchroniser','Sign out':'Se déconnecter','Sign in to keep your people, memories and deals in sync across your devices.':'Connectez-vous pour synchroniser vos contacts, souvenirs et deals entre vos appareils.','Password':'Mot de passe','Supabase project':'Projet Supabase','Project URL':'URL du projet','Publishable (anon) key':'Clé publique (anon)','Sign in':'Se connecter','Create account':'Créer un compte','Enter your Supabase project URL and publishable key.':'Saisissez l’URL de votre projet Supabase et sa clé publique.','Enter an email and a password of at least 6 characters.':'Saisissez un e-mail et un mot de passe d’au moins 6 caractères.','Account created. Confirm it from the email you just received, then sign in.':'Compte créé. Confirmez-le depuis l’e-mail que vous venez de recevoir, puis connectez-vous.','Signed in':'Connecté','Could not reach Supabase. Check the project URL.':'Supabase est injoignable. Vérifiez l’URL du projet.','Sign out? Your data stays on this device.':'Se déconnecter ? Vos données restent sur cet appareil.','phone contacts':'contacts du téléphone','Phone contacts':'Contacts du téléphone','Phone contact':'Contact du téléphone','more people you know at':'autres personnes que vous connaissez chez','not in Mnemo yet':'pas encore dans Mnemo','Not in Mnemo yet':'Pas encore dans Mnemo','People you know there':'Personnes que vous y connaissez','Import contacts':'Importer des contacts','Import phone contacts':'Importer les contacts du téléphone','Contacts':'Contacts','LinkedIn & contacts':'LinkedIn et contacts','No contacts found.':'Aucun contact trouvé.','{n} contacts imported':'{n} contacts importés','Profiles completed: {n}':'Fiches complétées : {n}','Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.':'Votre carnet d’adresses rejoint l’anneau extérieur de votre carte. Rien ne devient une fiche Mnemo tant que vous ne l’ajoutez pas, et les personnes déjà dans Mnemo voient leur téléphone et leur e-mail manquants complétés.','Import from this phone':'Importer depuis ce téléphone','Choose from this phone':'Choisir dans ce téléphone','Drop a contacts file':'Déposez un fichier de contacts','vCard (.vcf) or CSV — or click to choose':'vCard (.vcf) ou CSV — ou cliquez pour choisir','How to export your contacts':'Comment exporter vos contacts','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.':'App Contacts → Listes → appui long sur « Tous les contacts » → Exporter → enregistrer le fichier.','Contacts app → Menu → Manage contacts → Import or export → Export.':'App Contacts → Menu → Gérer les contacts → Importer ou exporter → Exporter.','contacts.google.com → Export → vCard.':'contacts.google.com → Exporter → vCard.','People → Manage contacts → Export contacts.':'Contacts → Gérer les contacts → Exporter les contacts.','{n} contacts already imported. A new file replaces them.':'{n} contacts déjà importés. Un nouveau fichier les remplace.','This file is not a vCard or a contacts CSV.':'Ce fichier n’est ni une vCard ni un CSV de contacts.','Allow Mnemo to access your contacts in the phone settings.':'Autorisez Mnemo à accéder à vos contacts dans les réglages du téléphone.','Your data':'Vos données','Everything is stored on this device. Export a backup regularly.':'Tout est stocké sur cet appareil. Exportez régulièrement une sauvegarde.','Export backup':'Exporter une sauvegarde','Restore backup':'Restaurer','Export CSV':'Exporter en CSV','Import CSV':'Importer un CSV','Remove sample data':'Supprimer les exemples','Open the classic version':'Ouvrir la version classique','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'Teams, Outlook, Gmail et les autres intégrations historiques s’y trouvent et partagent les mêmes données.','Saved':'Enregistré',
 'Storage is full — export a backup from Settings.':'Stockage plein — exportez une sauvegarde depuis les Réglages.','AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.':'IA injoignable. Vérifiez ANTHROPIC_API_KEY sur Netlify, ou ajoutez votre clé dans les Réglages.',
 'Relationship map':'Carte des relations','Find a person or a company':'Trouver une personne ou une société','Zoom out':'Dézoomer','Reset':'Recentrer','Zoom in':'Zoomer','No company':'Sans société','You':'Vous','people in Mnemo':'contacts dans Mnemo','LinkedIn connections':'relations LinkedIn','Overview':'Vue d’ensemble','Place in your circle':'Place dans votre cercle','of':'sur','Strength':'Force','closer than {p}% of your people':'plus proche que {p} % de vos contacts','your closest relationship':'votre relation la plus proche',
 'Conversations':'Échanges','On LinkedIn':'Sur LinkedIn','since':'depuis','Connected':'Connecté','Introductions':'Présentations','Around them at':'Autour, chez','See all':'Tout voir','Open profile':'Ouvrir la fiche','LinkedIn connection':'Relation LinkedIn','Connected since':'En relation depuis le','Not in Mnemo yet — no shared memory.':'Pas encore dans Mnemo — aucun souvenir partagé.','Warm path':'Chemin d’introduction',
@@ -522,7 +524,7 @@ const L={fr:{
 '{n} connections already imported. A new file replaces them.':'تم استيراد {n} من المعارف. الملف الجديد يستبدلها.','Sample connections are shown for now. Your file replaces them.':'تُعرض الآن معارف تجريبية. ملفك سيستبدلها.','Unzip the archive first, then drop Connections.csv.':'فكّ ضغط الأرشيف أولاً ثم أسقط Connections.csv.','This does not look like LinkedIn’s Connections.csv.':'هذا الملف لا يبدو ملف Connections.csv من LinkedIn.','{n} connections imported':'تم استيراد {n} من المعارف',
 'This is not a Mnemo backup.':'هذه ليست نسخة احتياطية من Mnemo.','Replace everything on this device with the backup ({n} people)?':'استبدال كل البيانات على هذا الجهاز بالنسخة الاحتياطية ({n} جهة اتصال)؟','Backup restored':'تمت استعادة النسخة','No rows found in this file.':'لا توجد صفوف في هذا الملف.','The file needs at least a name column.':'يجب أن يحتوي الملف على عمود للاسم.','{n} people imported':'تم استيراد {n} جهة اتصال',
 'Appearance':'المظهر','Auto':'تلقائي','Light':'فاتح','Dark':'داكن','Language':'اللغة','Currency':'العملة','Intelligence':'الذكاء','Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.':'التفريغ والذكاء الاصطناعي يعملان عبر وظائف Netlify الآمنة (OPENAI_API_KEY و ANTHROPIC_API_KEY). يمكنك اختياريًا استخدام مفتاح Anthropic شخصي يُحفظ على هذا الجهاز فقط.',
-'Access code':'رمز الوصول','The code you set as MNEMO_ACCESS_CODE in Netlify':'الرمز المحدد في MNEMO_ACCESS_CODE على Netlify','Personal Anthropic key (optional)':'مفتاح Anthropic شخصي (اختياري)','Enter your access code in Settings.':'أدخل رمز الوصول في الإعدادات.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'أدخل رمز الوصول في الإعدادات ثم أعد المحاولة. التسجيل محفوظ ما لم تُعد تحميل الصفحة.','Sync':'المزامنة','Stored on this device and synced to your account.':'محفوظة على هذا الجهاز ومُزامَنة مع حسابك.','Your session expired. Sign in again.':'انتهت الجلسة. سجّل الدخول مجددًا.','Offline — changes are kept on this device and will sync later.':'غير متصل — التغييرات محفوظة على هذا الجهاز وستتم مزامنتها لاحقًا.','Signed in as':'تم تسجيل الدخول باسم','Syncing…':'جارٍ المزامنة…','Last synced':'آخر مزامنة','Not synced yet':'لم تتم المزامنة بعد','Sync now':'مزامنة الآن','Sign out':'تسجيل الخروج','Sign in to keep your people, memories and deals in sync across your devices.':'سجّل الدخول لمزامنة جهات اتصالك وذكرياتك وصفقاتك بين أجهزتك.','Password':'كلمة المرور','Supabase project':'مشروع Supabase','Project URL':'رابط المشروع','Publishable (anon) key':'المفتاح العام (anon)','Sign in':'تسجيل الدخول','Create account':'إنشاء حساب','Enter your Supabase project URL and publishable key.':'أدخل رابط مشروع Supabase ومفتاحه العام.','Enter an email and a password of at least 6 characters.':'أدخل بريدًا إلكترونيًا وكلمة مرور من 6 أحرف على الأقل.','Account created. Confirm it from the email you just received, then sign in.':'تم إنشاء الحساب. أكّده من البريد الذي وصلك ثم سجّل الدخول.','Signed in':'تم تسجيل الدخول','Could not reach Supabase. Check the project URL.':'تعذّر الوصول إلى Supabase. تحقق من رابط المشروع.','Sign out? Your data stays on this device.':'تسجيل الخروج؟ بياناتك تبقى على هذا الجهاز.','Your data':'بياناتك','Everything is stored on this device. Export a backup regularly.':'كل شيء محفوظ على هذا الجهاز. صدّر نسخة احتياطية بانتظام.','Export backup':'تصدير نسخة احتياطية','Restore backup':'استعادة','Export CSV':'تصدير CSV','Import CSV':'استيراد CSV','Remove sample data':'حذف البيانات التجريبية','Open the classic version':'فتح النسخة الكلاسيكية','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'تكاملات Teams و Outlook و Gmail وغيرها موجودة هناك وتشارك البيانات نفسها.','Saved':'تم الحفظ',
+'Access code':'رمز الوصول','The code you set as MNEMO_ACCESS_CODE in Netlify':'الرمز المحدد في MNEMO_ACCESS_CODE على Netlify','Personal Anthropic key (optional)':'مفتاح Anthropic شخصي (اختياري)','Enter your access code in Settings.':'أدخل رمز الوصول في الإعدادات.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'أدخل رمز الوصول في الإعدادات ثم أعد المحاولة. التسجيل محفوظ ما لم تُعد تحميل الصفحة.','Sync':'المزامنة','Stored on this device and synced to your account.':'محفوظة على هذا الجهاز ومُزامَنة مع حسابك.','Your session expired. Sign in again.':'انتهت الجلسة. سجّل الدخول مجددًا.','Offline — changes are kept on this device and will sync later.':'غير متصل — التغييرات محفوظة على هذا الجهاز وستتم مزامنتها لاحقًا.','Signed in as':'تم تسجيل الدخول باسم','Syncing…':'جارٍ المزامنة…','Last synced':'آخر مزامنة','Not synced yet':'لم تتم المزامنة بعد','Sync now':'مزامنة الآن','Sign out':'تسجيل الخروج','Sign in to keep your people, memories and deals in sync across your devices.':'سجّل الدخول لمزامنة جهات اتصالك وذكرياتك وصفقاتك بين أجهزتك.','Password':'كلمة المرور','Supabase project':'مشروع Supabase','Project URL':'رابط المشروع','Publishable (anon) key':'المفتاح العام (anon)','Sign in':'تسجيل الدخول','Create account':'إنشاء حساب','Enter your Supabase project URL and publishable key.':'أدخل رابط مشروع Supabase ومفتاحه العام.','Enter an email and a password of at least 6 characters.':'أدخل بريدًا إلكترونيًا وكلمة مرور من 6 أحرف على الأقل.','Account created. Confirm it from the email you just received, then sign in.':'تم إنشاء الحساب. أكّده من البريد الذي وصلك ثم سجّل الدخول.','Signed in':'تم تسجيل الدخول','Could not reach Supabase. Check the project URL.':'تعذّر الوصول إلى Supabase. تحقق من رابط المشروع.','Sign out? Your data stays on this device.':'تسجيل الخروج؟ بياناتك تبقى على هذا الجهاز.','phone contacts':'جهة اتصال من الهاتف','Phone contacts':'جهات اتصال الهاتف','Phone contact':'جهة اتصال من الهاتف','more people you know at':'أشخاص آخرون تعرفهم في','not in Mnemo yet':'ليسوا في Mnemo بعد','Not in Mnemo yet':'ليس في Mnemo بعد','People you know there':'أشخاص تعرفهم هناك','Import contacts':'استيراد جهات الاتصال','Import phone contacts':'استيراد جهات اتصال الهاتف','Contacts':'جهات الاتصال','LinkedIn & contacts':'LinkedIn وجهات الاتصال','No contacts found.':'لم يُعثر على جهات اتصال.','{n} contacts imported':'تم استيراد {n} جهة اتصال','Profiles completed: {n}':'الملفات المستكملة: {n}','Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.':'ينضم دفتر عناوينك إلى الحلقة الخارجية في خريطتك. لا يصبح أحد ملفًا في Mnemo حتى تضيفه، ويُستكمل الهاتف والبريد الناقصان لمن هم في Mnemo.','Import from this phone':'استيراد من هذا الهاتف','Choose from this phone':'اختيار من هذا الهاتف','Drop a contacts file':'أسقط ملف جهات الاتصال','vCard (.vcf) or CSV — or click to choose':'vCard (.vcf) أو CSV — أو انقر للاختيار','How to export your contacts':'كيفية تصدير جهات اتصالك','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.':'تطبيق جهات الاتصال ← القوائم ← اضغط مطولاً على «كل جهات الاتصال» ← تصدير ← احفظ الملف.','Contacts app → Menu → Manage contacts → Import or export → Export.':'تطبيق جهات الاتصال ← القائمة ← إدارة جهات الاتصال ← استيراد أو تصدير ← تصدير.','contacts.google.com → Export → vCard.':'contacts.google.com ← تصدير ← vCard.','People → Manage contacts → Export contacts.':'الأشخاص ← إدارة جهات الاتصال ← تصدير جهات الاتصال.','{n} contacts already imported. A new file replaces them.':'تم استيراد {n} جهة اتصال. الملف الجديد يستبدلها.','This file is not a vCard or a contacts CSV.':'هذا الملف ليس vCard ولا ملف CSV لجهات الاتصال.','Allow Mnemo to access your contacts in the phone settings.':'اسمح لـ Mnemo بالوصول إلى جهات اتصالك من إعدادات الهاتف.','Your data':'بياناتك','Everything is stored on this device. Export a backup regularly.':'كل شيء محفوظ على هذا الجهاز. صدّر نسخة احتياطية بانتظام.','Export backup':'تصدير نسخة احتياطية','Restore backup':'استعادة','Export CSV':'تصدير CSV','Import CSV':'استيراد CSV','Remove sample data':'حذف البيانات التجريبية','Open the classic version':'فتح النسخة الكلاسيكية','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'تكاملات Teams و Outlook و Gmail وغيرها موجودة هناك وتشارك البيانات نفسها.','Saved':'تم الحفظ',
 'Storage is full — export a backup from Settings.':'التخزين ممتلئ — صدّر نسخة احتياطية من الإعدادات.','AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.':'تعذّر الوصول إلى الذكاء الاصطناعي. تحقق من ANTHROPIC_API_KEY في Netlify أو أضف مفتاحك في الإعدادات.',
 'Relationship map':'خريطة العلاقات','Find a person or a company':'ابحث عن شخص أو شركة','Zoom out':'تصغير','Reset':'إعادة ضبط','Zoom in':'تكبير','No company':'بدون شركة','You':'أنت','people in Mnemo':'جهة اتصال في Mnemo','LinkedIn connections':'معارف LinkedIn','Overview':'نظرة عامة','Place in your circle':'موقعه في دائرتك','of':'من','Strength':'القوة','closer than {p}% of your people':'أقرب من {p}٪ من جهات اتصالك','your closest relationship':'أقرب علاقاتك',
 'Conversations':'المحادثات','On LinkedIn':'على LinkedIn','since':'منذ','Connected':'متصل','Introductions':'التعريفات','Around them at':'من حوله في','See all':'عرض الكل','Open profile':'فتح الملف','LinkedIn connection':'معرفة على LinkedIn','Connected since':'على اتصال منذ','Not in Mnemo yet — no shared memory.':'ليس في Mnemo بعد — لا ذكريات مشتركة.','Warm path':'طريق التعريف',
@@ -651,7 +653,7 @@ function personDetail(c){
       ${ev.length?ev.map(e=>{const long=e.text&&e.text!==e.sum;return`<div class="tl-item"><span class="tl-ic">${ic(e.kind,16)}</span><div class="tl-body"><b>${esc(e.title||t(KINDS[e.kind]))}</b><time>${fmtDate(e.date)}${e.dur?' · '+esc(e.dur):''}</time>${e.sum?`<p>${esc(e.sum)}</p>`:long?`<p class="clamp">${esc(e.text)}</p>`:''}${long?`<p hidden style="color:var(--text);margin-top:10px">${esc(e.text)}</p><button class="tl-more" data-a="tl-more">${t('Show full notes')}</button> <button class="tl-more" style="color:var(--text3);margin-inline-start:12px" data-a="ev-del" data-id="${c.id}" data-e="${e.id}" data-src="${e.src}" hidden>${t('Delete')}</button>`:`<button class="tl-more" style="color:var(--text3)" data-a="ev-del" data-id="${c.id}" data-e="${e.id}" data-src="${e.src}">${t('Delete')}</button>`}</div></div>`}).join(''):`<div class="empty"><b>${t('No memories yet.')}</b>${t('Record a voice note right after you meet — Mnemo does the rest.')}</div>`}</div></section>
     ${ar.by||ar.gave.length||ar.peers.length||ar.li.length?`<section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Circle')}</h2></div><div class="card" style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center">
       ${ar.by?pill(ar.by,t('introduced you')):''}${ar.gave.map(p=>pill(p,t('introduced by them'))).join('')}${ar.peers.map(p=>pill(p,t('same company'))).join('')}
-      ${ar.li.length?`<button class="chip accent" style="height:30px" data-a="see-map" data-id="${c.id}">${ic('in',14)}${ar.li.length} ${t('LinkedIn connections at')} ${esc(c.company)}</button>`:''}</div></section>`:''}
+      ${ar.li.length?`<button class="chip accent" style="height:30px" data-a="see-map" data-id="${c.id}">${ic('network',14)}${ar.li.length} ${t('more people you know at')} ${esc(c.company)}</button>`:''}</div></section>`:''}
     <section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Ask')}</h2></div>
       <div class="ask"><input id="ask-in" placeholder="${t('What did we agree on? What does {name} care about?',{name:esc(first(c))})}" data-enter="ask" data-id="${c.id}"><button class="btn primary sm" data-a="ask" data-id="${c.id}">${t('Ask')}</button></div><div id="ask-out"></div></section>
   </div>`;
@@ -769,7 +771,7 @@ A['rec-stop']=async()=>{const mr=REC.mr;clearInterval(REC.tick);clearInterval(RE
 A['rec-retry']=()=>recProcess();
 async function transcribe(blob){
   const audioBase64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob)});
-  const res=await fetch('/.netlify/functions/whisper',{method:'POST',headers:{'Content-Type':'application/json',...(S.cfg.code?{'X-Mnemo-Code':S.cfg.code}:{})},body:JSON.stringify({audioBase64,mimeType:blob.type.split(';')[0]||'audio/webm',language:S.cfg.lang})});
+  const res=await fetch(API+'/.netlify/functions/whisper',{method:'POST',headers:{'Content-Type':'application/json',...(S.cfg.code?{'X-Mnemo-Code':S.cfg.code}:{})},body:JSON.stringify({audioBase64,mimeType:blob.type.split(';')[0]||'audio/webm',language:S.cfg.lang})});
   const d=await res.json().catch(()=>null);
   if(!res.ok||!d||d.error)throw Object.assign(new Error(d?.error?.message||'HTTP '+res.status),{code:d?.error?.code});
   return d.text||'';
@@ -809,14 +811,14 @@ const mark=(text,q)=>{const s=esc(text),w=q.trim().split(/\s+/).filter(x=>x.leng
 function snippet(text,q){const i=norm(text).indexOf(norm(q).split(/\s+/)[0]);const a=Math.max(0,i-40);return(a>0?'…':'')+text.slice(a,a+140)}
 I.pal=el=>{
   const q=el.value.trim(),nq=norm(q),it=[];
-  const acts=[['New person','plus',()=>A['new-person']()],['Record a voice note','mic',()=>A.capture({dataset:{tab:'voice'}})],['Add a note','note',()=>A.capture({dataset:{tab:'note'}})],['Open the relationship map','network',()=>{closeSheet();go('network')}],['Import LinkedIn connections','in',()=>A['li-import']()],['Settings','gear',()=>A.settings()]];
+  const acts=[['New person','plus',()=>A['new-person']()],['Record a voice note','mic',()=>A.capture({dataset:{tab:'voice'}})],['Add a note','note',()=>A.capture({dataset:{tab:'note'}})],['Open the relationship map','network',()=>{closeSheet();go('network')}],['Import LinkedIn connections','in',()=>A['li-import']()],['Import phone contacts','call',()=>A['ab-import']()],['Settings','gear',()=>A.settings()]];
   if(!nq){
     S.clients.map(c=>({c,d:lastTouch(c)||''})).sort((a,b)=>a.d<b.d?1:-1).slice(0,5).forEach(o=>it.push({h:'Recent',av:fn(o.c),title:esc(fn(o.c)),sub:esc(o.c.company||''),run:()=>{closeSheet();go('people',o.c.id)}}));
     acts.forEach(a=>it.push({h:'Actions',icon:a[1],title:t(a[0]),run:a[2]}));
   }else{
     S.clients.filter(c=>norm([fn(c),c.company,c.role,c.project].join(' ')).includes(nq)).slice(0,6).forEach(c=>it.push({h:'People',av:fn(c),title:mark(fn(c),q),sub:mark([c.role,c.company].filter(Boolean).join(' · '),q),run:()=>{closeSheet();go('people',c.id)}}));
     localSearch(q,S.clients).slice(0,7).forEach(o=>it.push({h:'Memory',icon:o.e.kind,title:mark(o.e.title||t(KINDS[o.e.kind]),q),sub:esc(fn(o.c))+' — '+mark(snippet(o.e.text||o.e.sum,q),q),run:()=>{closeSheet();go('people',o.c.id)}}));
-    S.li.filter(x=>!liInCrm(x)&&norm(x.f+' '+x.l+' '+x.co).includes(nq)).slice(0,4).forEach(x=>it.push({h:'LinkedIn',icon:'in',title:mark((x.f+' '+x.l).trim(),q),sub:mark([x.pos,x.co].filter(Boolean).join(' · '),q),run:()=>{closeSheet();NET.sel='l'+S.li.indexOf(x);NET.grp=null;go('network')}}));
+    S.li.filter(x=>!liInCrm(x)&&norm(x.f+' '+x.l+' '+x.co).includes(nq)).slice(0,4).forEach(x=>it.push({h:isAb(x)?'Contacts':'LinkedIn',icon:isAb(x)?'call':'in',title:mark((x.f+' '+x.l).trim(),q),sub:mark([x.pos,x.co].filter(Boolean).join(' · '),q),run:()=>{closeSheet();NET.sel='l'+S.li.indexOf(x);NET.grp=null;go('network')}}));
     acts.filter(a=>norm(t(a[0])).includes(nq)).forEach(a=>it.push({h:'Actions',icon:a[1],title:t(a[0]),run:a[2]}));
     it.push({h:'Ask Mnemo',icon:'spark',title:esc(q),sub:t('Answer from everything you have recorded'),run:()=>askAll(q)});
   }
@@ -864,16 +866,27 @@ document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('
 
 // ═══ LinkedIn & data ═════════════════════════════════════════════════════
 let LIM=null;
+// S.li holds everyone you know outside Mnemo: LinkedIn connections and (src:'ab') address-book contacts.
+const isAb=x=>x.src==='ab',digits=p=>String(p||'').replace(/\D/g,'').slice(-9);
+const liCount=()=>S.li.filter(x=>!isAb(x)).length,abCount=()=>S.li.filter(isAb).length;
+const outerName=()=>abCount()?(liCount()?'LinkedIn & contacts':'Contacts'):'LinkedIn';
+// One person, one dot: an address-book entry that is already a LinkedIn connection only adds its phone and email to it.
+function mergeBooks(li,ab){
+  const byE=new Map,byN=new Map,out=[];
+  for(const x of li){if(x.email)byE.set(x.email.toLowerCase(),x);byN.set(norm(x.f+' '+x.l),x)}
+  for(const x of ab){const m=(x.email&&byE.get(x.email.toLowerCase()))||byN.get(norm(x.f+' '+x.l));if(m){if(!m.phone&&x.phone)m.phone=x.phone;if(!m.email&&x.email)m.email=x.email}else out.push(x)}
+  return[...li,...out];
+}
 const normUrl=u=>String(u||'').toLowerCase().replace(/^https?:\/\/(www\.)?/,'').replace(/[?#].*$/,'').replace(/\/+$/,'');
 function liMaps(){
   if(LIM)return LIM;
-  const e=new Map,u=new Map,n=new Map,crm=new Set;
-  for(const x of S.li){if(x.email)e.set(x.email.toLowerCase(),x);if(x.url)u.set(normUrl(x.url),x);n.set(norm(x.f+' '+x.l),x)}
-  LIM={e,u,n,crm};
+  const e=new Map,u=new Map,n=new Map,ph=new Map,crm=new Set;
+  for(const x of S.li){if(x.email)e.set(x.email.toLowerCase(),x);if(x.url)u.set(normUrl(x.url),x);if(digits(x.phone).length>=7)ph.set(digits(x.phone),x);n.set(norm(x.f+' '+x.l),x)}
+  LIM={e,u,n,ph,crm};
   for(const c of S.clients){const x=liOf(c);if(x)crm.add(x)}
   return LIM;
 }
-const liOf=c=>{const m=liMaps();return(c.email&&m.e.get(c.email.toLowerCase()))||(c.linkedin&&m.u.get(normUrl(c.linkedin)))||m.n.get(norm(fn(c)))||null};
+const liOf=c=>{const m=liMaps();return(c.email&&m.e.get(c.email.toLowerCase()))||(c.linkedin&&m.u.get(normUrl(c.linkedin)))||(digits(c.phone).length>=7&&m.ph.get(digits(c.phone)))||m.n.get(norm(fn(c)))||null};
 const liInCrm=x=>liMaps().crm.has(x);
 const _save=save;save=function(){LIM=null;_save();syncSoon()};
 function parseCSV(text){
@@ -892,22 +905,107 @@ function parseLinkedIn(text){
   const col=n=>rows[hi].findIndex(x=>x.trim().toLowerCase()===n),ix={f:col('first name'),l:col('last name'),url:col('url'),email:col('email address'),co:col('company'),pos:col('position'),on:col('connected on')};
   return rows.slice(hi+1).map(r=>{const g=k=>ix[k]>=0?(r[ix[k]]||'').trim():'',d=new Date(g('on'));return{f:g('f'),l:g('l'),url:g('url'),email:g('email'),co:g('co'),pos:g('pos'),on:isNaN(d)?'':new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10)}}).filter(x=>x.f||x.l);
 }
+// ─── Address book: vCard / CSV file, the phone's contact picker, or the native app ───
+function qpDecode(s){const b=[];for(let i=0;i<s.length;i++){if(s[i]==='='&&/^[0-9A-Fa-f]{2}$/.test(s.substr(i+1,2))){b.push(parseInt(s.substr(i+1,2),16));i+=2}else b.push(...new TextEncoder().encode(s[i]))}return new TextDecoder().decode(new Uint8Array(b))}
+function parseVCard(text){
+  const raw=text.replace(/\r\n?/g,'\n').split('\n'),lines=[],out=[];
+  for(let i=0;i<raw.length;i++){
+    let l=raw[i];
+    if(/^[ \t]/.test(l)&&lines.length){lines[lines.length-1]+=l.slice(1);continue}
+    if(/ENCODING=QUOTED-PRINTABLE/i.test(l.split(':')[0]))while(l.endsWith('=')&&i+1<raw.length)l=l.slice(0,-1)+raw[++i];
+    lines.push(l);
+  }
+  const semi=v=>{const p=[];let c='';for(let i=0;i<v.length;i++){if(v[i]==='\\'&&i+1<v.length){c+=v[i+1]==='n'||v[i+1]==='N'?' ':v[i+1];i++}else if(v[i]===';'){p.push(c.trim());c=''}else c+=v[i]}p.push(c.trim());return p};
+  let c=null;
+  for(const l of lines){
+    const k=l.indexOf(':');if(k<0)continue;
+    const head=l.slice(0,k).split(';'),name=head[0].replace(/^[^.]*\./,'').toUpperCase(),par=head.slice(1).join(';').toUpperCase();
+    let val=l.slice(k+1);if(par.includes('QUOTED-PRINTABLE'))val=qpDecode(val);
+    if(name==='BEGIN'&&/VCARD/i.test(val)){c={tel:[],mail:[]};continue}
+    if(!c)continue;
+    if(name==='END'){
+      const n=c.n||[],fnp=(c.fn||'').split(/\s+/);
+      const f=[n[1],n[2]].filter(Boolean).join(' ')||(n[0]?'':fnp[0]||''),l2=n[0]||(n[1]?'':fnp.slice(1).join(' '));
+      const pick=a=>(a.find(x=>x.pref)||a.find(x=>x.cell)||a[0]||{}).v||'';
+      if((f||l2)&&!c.company&&!(c.org&&!n[0]&&!n[1]&&norm(c.fn)===norm(c.org)))out.push({f,l:l2,co:c.org||'',pos:c.title||'',email:pick(c.mail),phone:pick(c.tel),url:c.url||'',on:'',src:'ab'});
+      c=null;continue;
+    }
+    const v=semi(val);
+    if(name==='N')c.n=v;else if(name==='FN')c.fn=v.join(' ').trim();else if(name==='ORG')c.org=v[0];else if(name==='TITLE')c.title=v.join(' ').trim();
+    else if(name==='EMAIL'){if(v[0])c.mail.push({v:v[0],pref:/PREF/.test(par)})}
+    else if(name==='TEL'){if(v[0])c.tel.push({v:v[0],pref:/PREF/.test(par),cell:/CELL|MOBILE|IPHONE/.test(par)})}
+    else if(name==='URL'){if(/linkedin\.com/i.test(val))c.url=val.replace(/\\:/g,':')}
+    else if(name==='X-ABSHOWAS'&&/COMPANY/i.test(val))c.company=true;
+  }
+  return out;
+}
+function parseContactsCSV(text){
+  const rows=parseCSV(text);if(rows.length<2)return[];
+  const map={f:/^(first name|given name|prenom)$/,l:/^(last name|family name|nom|nom de famille)$/,full:/^(name|display name|full name|nom complet)$/,co:/^(organization name|organization 1 - name|company|societe|entreprise)$/,pos:/^(organization title|organization 1 - title|job title|title|fonction|poste)$/,email:/^(e-?mail 1 - value|e-?mail address|e-?mail|adresse de messagerie)$/,phone:/^(phone 1 - value|mobile phone|primary phone|phone|telephone|mobile|telephone mobile)$/};
+  const head=rows[0].map(norm),ix={};for(const k in map)ix[k]=head.findIndex(x=>map[k].test(x));
+  if(ix.f<0&&ix.l<0&&ix.full<0)return[];
+  return rows.slice(1).map(r=>{const g=k=>ix[k]>=0?(r[ix[k]]||'').trim():'',full=g('full').split(/\s+/);return{f:g('f')||(g('l')?'':full[0]||''),l:g('l')||(g('f')?'':full.slice(1).join(' ')),co:g('co'),pos:g('pos'),email:g('email'),phone:g('phone').split(/\s*:::\s*/)[0],url:'',on:'',src:'ab'}});
+}
+function abImport(list,append){
+  const seen=new Set,fresh=[];
+  for(const x of[...(append?S.li.filter(y=>isAb(y)&&!y.sample):[]),...list]){
+    if(!x.f&&!x.l)continue;
+    const k=norm(x.f+' '+x.l)+'|'+String(x.email||'').toLowerCase()+'|'+digits(x.phone);
+    if(!seen.has(k)){seen.add(k);fresh.push({f:x.f||'',l:x.l||'',co:x.co||'',pos:x.pos||'',email:x.email||'',phone:x.phone||'',url:x.url||'',on:'',src:'ab'})}
+  }
+  if(!fresh.length){toast(t('No contacts found.'));return}
+  S.li=mergeBooks(S.li.filter(x=>!isAb(x)&&!x.sample),fresh);LIM=null;
+  // People already in Mnemo get their missing details filled in; nothing is overwritten.
+  let filled=0;
+  for(const c of S.clients){const x=liOf(c);if(!x)continue;let ch=false;for(const[a,b]of[['phone','phone'],['email','email'],['company','co'],['role','pos']])if(!c[a]&&x[b]){c[a]=x[b];ch=true}if(ch)filled++}
+  save();closeSheet();NET.sel=null;NET.grp=null;
+  toast(t('{n} contacts imported',{n:list.filter(x=>x.f||x.l).length})+(filled?' · '+t('Profiles completed: {n}',{n:filled}):''));
+  if(S.view==='network')render(true);else go('network');
+}
+const nativeContacts=()=>NATIVE&&window.Capacitor.Plugins?.Contacts;
+const hasPicker=()=>!!(navigator.contacts&&navigator.contacts.select);
+A['ab-import']=()=>{
+  const how=[['iPhone','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.'],['Samsung / Android','Contacts app → Menu → Manage contacts → Import or export → Export.'],['Google Contacts','contacts.google.com → Export → vCard.'],['Outlook','People → Manage contacts → Export contacts.']];
+  sheet(t('Import contacts'),`<p class="hint">${t('Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.')}</p>
+  ${nativeContacts()?`<button class="btn primary" data-a="ab-native">${ic('call',16)}${t('Import from this phone')}</button>`:hasPicker()?`<button class="btn primary" data-a="ab-pick">${ic('call',16)}${t('Choose from this phone')}</button>`:''}
+  <label class="drop" id="ab-drop">${ic('up',22).replace('<svg','<svg style="margin:0 auto 8px"')}<b>${t('Drop a contacts file')}</b><br><span class="hint">${t('vCard (.vcf) or CSV — or click to choose')}</span><input type="file" accept=".vcf,.csv,text/vcard,text/x-vcard,text/csv" hidden data-c="ab-file"></label>
+  <details><summary class="hint" style="cursor:pointer">${t('How to export your contacts')}</summary><div style="display:flex;flex-direction:column;gap:8px;margin-top:10px">${how.map(([a,b])=>`<p class="hint"><b style="color:var(--text)">${a}</b> — ${t(b)}</p>`).join('')}</div></details>
+  ${abCount()?`<p class="hint">${t('{n} contacts already imported. A new file replaces them.',{n:abCount()})}</p>`:''}`);
+};
+async function abFile(file){
+  if(!file)return;const text=await file.text();
+  if(/BEGIN:VCARD/i.test(text))return abImport(parseVCard(text));
+  if(parseLinkedIn(text))return liFile(file);
+  const list=parseContactsCSV(text);
+  if(!list.length){toast(t('This file is not a vCard or a contacts CSV.'));return}
+  abImport(list);
+}
+A['ab-pick']=async()=>{try{const r=await navigator.contacts.select(['name','email','tel'],{multiple:true});if(r.length)abImport(r.map(c=>{const n=String(c.name?.[0]||'').trim().split(/\s+/);return{f:n[0]||'',l:n.slice(1).join(' '),email:c.email?.[0]||'',phone:c.tel?.[0]||''}}),true)}catch(e){console.warn(e)}};
+A['ab-native']=async()=>{
+  const P=nativeContacts();
+  try{
+    const perm=await P.requestPermissions();
+    if(perm.contacts!=='granted'){toast(t('Allow Mnemo to access your contacts in the phone settings.'));return}
+    const r=await P.getContacts({projection:{name:true,organization:true,emails:true,phones:true}});
+    abImport((r.contacts||[]).map(c=>{const d=String(c.name?.display||'').trim().split(/\s+/),g=c.name?.given||'',f=c.name?.family||'';return{f:g||(f?'':d[0]||''),l:f||(g?'':d.slice(1).join(' ')),co:c.organization?.company||'',pos:c.organization?.jobTitle||'',email:c.emails?.[0]?.address||'',phone:c.phones?.[0]?.number||''}}));
+  }catch(e){toast(String(e?.message||e))}
+};
 A['li-import']=()=>sheet(t('Connect LinkedIn'),`<p class="hint">${t('LinkedIn does not let any app read your connections directly. The official, safe way is your own data export — it takes two minutes and nothing leaves your device.')}</p>
   <ol class="steps"><li><span>${t('Open LinkedIn → Settings → Data privacy → Get a copy of your data.')} <a href="https://www.linkedin.com/mypreferences/d/download-my-data" target="_blank" rel="noopener">${t('Open')} ↗</a></span></li><li><span>${t('Tick “Connections” only and request the archive. LinkedIn emails it within minutes.')}</span></li><li><span>${t('Drop the file Connections.csv here.')}</span></li></ol>
   <label class="drop" id="li-drop">${ic('up',22).replace('<svg','<svg style="margin:0 auto 8px"')}<b>${t('Drop Connections.csv')}</b><br><span class="hint">${t('or click to choose the file')}</span><input type="file" accept=".csv,text/csv" hidden data-c="li-file"></label>
-  ${S.li.length?`<p class="hint">${S.li.filter(x=>!x.sample).length?t('{n} connections already imported. A new file replaces them.',{n:S.li.length}):t('Sample connections are shown for now. Your file replaces them.')}</p>`:''}`);
+  ${liCount()?`<p class="hint">${S.li.some(x=>!isAb(x)&&!x.sample)?t('{n} connections already imported. A new file replaces them.',{n:liCount()}):t('Sample connections are shown for now. Your file replaces them.')}</p>`:''}`);
 async function liFile(file){
   if(!file)return;
   if(/\.zip$/i.test(file.name)){toast(t('Unzip the archive first, then drop Connections.csv.'));return}
   const list=parseLinkedIn(await file.text());
   if(!list||!list.length){toast(t('This does not look like LinkedIn’s Connections.csv.'));return}
-  S.li=list;save();closeSheet();NET.sel=null;NET.grp=null;
+  S.li=mergeBooks(list,S.li.filter(x=>isAb(x)&&!x.sample));save();closeSheet();NET.sel=null;NET.grp=null;
   toast(t('{n} connections imported',{n:list.length}));if(S.view==='network')render(true);else go('network');
 }
-document.addEventListener('change',e=>{const k=e.target.dataset.c;if(k==='li-file')liFile(e.target.files[0]);if(k==='backup-file')restore(e.target.files[0]);if(k==='csv-file')importContacts(e.target.files[0])});
+document.addEventListener('change',e=>{const k=e.target.dataset.c;if(k==='li-file')liFile(e.target.files[0]);if(k==='ab-file')abFile(e.target.files[0]);if(k==='backup-file')restore(e.target.files[0]);if(k==='csv-file')importContacts(e.target.files[0])});
 document.addEventListener('dragover',e=>{const d=e.target.closest?.('.drop');if(d){e.preventDefault();d.classList.add('over')}});
 document.addEventListener('dragleave',e=>e.target.closest?.('.drop')?.classList.remove('over'));
-document.addEventListener('drop',e=>{const d=e.target.closest?.('.drop');if(d){e.preventDefault();d.classList.remove('over');if(d.id==='li-drop')liFile(e.dataTransfer.files[0])}});
+document.addEventListener('drop',e=>{const d=e.target.closest?.('.drop');if(d){e.preventDefault();d.classList.remove('over');if(d.id==='li-drop')liFile(e.dataTransfer.files[0]);if(d.id==='ab-drop')abFile(e.dataTransfer.files[0])}});
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 A.backup=()=>download('mnemo-backup-'+todayISO()+'.json',JSON.stringify({app:'mnemo',version:2,exportedAt:new Date().toISOString(),clients:S.clients,deals:S.deals,li:S.li}),'application/json');
 async function restore(file){
@@ -940,7 +1038,7 @@ A.settings=()=>{
     <label class="field"><span>${t('Personal Anthropic key (optional)')}</span><input class="input" type="password" id="set-ak" placeholder="sk-ant-…" value="${esc(S.cfg.ak||'')}" data-c="set-ak" autocomplete="off"></label>
     <h5>${t('Sync')}</h5>${syncPanel()}
     <h5>${t('Your data')}</h5><p class="hint">${SYNC.s?t('Stored on this device and synced to your account.'):t('Everything is stored on this device. Export a backup regularly.')}</p>
-    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-a="li-import">${ic('in',15)}${t('Import LinkedIn')}</button><button class="btn sm" data-a="backup">${t('Export backup')}</button><label class="btn sm">${t('Restore backup')}<input type="file" accept=".json,application/json" hidden data-c="backup-file"></label><button class="btn sm" data-a="csv-export">${t('Export CSV')}</button><label class="btn sm">${t('Import CSV')}<input type="file" accept=".csv,text/csv" hidden data-c="csv-file"></label>${hasSample()?`<button class="btn sm" data-a="clear-sample">${t('Remove sample data')}</button>`:''}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-a="li-import">${ic('in',15)}${t('Import LinkedIn')}</button><button class="btn sm" data-a="ab-import">${ic('call',15)}${t('Import contacts')}</button><button class="btn sm" data-a="backup">${t('Export backup')}</button><label class="btn sm">${t('Restore backup')}<input type="file" accept=".json,application/json" hidden data-c="backup-file"></label><button class="btn sm" data-a="csv-export">${t('Export CSV')}</button><label class="btn sm">${t('Import CSV')}<input type="file" accept=".csv,text/csv" hidden data-c="csv-file"></label>${hasSample()?`<button class="btn sm" data-a="clear-sample">${t('Remove sample data')}</button>`:''}</div>
     <p class="hint"><a href="classic.html">${t('Open the classic version')}</a> — ${t('Teams, Outlook, Gmail and other legacy integrations live there and share the same data.')}</p>`);
 };
 document.addEventListener('change',e=>{const k={'set-ak':'ak','set-code':'code'}[e.target.dataset.c];if(k){S.cfg[k]=e.target.value.trim();saveCfg();toast(t('Saved'))}});
@@ -1052,7 +1150,7 @@ function netDraw(now){
   for(const n of NET.nodes)n.p=prog(n.rad);
   // Orbits
   const gp=anim?ease(T/900):1;ctx.textAlign='center';ctx.textBaseline='middle';
-  [[NET.R[1]+NET.band[1]/2,'Inner circle'],[NET.R[2]+NET.band[2]/2,'Active circle'],[NET.R[3]+NET.band[3]/2,'Outer circle'],...(NET.nLi?[[NET.li0-16,'LinkedIn']]:[])].forEach(([r,label],i)=>{
+  [[NET.R[1]+NET.band[1]/2,'Inner circle'],[NET.R[2]+NET.band[2]/2,'Active circle'],[NET.R[3]+NET.band[3]/2,'Outer circle'],...(NET.nLi?[[NET.li0-16,outerName()]]:[])].forEach(([r,label],i)=>{
     ctx.globalAlpha=gp*(C.dark?.16:.11);ctx.strokeStyle=C.text;ctx.lineWidth=1;ctx.setLineDash(i===3?[2,6]:[]);ctx.beginPath();ctx.arc(ox,oy,r*z*gp,0,7);ctx.stroke();ctx.setLineDash([]);
     if(z>.32){font(10,600);const txt=t(label).toUpperCase(),tw=ctx.measureText(txt).width+14,ty=oy-r*z*gp;ctx.globalAlpha=1;ctx.fillStyle=C.bg;ctx.fillRect(ox-tw/2,ty-7,tw,14);ctx.globalAlpha=gp*.75;ctx.fillStyle=C.text3;ctx.fillText(txt,ox,ty)}
   });
@@ -1116,9 +1214,9 @@ function netStart(){
 }
 function netStop(){cancelAnimationFrame(NET.raf);NET.raf=0;NET.hover=null;NET.ptr.clear()}
 function netChrome(){
-  $('#net-sub').textContent=`${NET.crm.length} ${t('people in Mnemo')}${S.li.length?' · '+S.li.length+' '+t('LinkedIn connections'):''}`;
+  $('#net-sub').textContent=`${NET.crm.length} ${t('people in Mnemo')}${liCount()?' · '+liCount()+' '+t('LinkedIn connections'):''}${abCount()?' · '+abCount()+' '+t('phone contacts'):''}`;
   $('#net-mode').innerHTML=[['circle','Circles'],['company','Companies']].map(([k,l])=>`<button class="${NET.mode===k?'on':''}" data-a="net-mode" data-k="${k}">${t(l)}</button>`).join('');
-  const b=$('#net-li');b.className='chip glass '+(NET.showLi&&S.li.length?'accent':'');b.innerHTML=ic('in',14)+(S.li.length?t('LinkedIn'):t('Connect LinkedIn'));
+  const b=$('#net-li');b.className='chip glass '+(NET.showLi&&S.li.length?'accent':'');b.innerHTML=ic(abCount()&&!liCount()?'people':'in',14)+(S.li.length?t(outerName()):t('Connect LinkedIn'));
 }
 A['net-mode']=el=>{NET.mode=el.dataset.k;netChrome();netAsk()};
 A['net-li']=()=>{if(!S.li.length)return A['li-import']();NET.showLi=!NET.showLi;netBuild();netFit();netChrome();netPanel();netAsk()};
@@ -1127,7 +1225,7 @@ A['net-sel']=el=>netSelect(el.dataset.n,true);
 A['net-grp']=el=>{NET.grp=el.dataset.g;NET.sel=null;netPanel();netAsk()};
 A['net-clear']=()=>{NET.sel=null;NET.grp=null;if(innerWidth<=860)netFit();netPanel();netAsk()};
 A['net-find']=()=>{const q=norm(NET.q);if(q.length<2)return;const n=NET.crm.find(m=>norm(m.name+' '+m.co).includes(q))||NET.nodes.find(m=>norm(m.name+' '+m.co).includes(q));if(n)netSelect(n.id,true);else toast(t('No one found.'))};
-A['li-add']=el=>{const x=NET.byId.get(el.dataset.n)?.li;if(!x)return;DRAFT={liOn:x.on};sheet(t('New person'),personForm({firstname:x.f,name:x.l,company:x.co,role:x.pos,email:x.email,linkedin:x.url}))};
+A['li-add']=el=>{const x=NET.byId.get(el.dataset.n)?.li;if(!x)return;DRAFT={liOn:x.on};sheet(t('New person'),personForm({firstname:x.f,name:x.l,company:x.co,role:x.pos,email:x.email,phone:x.phone||'',linkedin:x.url}))};
 I.netq=el=>{NET.q=el.value;if(NET.q){NET.sel=null;NET.grp=null;netPanel()}netAsk()};
 function netPanel(){
   const el=$('#net-panel');if(!el)return;
@@ -1148,24 +1246,24 @@ function netPanel(){
   }else if(n){
     const x=n.li,warm=n.g.key!=='~'?n.g.crm.slice().sort((a,b)=>b.s-a.s)[0]:null,url=safeUrl(x.url);
     h=`${backBtn}<div style="display:flex;gap:14px;align-items:center">${av(n.name)}<div style="min-width:0"><h3>${esc(n.name)}</h3><p class="muted">${esc([x.pos,x.co].filter(Boolean).join(' · '))}</p></div></div>
-      <h4>${t('Place in your circle')}</h4><b style="font-size:17px">${t('LinkedIn connection')}</b><p class="hint" style="margin-top:4px">${x.on?t('Connected since')+' '+fmtDate(x.on)+'. ':''}${t('Not in Mnemo yet — no shared memory.')}</p>
+      <h4>${t('Place in your circle')}</h4><b style="font-size:17px">${isAb(x)?t('Phone contact'):t('LinkedIn connection')}</b><p class="hint" style="margin-top:4px">${x.on?t('Connected since')+' '+fmtDate(x.on)+'. ':''}${t('Not in Mnemo yet — no shared memory.')}</p>${x.phone||x.email?`<div style="margin-top:8px">${x.phone?`<a class="line" href="tel:${esc(String(x.phone).replace(/[^\d+]/g,''))}"><span>${esc(x.phone)}</span><span>${t('Call')}</span></a>`:''}${x.email?`<a class="line" href="mailto:${esc(x.email)}"><span style="overflow-wrap:anywhere">${esc(x.email)}</span><span>${t('Email')}</span></a>`:''}</div>`:''}
       <h4>${t('Warm path')}</h4>${warm?`<div class="path"><b>${t('You')}</b>${ic('arrow',14)}<button data-a="net-sel" data-n="${warm.id}" style="color:var(--accent);font-weight:600">${esc(warm.name)}</button>${ic('arrow',14)}<b>${esc(x.f||n.name)}</b></div><p class="hint" style="margin-top:8px">${t('{a} is in your {c} and works at the same company. Ask for an introduction.',{a:esc(warm.label),c:t(CIRCLES[warm.ring]).toLowerCase()})}</p>`:`<p class="hint">${t('No one you know well at this company yet. Reach out directly.')}</p>`}
       ${n.g.key!=='~'&&n.g.li.length>1?`<h4>${n.g.li.length+n.g.crm.length} ${t('people you know at')} ${esc(x.co)}</h4>${n.g.li.filter(m=>m!==n).slice(0,5).map(m=>line(m,esc(m.li.pos||''))).join('')}<button class="line" data-a="net-grp" data-g="${esc(n.g.key)}"><span style="color:var(--accent)">${t('See all')}</span><span></span></button>`:''}
       <div style="display:flex;gap:8px;margin-top:20px;flex-wrap:wrap"><button class="btn primary sm" data-a="li-add" data-n="${n.id}">${ic('plus',14)}${t('Add to Mnemo')}</button>${url?`<a class="btn sm" href="${esc(url)}" target="_blank" rel="noopener">${ic('in',14)}LinkedIn</a>`:''}</div>`;
   }else if(g){
     const best=g.crm.slice().sort((a,b)=>b.s-a.s);
-    h=`${backBtn}<h3>${esc(g.name||t('No company'))}</h3><p class="muted">${g.crm.length} ${t('in Mnemo')} · ${g.li.length} ${t('on LinkedIn')}</p>
+    h=`${backBtn}<h3>${esc(g.name||t('No company'))}</h3><p class="muted">${g.crm.length} ${t('in Mnemo')} · ${g.li.length} ${t('not in Mnemo yet')}</p>
       ${best.length?`<h4>${t('Your way in')}</h4>${best.map(m=>line(m,t(CIRCLES[m.ring]))).join('')}`:`<p class="hint" style="margin-top:14px">${t('You are connected to people here but none is in Mnemo yet. Add the one who matters.')}</p>`}
-      ${g.li.length?`<h4>${t('LinkedIn connections')}</h4>${g.li.slice(0,40).map(m=>line(m,esc(m.li.pos||''))).join('')}${g.li.length>40?`<p class="hint">+${g.li.length-40}</p>`:''}`:''}`;
+      ${g.li.length?`<h4>${t('People you know there')}</h4>${g.li.slice(0,40).map(m=>line(m,esc(m.li.pos||''))).join('')}${g.li.length>40?`<p class="hint">+${g.li.length-40}</p>`:''}`:''}`;
   }else{
     const cnt=k=>NET.crm.filter(m=>m.ring===k).length,matched=NET.crm.filter(m=>m.li).length;
     const cos=[...NET.G.values()].filter(x=>x.key!=='~'&&x.crm.length+x.li.length>1).sort((a,b)=>(b.crm.length+b.li.length)-(a.crm.length+a.li.length)).slice(0,8);
     h=`<h3>${t('Your circle')}</h3><p class="muted" style="margin-top:2px">${t('Closer to the centre means a stronger, more recent relationship.')}</p>
-      <div style="margin-top:14px">${[1,2,3].map(k=>`<div class="line"><span>${t(CIRCLES[k])}</span><span>${cnt(k)}</span></div>`).join('')}${S.li.length?`<div class="line"><span>${t('LinkedIn connections')}</span><span>${S.li.length}</span></div><div class="line"><span>${t('Already in Mnemo')}</span><span>${matched}</span></div>`:''}</div>
-      ${S.li.length?'':`<div class="path" style="display:block"><b>${t('Add your LinkedIn network')}</b><p class="hint" style="margin:4px 0 10px">${t('See who you know at every company and find the warm path to anyone.')}</p><button class="btn primary sm" data-a="li-import">${ic('in',14)}${t('Connect LinkedIn')}</button></div>`}
+      <div style="margin-top:14px">${[1,2,3].map(k=>`<div class="line"><span>${t(CIRCLES[k])}</span><span>${cnt(k)}</span></div>`).join('')}${liCount()?`<div class="line"><span>${t('LinkedIn connections')}</span><span>${liCount()}</span></div>`:''}${abCount()?`<div class="line"><span>${t('Phone contacts')}</span><span>${abCount()}</span></div>`:''}${S.li.length?`<div class="line"><span>${t('Already in Mnemo')}</span><span>${matched}</span></div>`:''}</div>
+      ${S.li.length?'':`<div class="path" style="display:block"><b>${t('Add your LinkedIn network')}</b><p class="hint" style="margin:4px 0 10px">${t('See who you know at every company and find the warm path to anyone.')}</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn primary sm" data-a="li-import">${ic('in',14)}${t('Connect LinkedIn')}</button><button class="btn sm" data-a="ab-import">${ic('call',14)}${t('Import contacts')}</button></div></div>`}
       ${ranked.length?`<h4>${t('Closest to you')}</h4>${ranked.slice(0,5).map(m=>line(m,m.s)).join('')}`:''}
       ${cos.length?`<h4>${t('Where your network is')}</h4>${cos.map(x=>`<button class="line" data-a="net-grp" data-g="${esc(x.key)}"><span>${esc(x.name)}</span><span>${x.crm.length+x.li.length}</span></button>`).join('')}`:''}
-      <div class="legend"><span><i style="background:var(--accent)"></i>${t('In Mnemo')}</span><span><i style="background:var(--text3)"></i>${t('LinkedIn only')}</span></div>
+      <div class="legend"><span><i style="background:var(--accent)"></i>${t('In Mnemo')}</span><span><i style="background:var(--text3)"></i>${t('Not in Mnemo yet')}</span></div>
       ${hasSample()?`<p class="hint" style="margin-top:14px">${t('This is sample data.')} <a href="#" data-a="li-import">${t('Import your own connections')}</a></p>`:''}`;
   }
   el.innerHTML=h;el.scrollTop=0;
