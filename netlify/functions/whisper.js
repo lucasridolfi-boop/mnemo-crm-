@@ -35,9 +35,11 @@ exports.handler = async (event) => {
     const boundary = '----FormBoundary' + Date.now().toString(36);
     const parts = [];
 
-    // Audio file part
+    // Whisper detects the format from the file extension: iPhone/Safari records audio/mp4, not webm.
+    const type = /^audio\/[\w.+-]+$/.test(mimeType || '') ? mimeType : 'audio/webm';
+    const ext = { 'audio/mp4': 'mp4', 'audio/x-m4a': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/ogg': 'ogg' }[type] || 'webm';
     parts.push(Buffer.from(
-      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="recording.webm"\r\nContent-Type: ${mimeType || 'audio/webm'}\r\n\r\n`,
+      `--${boundary}\r\nContent-Disposition: form-data; name="file"; filename="recording.${ext}"\r\nContent-Type: ${type}\r\n\r\n`,
       'utf8'
     ));
     parts.push(audioBuffer);
@@ -50,7 +52,7 @@ exports.handler = async (event) => {
     ));
 
     // Language part (optional)
-    if (language) {
+    if (/^[a-z]{2}$/.test(language || '')) {
       parts.push(Buffer.from(
         `--${boundary}\r\nContent-Disposition: form-data; name="language"\r\n\r\n${language}\r\n`,
         'utf8'

@@ -1,253 +1,92 @@
-# 🧠 Mnemo — Mémoire Projet pour Claude Code
+# Mnemo — Mémoire projet pour Claude Code
 
-> Fichier de référence persistant. Mis à jour au fil des sessions. Toujours charger en début de session.
-> Dernière mise à jour : Novembre 2026.
+> Fichier de référence persistant. À lire en début de session. Dernière mise à jour : novembre 2026 (Mnemo 2).
 
----
+## Utilisateur et produit
 
-## 👤 Qui est l'utilisateur ?
+**Lucas Ridolfi**, basé à Dubaï, développe Mnemo seul (pas de co-fondateur technique) et s'appuie sur l'IA pour le code.
 
-**Lucas Ridolfi** — basé à **Dubaï**. Développe Mnemo seul (sans co-fondateur technique), pilote le produit et la vision, s'appuie sur l'IA pour développer et structurer le projet.
+**Mnemo** : CRM de *mémoire relationnelle* pour dealmakers, M&A advisors, private bankers, family offices et C-levels du MENA. Chaque rencontre, réunion ou appel devient une intelligence actionnable par contact.
 
----
+- Tagline : *The West built CRMs for inboxes. In MENA, deals are closed with a handshake and a voice note.*
+- ICP : 5–20 ans d'expérience, deals $500K–$10M, 15–40 meetings/mois, +100 contacts, EN/FR/AR.
+- Prix cible : Solo $149/mois, Team $399/mois (3 users), Enterprise sur devis.
+- Insight clé (Jonathan, 14/03/2026) : la valeur est dans l'agrégation de *tous* les points de contact en une fiche unifiée.
 
-## 🚀 Qu'est-ce que Mnemo ?
+## Dépôt et déploiement
 
-CRM de **mémoire relationnelle** pour dealmakers, M&A advisors, private bankers, family office managers et C-levels. Transforme chaque rencontre, réunion et appel en intelligence actionnable sur chaque contact — pour ne jamais perdre un deal parce qu'on a oublié ce qui a été dit.
+- Repo : `lucasridolfi-boop/mnemo-crm-` (tiret final). Production : https://crmlucasridolfi.netlify.app (Netlify, auto-deploy depuis `main`).
+- Branche de travail cloud : `main-hd09fy`. **Mnemo 2 n'est en production qu'après fusion dans `main`.**
+- Variables Netlify (côté serveur) : `OPENAI_API_KEY` (Whisper), `ANTHROPIC_API_KEY` (Claude).
 
-**Tagline :** *The West built CRMs for inboxes. In MENA, deals are closed with a handshake and a voice note. Mnemo was built for the way you actually do business.*
+| Fichier | Rôle |
+|---|---|
+| `index.html` | **Mnemo 2** — l'application actuelle (fichier unique, ~1 200 lignes) |
+| `classic.html` | Ancienne version (6 500 lignes) conservée : intégrations Teams/Outlook/Gmail/Zoom/etc. Partage les mêmes données |
+| `netlify/functions/whisper.js` | Proxy Whisper (JSON `{audioBase64, mimeType, language}`) |
+| `netlify/functions/claude.js` | Proxy Anthropic Messages API (corps transmis tel quel) |
+| `netlify/functions/openai.js` | Proxy Whisper multipart (non utilisé par Mnemo 2) |
+| `manifest.webmanifest`, `icon.svg` | Installation PWA |
 
-**Origine du nom :** Mnémosyne, déesse grecque de la mémoire, mère des 9 Muses.
+## Mnemo 2 — architecture (`index.html`)
 
-**URL de production :** https://crmlucasridolfi.netlify.app
+Design : sobre, type Apple — clair par défaut (suit le système, sombre disponible), une seule couleur d'accent, police système/Inter, navigation givrée, feuilles modales.
 
----
+Quatre vues + actions globales :
+- **Today** — chiffres clés, relances dues, relations qui s'éteignent (brouillon de message IA), mémoire récente.
+- **People** — liste triée par force de relation ; fiche en une seule page : force/cercle, brief IA, À propos, relances, mémoire (timeline unifiée), cercle, question IA.
+- **Network** — carte des relations sur canvas : vous au centre, 3 anneaux (Inner ≥ 60, Active ≥ 30, Outer) selon la force, champ LinkedIn à l'extérieur, un secteur par société. Panneau : place dans le cercle, rang, chemin d'introduction (« warm path »), collègues.
+- **Deals** — kanban 6 étapes, glisser-déposer.
+- **Capture** (bouton global) — Vocal (MediaRecorder → Whisper → Claude → validation), Note, Contact.
+- **⌘K / Ctrl K** — recherche contacts + mémoire + LinkedIn, actions, « Ask Mnemo » (IA sur tout le corpus).
+- **Settings** — thème, langue EN/FR/AR (RTL), devise, clé Anthropic perso optionnelle, sauvegarde JSON, CSV, import LinkedIn.
 
-## 🎯 ICP v1
+### LinkedIn
+LinkedIn n'offre **aucune API** pour lire les relations d'un membre. La voie officielle : export « Get a copy of your data » → `Connections.csv`, importé dans l'app (rien ne quitte l'appareil). L'export ne contient pas les relations mutuelles : les liens de la carte viennent de la société commune et du champ « Présenté par » (`introBy`).
 
-- Dealmakers, M&A advisors, private bankers, family office managers, C-Levels
-- 5–20 ans d'expérience, deals $500K–$10M, 15–40 meetings/mois, +100 contacts en parallèle
-- Langues : EN / FR / AR — Marché prioritaire : Dubai, MENA
-- Outils actuels : WhatsApp + Excel + Notes iPhone + LinkedIn (chaos total)
-- Willingness to pay : $150–300/mois si ça sauve 1 deal par an
+### Données (localStorage, clés partagées avec `classic.html`)
+- `ncrm3_clients` : `[{id, firstname, name, role, company, email, phone, linkedin, location, context, project, target, followon, status, tags, introBy, brief:{text,at}, sample, ints:[{id,title,date,src,tr,sum,dur}], tasks:[{id,title,due,pri,done}], meetings:[…legacy]}]`
+- `ncrm3_deals` : `[{id,title,contactId,contactName,value,stage,closeDate,notes}]` — étapes `lead|qualified|proposal|negotiation|won|lost`
+- `mnemo_li` : `[{f,l,url,email,co,pos,on}]` (relations LinkedIn)
+- `ncrm3_cfg` : `{lang, cur, ak, …}` ; `ncrm3_theme` : `auto|light|dark`
+- Premier lancement sans données : jeu d'exemple (`sample:true`), supprimable via « Start fresh ».
 
----
+### Force de relation (0–100)
+`55·e^(−jours/45)` (récence) + `min(30, 9·log2(1+échanges))` (fréquence) + 8 si deal ouvert + jusqu'à 7 (relances/projet).
 
-## 🛠️ Stack Technique
+### Règles de code Mnemo 2
+- Actions : `data-a="nom"` → `A['nom'](el)` (délégation). Saisie : `data-i` → `I[…]`. Entrée : `data-enter`.
+- Textes : `t('English string')` — l'anglais est la clé ; ajouter FR **et** AR dans `L`.
+- Toujours `esc()` pour tout contenu inséré en HTML ; `safeUrl()` pour les liens.
+- Après toute mutation : `save()` puis `render()`.
+- Modèles IA dans la constante `MODEL` ; appels via `ai()` (proxy Netlify par défaut).
+- Valider après modification : extraire le `<script>` final et `new Function(js)`, puis test navigateur (Playwright).
 
-| Composant | Technologie |
-|-----------|-------------|
-| Frontend | HTML/CSS/JS vanilla — **un seul fichier `index.html`** (~6 500+ lignes) |
-| Base de données | Supabase (PostgreSQL) — localStorage fallback si non configuré |
-| IA | API Anthropic Claude via proxy Netlify (`/.netlify/functions/claude`) |
-| Transcription | Whisper OpenAI via proxy Netlify (`/.netlify/functions/whisper`) |
-| PDF export | jsPDF |
-| Hébergement | Netlify (auto-deploy depuis GitHub) |
-| Fonts | Geist + Geist Mono |
+## Audit de l'ancienne version (novembre 2026)
 
-**Repo GitHub :** `lucasridolfi-boop/mnemo-crm-` (noter le tiret final)
-**Branche de travail :** `main-hd09fy`
+Bugs constatés dans `classic.html` : nom affiché en double (« Sophie Sophie Martin ») ; mobile inutilisable (sidebar fixe) ; langues mélangées ; `saveClients()` inexistant → notes d'équipe et import de contact partagé jamais enregistrés (corrigé) ; `addSequenceStep()` inexistant ; service worker enregistré depuis une URL `blob:` → jamais actif (pas de mode hors ligne) ; Zoom/Aircall/Plaud appelés depuis le navigateur (bloqués par CORS, secrets en localStorage) ; `esc()` n'échappait pas les guillemets et liens `javascript:` possibles ; sync Supabase partielle (tâches, deals, suppressions non synchronisés) ; enregistrements longs > 6 Mo rejetés par Netlify ; audio iPhone envoyé comme `.webm` → rejeté par Whisper (corrigé dans `whisper.js`).
 
-**Workflow :** modifier `index.html` → `git add index.html` → `git commit` → `git push origin main-hd09fy` → Netlify redéploie automatiquement
+## À faire
 
-**Netlify functions disponibles :**
-- `netlify/functions/whisper.js` — proxy Whisper (audio → transcription)
-- `netlify/functions/claude.js` — proxy Claude (IA)
-- `netlify/functions/openai.js` — proxy OpenAI (générique)
+| Priorité | Sujet |
+|---|---|
+| P0 | Fusionner `main-hd09fy` dans `main` pour mettre Mnemo 2 en production |
+| P0 | Vérifier `OPENAI_API_KEY` et `ANTHROPIC_API_KEY` sur Netlify, tester vocal + IA en réel |
+| P0 | **Sécuriser les fonctions Netlify** : elles sont ouvertes à tous (CORS `*`, aucune authentification) → n'importe qui peut consommer les clés API |
+| P1 | Synchronisation cloud + comptes (Supabase, avec RLS) — Mnemo 2 est 100 % local pour l'instant |
+| P1 | Réintégrer dans Mnemo 2 les synchronisations utiles (Outlook/Gmail/Calendar) via fonctions serveur |
+| P2 | Multi-utilisateurs, export PDF, séquences email |
 
----
+## Liens
 
-## 🗄️ Structure Supabase
+- Notion — Vision : https://www.notion.so/322dd3c8b0eb80e394dfd1f629ab622a
+- Notion — Coding & API : https://www.notion.so/324dd3c8b0eb81e3a602f0ccf5392687
+- Notion — Plan d'action : https://www.notion.so/32add3c8b0eb81ffab02ff5e815cadd7
+- Notion — Analyse concurrentielle : https://www.notion.so/326dd3c8b0eb8141bc98dcaffb90dead
+- Survey : https://docs.google.com/forms/d/e/1FAIpQLScVL4RjdOFwHgySCIKAtpVixnbHn0-0t5lqWFc5n7XNZhytJQ/viewform
 
-```sql
-clients (id, name, company, email, phone, status, tags, avatar, color, ca, firstname, role, linkedin, location, context, project, target, followon, category)
-interactions (id, client_id, title, source, transcript, summary, duration, date)
-tasks (id, client_id, title, due_date, done, priority)
-```
+## Historique
 
-**Clés API à configurer dans l'app (Settings) :**
-- Anthropic API Key (`ak`)
-- OpenAI API Key (`oaKey`) — active Whisper
-- Supabase URL (`sbUrl`) + Anon Key (`sbKey`)
-- Microsoft Client ID (`msId`) — Teams/Outlook
-- Fireflies API Key (`ffKey`)
-- Plaud API Key (`plaudKey`)
-- Google Calendar ID (`gcalId`)
-- Zoom credentials (`zoomAccountId`, `zoomClientId`, `zoomClientSecret`)
-- Aircall (`aircallId`, `aircallToken`)
-
-**Clés côté serveur Netlify (env vars, pas dans l'app) :**
-- `OPENAI_API_KEY` — pour Whisper en production
-- `ANTHROPIC_API_KEY` — pour Claude en production
-
----
-
-## ✅ Fonctionnalités Implémentées (état Novembre 2026)
-
-### Vues principales (nav gauche)
-- **Dashboard** — KPIs, pipeline visuel, activité récente, tâches du jour
-- **Contacts** — sidebar filtres statut + catégorie dynamique
-- **Pipeline** — Kanban 6 colonnes drag & drop (Lead → Gagné/Perdu)
-- **Analytics** — graphiques statuts, sources, catégories
-- **Follow-up IA** — détecte contacts inactifs +14j, génère messages de relance
-- **Séquences** — templates email avec variables `{{prenom}}` `{{entreprise}}`
-- **Location** — vue par lieu (map + liste des contacts rencontrés par endroit)
-
-### Fiche Contact — 9 onglets
-1. **Fiche** — infos structurées (nom, prénom, poste, société, email, tél, LinkedIn, catégorie, statut, lieu, contexte, projet, target, follow-on)
-2. **Timeline** — interactions chronologiques
-3. **Emails** — historique + composition
-4. **Réunions** — physique/online/appel avec transcription audio
-5. **Transcriptions** — toutes les transcriptions
-6. **Tâches** — priorités + dates d'échéance
-7. **Recherche IA** — questions en langage naturel sur le contact
-8. **Lieu & Photo** — scan carte de visite, recherche par lieu/date
-9. **Insights** — analyse IA du profil
-
-### Fonctionnalités IA
-- Transcription audio via **Whisper** (MediaRecorder + proxy Netlify) — remplace Web Speech API
-- Résumé automatique notes vocales via Claude
-- Recherche globale IA dans toutes les conversations
-- Recherche par contact en langage naturel
-- Enrichissement IA (insights, tags suggérés)
-- Scan photo/carte de visite → pré-remplissage fiche
-
-### Intégrations
-- Fireflies.ai (import réunions via GraphQL)
-- Microsoft Teams (sync via Graph API)
-- Outlook (sync emails via Graph API)
-- Google Calendar (sync)
-- Gmail (sync)
-- Zoom (note-taker)
-- Plaud (enregistrements physiques)
-- Aircall (appels)
-
-### UX / Interface
-- Mode sombre/clair
-- **i18n 3 langues** : English / Français / العربية (RTL pour l'arabe)
-- Command Palette ⌘K
-- Raccourcis clavier : N (nouveau contact), D (dashboard), C (contacts), P (pipeline), A (analytics), L (location)
-- PWA installable (manifest inline + service worker)
-- **Topbar** : bouton Sync (dropdown), Team (dropdown), Langue (dropdown 🇬🇧/🇫🇷/🇸🇦)
-- **Barre d'actions** : dropdown Intégrations (13 options consolidées)
-- **Sélecteur de lieux** : dropdown 📍 Lieux & événements
-- **Sélecteur de mois** : select avec mois lisibles (pas de tirets)
-- Export PDF professionnel (5 sections)
-- Score de relation (chaleur, fréquence)
-- Notifications navigateur
-
----
-
-## 📋 Ce Qui Reste À Faire (Backlog Priorisé)
-
-| Priorité | Feature | Complexité | Notes |
-|----------|---------|------------|-------|
-| 🔴 P0 | Configurer Supabase | Faible | Entrer URL + Anon Key dans Settings |
-| 🔴 P0 | Configurer `OPENAI_API_KEY` sur Netlify | Très faible | Netlify → Site Settings → Env Vars |
-| 🔴 P0 | Multi-users complet (partage fiches + permissions) | Complexe | — |
-| 🟠 P1 | Gmail sync | Moyenne | OAuth Google + Gmail API |
-| 🟠 P1 | Email pixel tracking | Moyenne | Supabase Edge Function |
-| 🟠 P1 | WhatsApp sync réel (QR ou forward) | Complexe | — |
-| 🟠 P1 | Zoom integration note-taker | Moyenne | — |
-| 🟡 P2 | Enregistrement appel téléphonique (Aircall) | Moyenne | — |
-| 🟡 P2 | Slack sync | Moyenne | — |
-| 🔵 P3 | App mobile native | Complexe | PWA couvre 80% du besoin |
-
----
-
-## 🔧 Règles de Développement — CRITIQUES
-
-### Toujours utiliser
-- `locale()` au lieu de `'fr-FR'` hardcodé → retourne `'ar-SA'` / `'fr-FR'` / `'en-GB'` selon `CFG.lang`
-- `openPane(id)` pour ouvrir un onglet de fiche contact (pas `swPane()` directement sauf depuis les boutons de tabs)
-- L'Edit tool pour modifier `index.html` — ne jamais extraire du code depuis Word
-
-### Bugs connus / pièges
-- Les vues utilisent `position:absolute` + `.view.on{display:flex}` — les vues scrollables (dash, pipeline, analytics) nécessitent `display:block` via CSS spécifique
-- La recherche globale (`#global-results`) doit être au niveau `#content`, PAS dans `#view-contacts`
-- Éviter les doublons de fonctions (`gotoView`, `renderPipeline`, etc.) lors des ajouts
-- Valider le JS après toute modification significative : `node -e "require('fs').readFileSync('index.html','utf8')" 2>&1`
-
-### Objet CFG
-```js
-let CFG = {
-  ak:'',        // Anthropic API key
-  sbUrl:'',     // Supabase URL
-  sbKey:'',     // Supabase Anon Key
-  msId:'',      // Microsoft Client ID
-  ffKey:'',     // Fireflies API Key
-  plaudKey:'',  // Plaud API Key
-  gcalId:'',    // Google Calendar ID
-  zoomAccountId:'', zoomClientId:'', zoomClientSecret:'',
-  aircallId:'', aircallToken:'',
-  lang:'en',    // 'en' | 'fr' | 'ar'
-  oaKey:''      // OpenAI API key (Whisper)
-};
-```
-
----
-
-## 💰 Modèle Économique
-
-| Plan | Prix | Cible |
-|------|------|-------|
-| Solo | $149/mois ou $1,200/an | Dealmaker indépendant |
-| Team | $399/mois (3 users) | Boutique M&A, agence immo |
-| Enterprise | Sur devis | Family offices, agences premium |
-
-**Objectifs :** 50 users Solo → $7,500 MRR (6 mois) → 200 users → $30,000 MRR → Seed $3–6M
-
----
-
-## 🏆 Positionnement Concurrentiel
-
-| Critère | Folk | Clay | Fireflies | **Mnemo** |
-|---------|------|------|-----------|-----------|
-| Audio / Vocal First | ❌ | ❌ | Partiel | ✅ |
-| Recherche dans transcripts PAR contact | ❌ | ❌ | Global seulement | ✅ |
-| Conçu pour dealmakers indépendants | ❌ | Partiel | ❌ | ✅ |
-| Marché MENA natif (FR/EN/AR) | ❌ | ❌ | ❌ | ✅ |
-
-**Moat :** 1) Distribution réseau direct Dubai 2) Lock-in données conversationnelles 3) Focus vertical niche 4) Seul outil vocal + transcription réunion + recherche par contact combinés
-
----
-
-## 🗒️ Insights Utilisateurs Clés
-
-**Jonathan (14/03/2026) :** "Dans un monde parfait, sync : mailbox + video call (note taker) + phone calls (record line) + physical meeting (note taker/CR) + SMS + project management (Slack, Teams)" → la valeur est dans l'**agrégation de TOUTES les touchpoints en une fiche unifiée**.
-
----
-
-## 🔗 Liens Utiles
-
-- **Proto live :** https://crmlucasridolfi.netlify.app
-- **Repo GitHub :** https://github.com/lucasridolfi-boop/mnemo-crm-
-- **Notion — Vision & Stratégie :** https://www.notion.so/322dd3c8b0eb80e394dfd1f629ab622a
-- **Notion — Coding & API :** https://www.notion.so/324dd3c8b0eb81e3a602f0ccf5392687
-- **Notion — Plan d'Action :** https://www.notion.so/32add3c8b0eb81ffab02ff5e815cadd7
-- **Notion — Analyse Concurrentielle :** https://www.notion.so/326dd3c8b0eb8141bc98dcaffb90dead
-- **Survey (répondants) :** https://docs.google.com/forms/d/e/1FAIpQLScVL4RjdOFwHgySCIKAtpVixnbHn0-0t5lqWFc5n7XNZhytJQ/viewform
-
----
-
-## 📜 Historique des Sessions
-
-### Session 1–3 (Mars 2026 — Windows local)
-- Création structure app, vues principales, fiche contact 8 onglets
-- Intégrations Fireflies, Teams, Outlook
-- Transcription Web Speech API (Chrome natif)
-- Export PDF, Command Palette, raccourcis clavier
-- Notes Notion (Vision, Coding, Plan d'action, Analyse concurrentielle)
-- Survey discovery (FR + EN MENA)
-
-### Session 4 (Octobre–Novembre 2026 — Cloud)
-- **Audit code** : 9 problèmes trouvés et corrigés (`.ok` checks, `locale()` migration, ligne morte)
-- **Migration vocale vers Whisper** : MediaRecorder + proxy Netlify — remplace Web Speech API
-- **Refonte UX dropdowns** :
-  - Bouton Sync → dropdown (Teams, Outlook, GCal, Gmail, Zoom + statut DB)
-  - Bouton Team → dropdown (Se connecter / Rejoindre)
-  - Bouton Langue → dropdown avec drapeaux 🇬🇧🇫🇷🇸🇦
-  - Sélecteur Lieux → dropdown 📍
-  - Sélecteur mois → select propre (sans tirets)
-  - Bouton Intégrations → 1 dropdown (13 options)
-- **MEMORY.md créé** dans le repo pour persistance inter-sessions
+- **Mars 2026 (local)** — version classique : vues, fiche 8 onglets, intégrations, PDF, ⌘K, notes Notion, survey.
+- **Oct.–nov. 2026** — audit, migration vocale vers Whisper, dropdowns, `MEMORY.md`.
+- **Nov. 2026 (cloud)** — **Mnemo 2** : réécriture complète (design sobre, 4 vues, carte des relations + import LinkedIn, vocal segmenté, FR/EN/AR, mobile). Ancienne version conservée dans `classic.html`.

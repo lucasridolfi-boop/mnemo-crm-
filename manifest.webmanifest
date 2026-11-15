@@ -1,0 +1,10 @@
+{
+  "name": "Mnemo",
+  "short_name": "Mnemo",
+  "description": "Relational memory for dealmakers",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#fbfbfd",
+  "theme_color": "#fbfbfd",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
