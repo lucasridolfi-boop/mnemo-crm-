@@ -74,7 +74,7 @@ La vérification d'origine seule arrête les autres sites web, pas un script qui
 
 ## Synchronisation Supabase (Mnemo 2)
 
-- Projet Supabase : « CRM », `https://bokgaovvctreikgcggwf.supabase.co` (valeur par défaut dans `SB_DEFAULT` ; la clé publique se saisit dans Settings, ou peut être inscrite dans `SB_DEFAULT.key` — elle est publique par conception, la protection vient de la RLS).
+- Projet Supabase : « CRM », `https://bokgaovvctreikgcggwf.supabase.co` (URL et clé publique `sb_publishable_…` inscrites dans `SB_DEFAULT` ; cette clé est publique par conception, la protection vient de la RLS — ne jamais y mettre la clé `secret`/`service_role`).
 - Local d'abord : l'app lit et écrit toujours dans localStorage. Connecté (e-mail + mot de passe Supabase), chaque contact, chaque deal et la liste LinkedIn sont répliqués en une ligne de `mnemo_items` (`user_id, kind, id, data jsonb, deleted, updated_ms, server_at`).
 - Algorithme (`syncRun`) : marquer les changements locaux (hash par enregistrement, tombstone pour les suppressions) → tirer les lignes modifiées depuis le curseur `server_at` → pousser les enregistrements modifiés. Conflit : **la modification la plus récente d'un enregistrement gagne** (par contact entier, pas par note). Au tout premier sync d'un appareil, la copie du compte gagne sur une copie locale de même identifiant.
 - Déclencheurs : 1,5 s après chaque `save()`, au chargement, au retour sur l'onglet, au retour en ligne, toutes les 60 s.

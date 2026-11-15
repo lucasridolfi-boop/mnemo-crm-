@@ -1175,7 +1175,8 @@ window.addEventListener('resize',()=>{if(S.view==='network'){netFit();netPanel()
 // ═══ Cloud sync (Supabase) ═══════════════════════════════════════════════
 // Local-first: the app always works from localStorage. When signed in, every person,
 // deal and the LinkedIn list is mirrored as one row each; the newest edit of a record wins.
-const SB_DEFAULT={url:'https://bokgaovvctreikgcggwf.supabase.co',key:''};
+// The publishable key is public by design; row level security is what protects the data.
+const SB_DEFAULT={url:'https://bokgaovvctreikgcggwf.supabase.co',key:'sb_publishable_ySpvQHWifHy4z7aEgs1DLw_3v0e8g8T'};
 const SYNC={s:null,uid:'',meta:{},cursor:'',at:0,busy:false,again:false,timer:0,state:'off',err:''};
 const sbConf=()=>({url:String(S.cfg.syncUrl||SB_DEFAULT.url).trim().replace(/\/+$/,''),key:String(S.cfg.syncKey||SB_DEFAULT.key).trim()});
 function syncLoad(){try{const d=JSON.parse(localStorage.getItem(LS.sync)||'{}');Object.assign(SYNC,{s:d.s||null,uid:d.uid||'',meta:d.meta||{},cursor:d.cursor||'',at:d.at||0})}catch(e){}SYNC.state=SYNC.s?'idle':'off'}
