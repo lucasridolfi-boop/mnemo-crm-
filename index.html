@@ -776,7 +776,7 @@ async function recProcess(){
   CAP.code=false;CAP.state='busy';CAP.msg=t('Transcribing…');capture();
   let tr='';
   try{for(const b of parts)tr+=(tr?' ':'')+await transcribe(b)}
-  catch(e){console.warn(e);CAP.state='error';CAP.code=needCode(e);CAP.msg=CAP.code?t('Enter your access code in Settings, then try again. Your recording is kept until you reload the page.'):t('Transcription failed. Check OPENAI_API_KEY on Netlify. Your recording is kept until you close this window.');return capture()}
+  catch(e){console.warn(e);CAP.state='error';CAP.code=needCode(e);CAP.msg=CAP.code?t('Enter your access code in Settings, then try again. Your recording is kept until you reload the page.'):t('Transcription failed. Check OPENAI_API_KEY on Netlify. Your recording is kept until you close this window.')+(e?.message?' — '+String(e.message).slice(0,160):'');return capture()}
   if(!tr.trim()){CAP.state='error';CAP.msg=t('Nothing was heard. Try again closer to the microphone.');return capture()}
   CAP.msg=t('Understanding…');capture();
   let r=null;
