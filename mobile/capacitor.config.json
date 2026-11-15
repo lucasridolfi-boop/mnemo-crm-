@@ -1,0 +1,7 @@
+{
+  "appId": "app.mnemo.crm",
+  "appName": "Mnemo",
+  "webDir": "www",
+  "ios": { "contentInset": "always" },
+  "android": { "allowMixedContent": false }
+}

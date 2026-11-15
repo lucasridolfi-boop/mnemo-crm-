@@ -1,0 +1,21 @@
+{
+  "name": "mnemo-mobile",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mnemo for iOS and Android — the web app from ../index.html inside a Capacitor shell",
+  "scripts": {
+    "build": "node scripts/build-www.mjs",
+    "sync": "npm run build && cap sync",
+    "android": "npm run sync && cap open android",
+    "ios": "npm run sync && cap open ios"
+  },
+  "dependencies": {
+    "@capacitor-community/contacts": "^8.0.0",
+    "@capacitor/android": "^8.6.2",
+    "@capacitor/core": "^8.6.2",
+    "@capacitor/ios": "^8.6.2"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^8.6.2"
+  }
+}

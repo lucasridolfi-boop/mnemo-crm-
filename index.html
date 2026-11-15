@@ -985,7 +985,7 @@ A['ab-native']=async()=>{
   const P=nativeContacts();
   try{
     const perm=await P.requestPermissions();
-    if(perm.contacts!=='granted'){toast(t('Allow Mnemo to access your contacts in the phone settings.'));return}
+    if(!['granted','limited'].includes(perm.contacts)){toast(t('Allow Mnemo to access your contacts in the phone settings.'));return}
     const r=await P.getContacts({projection:{name:true,organization:true,emails:true,phones:true}});
     abImport((r.contacts||[]).map(c=>{const d=String(c.name?.display||'').trim().split(/\s+/),g=c.name?.given||'',f=c.name?.family||'';return{f:g||(f?'':d[0]||''),l:f||(g?'':d.slice(1).join(' ')),co:c.organization?.company||'',pos:c.organization?.jobTitle||'',email:c.emails?.[0]?.address||'',phone:c.phones?.[0]?.number||''}}));
   }catch(e){toast(String(e?.message||e))}

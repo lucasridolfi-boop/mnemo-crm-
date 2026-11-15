@@ -27,6 +27,8 @@
 | `netlify/functions/whisper.js` | Proxy Whisper (JSON `{audioBase64, mimeType, language}`) |
 | `netlify/functions/claude.js` | Proxy Anthropic Messages API (`model`, `messages`, `system`, `max_tokens` ≤ 4096 uniquement) |
 | `supabase/schema.sql` | Schéma de synchronisation (table `mnemo_items` + RLS), à exécuter une fois dans Supabase |
+| `mobile/` | Application iOS et Android (Capacitor 8) : coquille native autour de `index.html` |
+| `.github/workflows/android.yml` | Compile l'APK Android de test à chaque changement |
 | `manifest.webmanifest`, `icon.svg` | Installation PWA |
 
 ## Mnemo 2 — architecture (`index.html`)
@@ -71,6 +73,20 @@ Chaque fonction (`guard()` dupliqué dans les deux fichiers, volontairement sans
 3. `claude.js` ne transmet qu'une liste blanche de champs et plafonne `max_tokens` ; `whisper.js` valide type MIME et langue.
 
 La vérification d'origine seule arrête les autres sites web, pas un script qui falsifie l'en-tête : c'est le code d'accès qui protège réellement les clés. Les deux apps envoient `cfg.code` (clé `code` de `ncrm3_cfg`).
+
+## Application mobile (`mobile/`)
+
+- **Un seul code** : l'app embarque `../index.html` tel quel. `npm run build` le copie dans `mobile/www/` (non versionné), `npx cap sync` le pousse dans `android/` et `ios/`. Ne jamais modifier `www/` ni les copies `public/`.
+- Identifiant : `app.mnemo.crm` (à confirmer avant toute publication : il devient définitif sur les stores). Nom : Mnemo.
+- Dans l'app, `NATIVE` est vrai : les fonctions sont appelées sur `https://mnemo-crm.netlify.app` (constante `API`), et le carnet d'adresses est lu par le plugin `@capacitor-community/contacts` (`A['ab-native']`).
+- Les fonctions Netlify acceptent les origines de l'app (`capacitor://localhost`, `https://localhost`) **uniquement si `MNEMO_ACCESS_CODE` est défini** et fourni.
+- Autorisations déclarées : micro et contacts (`AndroidManifest.xml`, `Info.plist`).
+- Android : le workflow GitHub produit `mnemo-android-test` (APK de test, non signé pour le store). iOS : nécessite un Mac ou un service de compilation, et un compte Apple Developer ; jamais compilé à ce jour.
+- Pas encore fait : icône et écran de démarrage, signature, fiches des stores, mises à jour à chaud.
+
+## Contacts du téléphone
+
+`S.li` contient tout le réseau hors Mnemo : relations LinkedIn et contacts du carnet d'adresses (`src:'ab'`). Sources : fichier vCard ou CSV (Google, Outlook), sélecteur de contacts du navigateur (Android), carnet natif dans l'app. Ils apparaissent dans l'anneau extérieur de la carte ; « Add to Mnemo » en fait une fiche. Les fiches existantes sont complétées (téléphone, e-mail, société, poste) sans rien écraser. `mergeBooks` évite les doublons LinkedIn/carnet.
 
 ## Synchronisation Supabase (Mnemo 2)
 

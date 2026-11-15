@@ -4,24 +4,37 @@ const crypto = require('crypto');
 const json = (statusCode, body) => ({ statusCode, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }, body: JSON.stringify(body) });
 const fail = (statusCode, message, code) => json(statusCode, { error: { message, code } });
 
-// Only this site's own pages may call the function, and — once MNEMO_ACCESS_CODE is set
-// in Netlify — only with that code. Returns an error response, or null when allowed.
+// Who may call: this site's own pages, and the Mnemo mobile app (whose pages load from a local
+// origin). Once MNEMO_ACCESS_CODE is set in Netlify every caller must send it — and the mobile
+// app is only accepted when it is set, because its origin alone proves nothing.
+const APP_ORIGINS = ['capacitor://localhost', 'https://localhost', 'http://localhost'];
+const lower = (headers) => Object.fromEntries(Object.entries(headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
+const cors = (event) => {
+  const origin = lower(event.headers).origin;
+  return APP_ORIGINS.includes(origin) ? { 'Access-Control-Allow-Origin': origin, 'Access-Control-Allow-Headers': 'content-type, x-mnemo-code', 'Access-Control-Allow-Methods': 'POST, OPTIONS', Vary: 'Origin' } : {};
+};
 function guard(event) {
-  const h = Object.fromEntries(Object.entries(event.headers || {}).map(([k, v]) => [k.toLowerCase(), v]));
+  const h = lower(event.headers);
   const hosts = [h.host, h['x-forwarded-host'], process.env.URL, process.env.DEPLOY_PRIME_URL, process.env.DEPLOY_URL]
     .filter(Boolean).map(v => String(v).replace(/^https?:\/\//, '').replace(/\/.*$/, '').toLowerCase());
+  const expected = process.env.MNEMO_ACCESS_CODE;
   let origin = '';
   try { origin = new URL(h.origin).host.toLowerCase(); } catch (e) {}
-  if (!origin || !(hosts.includes(origin) || /^localhost(:\d+)?$/.test(origin))) return fail(403, 'Forbidden origin', 'origin');
-  const expected = process.env.MNEMO_ACCESS_CODE;
+  const fromSite = !!origin && (hosts.includes(origin) || (/^localhost(:\d+)?$/.test(origin) && !APP_ORIGINS.includes(h.origin)));
+  const fromApp = APP_ORIGINS.includes(h.origin) && !!expected;
+  if (!fromSite && !fromApp) return fail(403, 'Forbidden origin', 'origin');
   if (expected) {
     const digest = v => crypto.createHash('sha256').update(String(v || '')).digest();
     if (!crypto.timingSafeEqual(digest(h['x-mnemo-code']), digest(expected))) return fail(401, 'Access code required', 'access_code');
   }
   return null;
 }
+const withCors = (event, res) => ({ ...res, headers: { ...res.headers, ...cors(event) } });
 
-exports.handler = async (event) => {
+exports.handler = async (event) => withCors(event, await handle(event));
+
+async function handle(event) {
+  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers: {}, body: '' };
   if (event.httpMethod !== 'POST') return fail(405, 'Method not allowed');
   const denied = guard(event);
   if (denied) return denied;
@@ -58,4 +71,4 @@ exports.handler = async (event) => {
   } catch (err) {
     return fail(502, err.message);
   }
-};
+}
