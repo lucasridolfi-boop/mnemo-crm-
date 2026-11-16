@@ -88,6 +88,13 @@ La vérification d'origine seule arrête les autres sites web, pas un script qui
 
 `S.li` contient tout le réseau hors Mnemo : relations LinkedIn et contacts du carnet d'adresses (`src:'ab'`). Sources : fichier vCard ou CSV (Google, Outlook), sélecteur de contacts du navigateur (Android), carnet natif dans l'app. Ils apparaissent dans l'anneau extérieur de la carte ; « Add to Mnemo » en fait une fiche. Les fiches existantes sont complétées (téléphone, e-mail, société, poste) sans rien écraser. `mergeBooks` évite les doublons LinkedIn/carnet.
 
+## Qui connaît qui (liens entre contacts)
+
+- `linkMap()` réunit trois sources, lues dans les deux sens : liens déclarés (`c.links=[{id,why,via}]`), présentations (`introBy`), et personnes nommées dans les notes (nom complet n'importe où, ou prénom seul s'il est unique dans Mnemo, écrit avec sa majuscule et pas en début de phrase). `c.unlinks` supprime une mention détectée à tort. Cache `LKM`, vidé à chaque `save()`.
+- Affichage : section « Circle » de la fiche (liste, « N en commun », ajout, retrait, meilleure porte d'entrée pour un lien faible), arêtes sur la carte, « Vos connecteurs » dans la vue d'ensemble.
+- La capture vocale envoie à l'IA la liste des 150 contacts les plus proches et propose de lier ceux mentionnés.
+- LinkedIn ne fournit pas les relations en commun : ce graphe est construit uniquement à partir des données de l'utilisateur.
+
 ## Synchronisation Supabase (Mnemo 2)
 
 - Projet Supabase : « CRM », `https://bokgaovvctreikgcggwf.supabase.co` (URL et clé publique `sb_publishable_…` inscrites dans `SB_DEFAULT` ; cette clé est publique par conception, la protection vient de la RLS — ne jamais y mettre la clé `secret`/`service_role`).
