@@ -15,19 +15,19 @@
 <style>
 :root{
   --bg:#fbfbfd;--surface:#fff;--fill:#f5f5f7;--fill2:#e8e8ed;
-  --text:#1d1d1f;--text2:#6e6e73;--text3:#a1a1a6;
+  --text:#1d1d1f;--text2:#5f5f64;--text3:#6e6e73;
   --line:rgba(0,0,0,.08);--line2:rgba(0,0,0,.14);
-  --accent:#0071e3;--accent-soft:rgba(0,113,227,.1);--on-accent:#fff;
-  --green:#248a3d;--orange:#c9601a;--red:#d70015;
+  --accent:#0071e3;--accent-fill:#0071e3;--accent-soft:rgba(0,113,227,.1);--on-accent:#fff;
+  --green:#1f7a35;--orange:#a84f0c;--red:#c4001a;
   --nav:rgba(251,251,253,.78);--shadow:0 12px 40px rgba(0,0,0,.12);
   --r:18px;--r-sm:12px;
   --font:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display","Inter","Segoe UI",system-ui,sans-serif;
 }
 :root[data-theme="dark"]{
   --bg:#000;--surface:#1c1c1e;--fill:#1c1c1e;--fill2:#2c2c2e;
-  --text:#f5f5f7;--text2:#a1a1a6;--text3:#6e6e73;
+  --text:#f5f5f7;--text2:#a8a8ad;--text3:#8e8e93;
   --line:rgba(255,255,255,.1);--line2:rgba(255,255,255,.18);
-  --accent:#2997ff;--accent-soft:rgba(41,151,255,.16);--on-accent:#fff;
+  --accent:#2997ff;--accent-fill:#0a6bd6;--accent-soft:rgba(41,151,255,.16);--on-accent:#fff;
   --green:#30d158;--orange:#ff9f0a;--red:#ff453a;
   --nav:rgba(0,0,0,.72);--shadow:0 12px 40px rgba(0,0,0,.6);
 }
@@ -45,6 +45,8 @@ svg{display:block;flex-shrink:0}
 /* ── Navigation ── */
 #nav{position:fixed;inset:0 0 auto 0;height:52px;z-index:30;display:flex;align-items:center;gap:8px;padding:0 max(20px,env(safe-area-inset-left));background:var(--nav);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--line)}
 .brand{display:flex;align-items:center;gap:8px;font-weight:600;font-size:17px;letter-spacing:-.02em;margin-inline-end:auto;flex:1}
+.brand-btn{display:flex;align-items:center;gap:8px;font:inherit;font-weight:600;padding:6px 8px;margin-inline-start:-8px;border-radius:10px;color:var(--text)}
+.brand-btn:hover{background:var(--fill2)}
 .brand i{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--text);position:relative;display:block}
 .brand i::after{content:"";position:absolute;inset:4.5px;border-radius:50%;background:var(--text)}
 .tabs{display:flex;gap:2px}
@@ -59,7 +61,7 @@ svg{display:block;flex-shrink:0}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:36px;padding:0 16px;border-radius:99px;font-size:14px;font-weight:500;background:var(--fill2);color:var(--text);transition:filter .15s,transform .1s,background .15s;white-space:nowrap}
 .btn:hover{filter:brightness(.96)}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.primary{background:var(--accent-fill);color:var(--on-accent)}
 .btn.primary:hover{filter:brightness(1.08)}
 .btn.ghost{background:transparent;color:var(--accent);padding:0 10px}
 .btn.ghost:hover{background:var(--accent-soft);filter:none}
@@ -99,7 +101,7 @@ svg{display:block;flex-shrink:0}
 .chip.red{background:color-mix(in srgb,var(--red) 11%,transparent);color:var(--red)}
 .check{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--line2);flex-shrink:0;display:grid;place-items:center;color:transparent;transition:all .15s}
 .check:hover{border-color:var(--accent)}
-.check.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.check.on{background:var(--accent-fill);border-color:var(--accent-fill);color:#fff}
 .empty{padding:44px 24px;text-align:center;color:var(--text2)}
 .empty b{display:block;color:var(--text);font-size:17px;font-weight:600;margin-bottom:4px}
 .empty .btn{margin-top:16px}
@@ -126,7 +128,7 @@ svg{display:block;flex-shrink:0}
 .plist-scroll{overflow-y:auto;flex:1;padding:0 8px 24px}
 .prow{display:flex;align-items:center;gap:12px;padding:10px;border-radius:14px;width:100%;text-align:start}
 .prow:hover{background:var(--fill2)}
-.prow.on{background:var(--accent);color:#fff}
+.prow.on{background:var(--accent-fill);color:#fff}
 .prow.on .row-main span{color:rgba(255,255,255,.8)}
 .prow.on .ring circle:first-child{stroke:rgba(255,255,255,.3)}.prow.on .ring circle:last-child{stroke:#fff}
 .pdetail{overflow-y:auto;min-width:0}
@@ -235,7 +237,7 @@ svg{display:block;flex-shrink:0}
 .pal-list{overflow-y:auto;padding:8px;max-height:56vh}
 .pal-list h6{font-size:11.5px;font-weight:600;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:10px 12px 4px}
 .pal-item{display:flex;align-items:center;gap:12px;width:100%;text-align:start;padding:9px 12px;border-radius:12px}
-.pal-item.on{background:var(--accent);color:#fff}
+.pal-item.on{background:var(--accent-fill);color:#fff}
 .pal-item.on span,.pal-item.on .tl-ic{color:rgba(255,255,255,.85)}
 .pal-item.on .tl-ic{background:rgba(255,255,255,.2)}
 mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;border-radius:3px;padding:0 1px}
@@ -243,6 +245,49 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 #toast.on{opacity:1;transform:translate(-50%,0)}
 #sync-btn.busy{color:var(--accent);animation:blink 1.2s ease-in-out infinite}#sync-btn.err{color:var(--red)}
 @keyframes blink{50%{opacity:.35}}
+/* ── World map ── */
+.mapv #map{position:absolute;inset:0;background:var(--bg);z-index:0}
+.mapv .map-box{position:absolute;top:20px;inset-inline-start:24px;z-index:1001;max-width:min(560px,calc(100% - 400px));padding:16px 18px;border-radius:20px;box-shadow:var(--shadow)}
+.mapv .map-box h1{font-size:28px;font-weight:700;letter-spacing:-.03em}
+.mapv .map-box p{color:var(--text2);font-size:13.5px;margin:2px 0 10px}
+.mapv .net-panel{z-index:1001}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chips .chip{height:30px;flex-shrink:0;cursor:pointer}
+.pin{display:grid;place-items:center;border-radius:50%;background:var(--accent-fill);color:#fff;font-weight:600;font-size:12.5px;border:2px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.28);transition:transform .15s}
+.pin.on{transform:scale(1.18);background:#0a3d91}
+:root[data-theme="dark"] .pin{border-color:#1c1c1e}
+.leaflet-container{font:inherit}
+.leaflet-control-attribution{font-size:10.5px}
+.map-msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--text2);z-index:1;text-align:center;padding:24px}
+@media (max-width:860px){.mapv .map-box{inset-inline:12px;top:12px;max-width:none;padding:12px 14px}.mapv .map-box h1{font-size:22px}.mapv .map-box p{display:none}}
+/* ── Last contact tiles, reminders ── */
+.touch{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:12px}
+.touch button{display:flex;flex-direction:column;align-items:center;gap:4px;padding:12px 6px;border-radius:16px;background:var(--surface);border:1px solid var(--line);transition:background .15s,transform .1s}
+.touch button:hover{background:var(--fill)}
+.touch button:active{transform:scale(.96)}
+.touch b{font-size:13px;font-weight:600}
+.touch span{font-size:12px;color:var(--text2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.touch svg{color:var(--accent)}
+.presets{display:flex;gap:6px;padding:0 14px 12px 46px;flex-wrap:wrap}
+.presets button{height:26px;padding:0 10px;border-radius:99px;background:var(--fill2);color:var(--text2);font-size:12.5px}
+.presets button:hover{color:var(--text)}
+.badge{display:inline-grid;place-items:center;min-width:17px;height:17px;padding:0 5px;border-radius:99px;background:#c4001a;color:#fff;font-size:10.5px;font-weight:600;margin-inline-start:6px;vertical-align:1px}
+#tabbar .badge{position:absolute;top:5px;margin-inline-start:16px}
+#tabbar button{position:relative}
+#toast.on.act{pointer-events:auto}
+#toast button{color:var(--accent);font-weight:600;margin-inline-start:14px}
+@media (max-width:860px){
+  .rows .btn .lbl{display:none}.rows .btn.sm{width:40px;padding:0}
+  .pd .chip,.net-ctl .chip{height:34px!important}
+  .hint a{display:inline-block;padding:8px 0}
+  .mapv .leaflet-touch .leaflet-bar a{width:38px;height:38px;line-height:38px}
+  .btn.sm{height:36px}.chip,.chips .chip{height:34px}.seg button{min-height:34px}.presets button{height:34px}
+  .check{position:relative}.check::after{content:"";position:absolute;inset:-11px}
+  .rows .icon-btn,.addrow .icon-btn{width:36px!important;height:36px!important}
+  .tl-more{display:inline-block;padding:8px 0}
+  .leaflet-touch .leaflet-bar a{width:38px;height:38px;line-height:38px}
+  .touch{gap:6px}.touch button{padding:10px 2px;border-radius:14px}.touch b{font-size:11.5px}.touch span{font-size:10.5px}.presets{padding-inline-start:16px}}
 #tabbar{display:none}
 @keyframes fade{from{opacity:0}}
 @keyframes rise{from{opacity:0;transform:translateY(18px) scale(.985)}}
@@ -284,7 +329,7 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 </head>
 <body>
 <header id="nav">
-  <div class="brand"><i></i>Mnemo</div>
+  <div class="brand"><button class="brand-btn" data-a="go" data-v="today" aria-label="Mnemo — Today"><i></i>Mnemo</button></div>
   <nav class="tabs" id="tabs"></nav>
   <div class="nav-r">
     <button class="search-btn" data-a="palette" id="search-btn"></button>
@@ -305,11 +350,11 @@ const LS={clients:'ncrm3_clients',deals:'ncrm3_deals',cfg:'ncrm3_cfg',theme:'ncr
 const MODEL={smart:'claude-sonnet-5-5',fast:'claude-haiku-5-5'};
 // Inside the mobile app the page is not served by Netlify, so the functions are called by full address.
 const NATIVE=!!window.Capacitor?.isNativePlatform?.(),API=NATIVE?'https://mnemo-crm.netlify.app':'';
-const S={clients:[],deals:[],li:[],cfg:{lang:'en',ak:'',cur:'USD'},view:'today',sel:null,q:'',filter:'all'};
+const S={clients:[],deals:[],li:[],cfg:{lang:'en',ak:'',cur:'USD'},view:'today',sel:null,q:'',filter:'all',chip:'',year:''};
 const STAGES=[['lead','Lead'],['qualified','Qualified'],['proposal','Proposal'],['negotiation','Negotiation'],['won','Won'],['lost','Lost']];
-const KINDS={note:'Note',meeting:'Meeting',call:'Call',email:'Email',whatsapp:'WhatsApp',audio:'Voice note'};
-const KIND_ALIAS={teams:'meeting',zoom:'meeting',gcal:'meeting',outlook:'email',gmail:'email',aircall:'call',sms:'whatsapp',slack:'note'};
-const AV_COLORS=['#5e5ce6','#0a84ff','#30b0c7','#34a853','#ff9f0a','#ff6482','#bf5af2','#a2845e'];
+const KINDS={note:'Note',meeting:'Meeting',call:'Call',email:'Email',sms:'SMS',whatsapp:'WhatsApp',audio:'Voice note'};
+const KIND_ALIAS={teams:'meeting',zoom:'meeting',gcal:'meeting',outlook:'email',gmail:'email',aircall:'call',slack:'note'};
+const AV_COLORS=['#5856d6','#0062cc','#0e7383','#1f7a3a','#b25000','#c2185b','#8a3fb8','#7a5a3a'];
 
 const $=(s,r=document)=>r.querySelector(s);
 const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
@@ -343,10 +388,13 @@ const ICON={
   note:'<path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h4"/>',meeting:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
   call:'<path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A15 15 0 013 6a2 2 0 012-2z"/>',
   email:'<rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="M3.5 7l8.5 6 8.5-6"/>',
-  whatsapp:'<path d="M4 20l1.3-4.2A8 8 0 1112 20a8 8 0 01-3.8-1z"/>',audio:'<path d="M4 10v4M8 6v12M12 9v6M16 5v14M20 10v4"/>',
+  whatsapp:'<path d="M4 20l1.3-4.2A8 8 0 1112 20a8 8 0 01-3.8-1z"/>',sms:'<path d="M4 5h16v11H9.5L4 20z"/><path d="M8 9.5h8M8 12.5h5"/>',audio:'<path d="M4 10v4M8 6v12M12 9v6M16 5v14M20 10v4"/>',
   in:'<rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M8 10.5V16M8 7.8v.1M12 16v-5.5M12 13a2 2 0 014 0v3"/>',
   back:'<path d="M14 6l-6 6 6 6"/>',edit:'<path d="M4 20h4L19 9l-4-4L4 16z"/>',spark:'<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/><path d="M19 16l.7 1.8L21.5 18.5l-1.8.7L19 21l-.7-1.8-1.8-.7 1.8-.7z"/>',
-  up:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',cloud:'<path d="M7 18a4.5 4.5 0 01-.6-8.96A6 6 0 0118 10.2 3.9 3.9 0 0117.5 18z"/>',trash:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>'
+  up:'<path d="M12 16V4M7 9l5-5 5 5M5 20h14"/>',cloud:'<path d="M7 18a4.5 4.5 0 01-.6-8.96A6 6 0 0118 10.2 3.9 3.9 0 0117.5 18z"/>',trash:'<path d="M5 7h14M10 7V4h4v3M7 7l1 13h8l1-13"/>',arrow:'<path d="M5 12h14M13 6l6 6-6 6"/>',
+  map:'<path d="M9 4L3.5 6v14L9 18l6 2 5.5-2V4L15 6z"/><path d="M9 4v14M15 6v14"/>',
+  gift:'<rect x="3.5" y="8.5" width="17" height="12" rx="2"/><path d="M3.5 12.5h17M12 8.5v12"/><path d="M12 8.5C10.6 5.6 7 5.2 7 7.2S10 8.5 12 8.5zm0 0c1.4-2.9 5-3.3 5-1.3S14 8.5 12 8.5z"/>',
+  card:'<rect x="3" y="5.5" width="18" height="13" rx="2.5"/><circle cx="8.5" cy="11" r="2"/><path d="M5.6 15.6c.6-1.3 1.6-2 2.9-2s2.3.7 2.9 2M14 10h4M14 13.5h3"/>'
 };
 const ic=(n,s=18)=>`<svg width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${ICON[n]||''}</svg>`;
 const ring=(v,size=30,label=false)=>{const r=size/2-2.5,c=2*Math.PI*r;return`<span class="ring" style="width:${size}px;height:${size}px"><svg width="${size}" height="${size}"><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--fill2)" stroke-width="2.5"/><circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--accent)" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="${c}" stroke-dashoffset="${c*(1-v/100)}"/></svg>${label?`<b style="font-size:${size>50?17:11}px">${v}</b>`:''}</span>`};
@@ -456,6 +504,10 @@ function sampleData(){
   const clients=[khalid,omar,sarah,layla,james,nadia,rajiv,hassan,mei,faisal,sophie,elodie,tariq,abdullah];
   const LK=(a,b,why)=>(a.links=a.links||[]).push({id:b.id,why});
   LK(sarah,rajiv,'Runs the buyer search for PayBridge');LK(khalid,layla,'Co-investors on two deals');LK(james,rajiv,'Counsel on the PayBridge sale');LK(nadia,khalid,'Negotiating the Atlas carve-out');LK(elodie,layla,'Banks the Al Rashid family');LK(hassan,khalid,'Financed Meridian’s last deal');LK(tariq,abdullah,'Former colleagues in Riyadh');LK(omar,nadia,'Running the Atlas diligence together');
+  for(const[g,ps]of[['Atlas deal',[khalid,omar,nadia,sophie]],['PayBridge sale',[rajiv,sarah,james,mei]],['Investors',[layla,elodie,faisal]]])ps.forEach(x=>x.group=g);
+  for(const[x,n]of[[khalid,30],[layla,30],[sarah,14],[tariq,90],[abdullah,90],[elodie,90]])x.cadence=n;
+  layla.birthday='1984'+due(3).slice(4);james.birthday='1975'+due(40).slice(4);
+  for(const[x,d]of[[khalid,'2025-03-04'],[sarah,'2025-10-21'],[layla,'2024-03-02'],[james,'2023-06-15'],[rajiv,'2025-08-30'],[abdullah,'2025-10-28'],[elodie,'2024-09-12'],[tariq,'2022-05-10'],[faisal,'2025-07-01']])x.metOn=d;
   const D=(title,c,value,stage,d)=>({id:id(),sample:true,title,contactId:c.id,contactName:fn(c),value,stage,closeDate:due(d),notes:'',createdAt:new Date().toISOString()});
   const deals=[D('Atlas Hospitality carve-out',khalid,4000000,'negotiation',45),D('PayBridge sell-side mandate',rajiv,600000,'proposal',90),D('Al Rashid co-investment',layla,2000000,'qualified',60),D('Sahara Logistics Series B',tariq,1500000,'lead',200),D('Clifford & Hale referral',james,85000,'won',-20)];
   // A plausible LinkedIn network so the map can be explored before importing your own.
@@ -494,7 +546,7 @@ const L={fr:{
 '{n} connections already imported. A new file replaces them.':'{n} relations déjà importées. Un nouveau fichier les remplace.','Sample connections are shown for now. Your file replaces them.':'Des relations d’exemple sont affichées pour l’instant. Votre fichier les remplacera.','Unzip the archive first, then drop Connections.csv.':'Décompressez d’abord l’archive, puis déposez Connections.csv.','This does not look like LinkedIn’s Connections.csv.':'Ce fichier ne ressemble pas au Connections.csv de LinkedIn.','{n} connections imported':'{n} relations importées',
 'This is not a Mnemo backup.':'Ce n’est pas une sauvegarde Mnemo.','Replace everything on this device with the backup ({n} people)?':'Remplacer toutes les données de cet appareil par la sauvegarde ({n} contacts) ?','Backup restored':'Sauvegarde restaurée','No rows found in this file.':'Aucune ligne trouvée dans ce fichier.','The file needs at least a name column.':'Le fichier doit contenir au moins une colonne nom.','{n} people imported':'{n} contacts importés',
 'Appearance':'Apparence','Auto':'Auto','Light':'Clair','Dark':'Sombre','Language':'Langue','Currency':'Devise','Intelligence':'Intelligence','Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.':'La transcription et l’IA passent par vos fonctions Netlify sécurisées (OPENAI_API_KEY et ANTHROPIC_API_KEY). Vous pouvez aussi utiliser une clé Anthropic personnelle, stockée uniquement sur cet appareil.','Access code':'Code d’accès','The code you set as MNEMO_ACCESS_CODE in Netlify':'Le code défini dans MNEMO_ACCESS_CODE sur Netlify','Personal Anthropic key (optional)':'Clé Anthropic personnelle (facultatif)','Enter your access code in Settings.':'Saisissez votre code d’accès dans les Réglages.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'Saisissez votre code d’accès dans les Réglages, puis réessayez. L’enregistrement est conservé tant que la page n’est pas rechargée.',
-'Sync':'Synchronisation','Stored on this device and synced to your account.':'Stocké sur cet appareil et synchronisé avec votre compte.','Your session expired. Sign in again.':'Votre session a expiré. Reconnectez-vous.','Offline — changes are kept on this device and will sync later.':'Hors ligne — les modifications restent sur cet appareil et seront synchronisées plus tard.','Signed in as':'Connecté en tant que','Syncing…':'Synchronisation…','Last synced':'Dernière synchronisation à','Not synced yet':'Pas encore synchronisé','Sync now':'Synchroniser','Sign out':'Se déconnecter','Sign in to keep your people, memories and deals in sync across your devices.':'Connectez-vous pour synchroniser vos contacts, souvenirs et deals entre vos appareils.','Password':'Mot de passe','Supabase project':'Projet Supabase','Project URL':'URL du projet','Publishable (anon) key':'Clé publique (anon)','Sign in':'Se connecter','Create account':'Créer un compte','Enter your Supabase project URL and publishable key.':'Saisissez l’URL de votre projet Supabase et sa clé publique.','Enter an email and a password of at least 6 characters.':'Saisissez un e-mail et un mot de passe d’au moins 6 caractères.','Account created. Confirm it from the email you just received, then sign in.':'Compte créé. Confirmez-le depuis l’e-mail que vous venez de recevoir, puis connectez-vous.','Signed in':'Connecté','Could not reach Supabase. Check the project URL.':'Supabase est injoignable. Vérifiez l’URL du projet.','Sign out? Your data stays on this device.':'Se déconnecter ? Vos données restent sur cet appareil.','phone contacts':'contacts du téléphone','Phone contacts':'Contacts du téléphone','Phone contact':'Contact du téléphone','more people you know at':'autres personnes que vous connaissez chez','not in Mnemo yet':'pas encore dans Mnemo','Not in Mnemo yet':'Pas encore dans Mnemo','People you know there':'Personnes que vous y connaissez','Import contacts':'Importer des contacts','Import phone contacts':'Importer les contacts du téléphone','Contacts':'Contacts','LinkedIn & contacts':'LinkedIn et contacts','No contacts found.':'Aucun contact trouvé.','{n} contacts imported':'{n} contacts importés','Profiles completed: {n}':'Fiches complétées : {n}','Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.':'Votre carnet d’adresses rejoint l’anneau extérieur de votre carte. Rien ne devient une fiche Mnemo tant que vous ne l’ajoutez pas, et les personnes déjà dans Mnemo voient leur téléphone et leur e-mail manquants complétés.','Import from this phone':'Importer depuis ce téléphone','Choose from this phone':'Choisir dans ce téléphone','Drop a contacts file':'Déposez un fichier de contacts','vCard (.vcf) or CSV — or click to choose':'vCard (.vcf) ou CSV — ou cliquez pour choisir','How to export your contacts':'Comment exporter vos contacts','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.':'App Contacts → Listes → appui long sur « Tous les contacts » → Exporter → enregistrer le fichier.','Contacts app → Menu → Manage contacts → Import or export → Export.':'App Contacts → Menu → Gérer les contacts → Importer ou exporter → Exporter.','contacts.google.com → Export → vCard.':'contacts.google.com → Exporter → vCard.','People → Manage contacts → Export contacts.':'Contacts → Gérer les contacts → Exporter les contacts.','{n} contacts already imported. A new file replaces them.':'{n} contacts déjà importés. Un nouveau fichier les remplace.','This file is not a vCard or a contacts CSV.':'Ce fichier n’est ni une vCard ni un CSV de contacts.','Allow Mnemo to access your contacts in the phone settings.':'Autorisez Mnemo à accéder à vos contacts dans les réglages du téléphone.','{n} connections in your network':'{n} relations dans votre réseau','{n} in common':'{n} en commun','Knows them':'Se connaissent','Mentioned in your notes':'Mentionné dans vos notes','Remove link':'Retirer le lien','Link someone':'Lier quelqu’un','Link someone they know':'Lier une personne qu’il connaît','How they know each other (optional)':'Comment ils se connaissent (facultatif)','Link':'Lier','Best way in':'Meilleure porte d’entrée','{a} knows them and is in your {c}. Ask for an introduction.':'{a} le connaît et fait partie de votre {c}. Demandez-lui une introduction.','Your connectors':'Vos connecteurs','knows {n}':'connaît {n}','Link to the people mentioned':'Lier aux personnes mentionnées','Your data':'Vos données','Everything is stored on this device. Export a backup regularly.':'Tout est stocké sur cet appareil. Exportez régulièrement une sauvegarde.','Export backup':'Exporter une sauvegarde','Restore backup':'Restaurer','Export CSV':'Exporter en CSV','Import CSV':'Importer un CSV','Remove sample data':'Supprimer les exemples','Open the classic version':'Ouvrir la version classique','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'Teams, Outlook, Gmail et les autres intégrations historiques s’y trouvent et partagent les mêmes données.','Saved':'Enregistré',
+'Sync':'Synchronisation','Stored on this device and synced to your account.':'Stocké sur cet appareil et synchronisé avec votre compte.','Your session expired. Sign in again.':'Votre session a expiré. Reconnectez-vous.','Offline — changes are kept on this device and will sync later.':'Hors ligne — les modifications restent sur cet appareil et seront synchronisées plus tard.','Signed in as':'Connecté en tant que','Syncing…':'Synchronisation…','Last synced':'Dernière synchronisation à','Not synced yet':'Pas encore synchronisé','Sync now':'Synchroniser','Sign out':'Se déconnecter','Sign in to keep your people, memories and deals in sync across your devices.':'Connectez-vous pour synchroniser vos contacts, souvenirs et deals entre vos appareils.','Password':'Mot de passe','Supabase project':'Projet Supabase','Project URL':'URL du projet','Publishable (anon) key':'Clé publique (anon)','Sign in':'Se connecter','Create account':'Créer un compte','Enter your Supabase project URL and publishable key.':'Saisissez l’URL de votre projet Supabase et sa clé publique.','Enter an email and a password of at least 6 characters.':'Saisissez un e-mail et un mot de passe d’au moins 6 caractères.','Account created. Confirm it from the email you just received, then sign in.':'Compte créé. Confirmez-le depuis l’e-mail que vous venez de recevoir, puis connectez-vous.','Signed in':'Connecté','Could not reach Supabase. Check the project URL.':'Supabase est injoignable. Vérifiez l’URL du projet.','Sign out? Your data stays on this device.':'Se déconnecter ? Vos données restent sur cet appareil.','phone contacts':'contacts du téléphone','Phone contacts':'Contacts du téléphone','Phone contact':'Contact du téléphone','more people you know at':'autres personnes que vous connaissez chez','not in Mnemo yet':'pas encore dans Mnemo','Not in Mnemo yet':'Pas encore dans Mnemo','People you know there':'Personnes que vous y connaissez','Import contacts':'Importer des contacts','Import phone contacts':'Importer les contacts du téléphone','Contacts':'Contacts','LinkedIn & contacts':'LinkedIn et contacts','No contacts found.':'Aucun contact trouvé.','{n} contacts imported':'{n} contacts importés','Profiles completed: {n}':'Fiches complétées : {n}','Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.':'Votre carnet d’adresses rejoint l’anneau extérieur de votre carte. Rien ne devient une fiche Mnemo tant que vous ne l’ajoutez pas, et les personnes déjà dans Mnemo voient leur téléphone et leur e-mail manquants complétés.','Import from this phone':'Importer depuis ce téléphone','Choose from this phone':'Choisir dans ce téléphone','Drop a contacts file':'Déposez un fichier de contacts','vCard (.vcf) or CSV — or click to choose':'vCard (.vcf) ou CSV — ou cliquez pour choisir','How to export your contacts':'Comment exporter vos contacts','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.':'App Contacts → Listes → appui long sur « Tous les contacts » → Exporter → enregistrer le fichier.','Contacts app → Menu → Manage contacts → Import or export → Export.':'App Contacts → Menu → Gérer les contacts → Importer ou exporter → Exporter.','contacts.google.com → Export → vCard.':'contacts.google.com → Exporter → vCard.','People → Manage contacts → Export contacts.':'Contacts → Gérer les contacts → Exporter les contacts.','{n} contacts already imported. A new file replaces them.':'{n} contacts déjà importés. Un nouveau fichier les remplace.','This file is not a vCard or a contacts CSV.':'Ce fichier n’est ni une vCard ni un CSV de contacts.','Allow Mnemo to access your contacts in the phone settings.':'Autorisez Mnemo à accéder à vos contacts dans les réglages du téléphone.','{n} connections in your network':'{n} relations dans votre réseau','{n} in common':'{n} en commun','Knows them':'Se connaissent','Mentioned in your notes':'Mentionné dans vos notes','Remove link':'Retirer le lien','Link someone':'Lier quelqu’un','Link someone they know':'Lier une personne qu’il connaît','How they know each other (optional)':'Comment ils se connaissent (facultatif)','Link':'Lier','Best way in':'Meilleure porte d’entrée','{a} knows them and is in your {c}. Ask for an introduction.':'{a} le connaît et fait partie de votre {c}. Demandez-lui une introduction.','Your connectors':'Vos connecteurs','knows {n}':'connaît {n}','Link to the people mentioned':'Lier aux personnes mentionnées','Overdue by {n} days':'En retard de {n} jours','Due today':'À faire aujourd’hui','Due in {n} days':'Dans {n} jours','Coming up':'À venir','Birthday today':'Anniversaire aujourd’hui','Birthday in {n} days':'Anniversaire dans {n} jours','Write a birthday message':'Écrire un message d’anniversaire','Reconnect':'À relancer','Mark as contacted':'Marquer comme contacté','Reached out':'Prise de contact','Logged. Next reminder in {n} days.':'Noté. Prochain rappel dans {n} jours.','Logged.':'Noté.','To reconnect':'À relancer','Year':'Année','All years':'Toutes les années','Group':'Groupe','e.g. Atlas deal, Riyadh investors':'ex. Deal Atlas, investisseurs Riyad','Where and when':'Où et quand','Staying in touch':'Garder le contact','Keep in touch':'Rythme de contact','Happy birthday {name}! Wishing you a wonderful year ahead.':'Joyeux anniversaire {name} ! Je vous souhaite une très belle année.','Take a photo of a business card':'Photographiez une carte de visite','Mnemo reads it and fills in the profile.':'Mnemo la lit et remplit la fiche.','Choose a photo':'Choisir une photo','Add manually':'Saisir à la main','Try another photo':'Essayer une autre photo','Reading the card…':'Lecture de la carte…','This image could not be read. Try a JPEG or PNG photo.':'Cette image est illisible. Essayez une photo JPEG ou PNG.','No contact details found on this image.':'Aucune coordonnée trouvée sur cette image.','{name} is already in Mnemo — details added from the card.':'{name} est déjà dans Mnemo — coordonnées complétées depuis la carte.','{name} is already in Mnemo.':'{name} est déjà dans Mnemo.','Business card scanned on {d}':'Carte de visite scannée le {d}','World map of your people':'Carte du monde de vos contacts','Map':'Carte','The map could not load. Check your connection — your places are listed on the right.':'La carte n’a pas pu se charger. Vérifiez votre connexion — vos lieux sont listés à droite.','people in {n} places':'contacts dans {n} lieux','All places':'Tous les lieux','{n} people':'{n} contacts','Your world':'Votre monde','Where you met the people in Mnemo, or the city they are based in.':'Là où vous avez rencontré vos contacts, ou la ville où ils sont basés.','Places':'Lieux','No one placed on the map for {y}.':'Personne sur la carte pour {y}.','No places yet.':'Aucun lieu pour l’instant.','{n} people have no place yet. Add a city or where you met on their profile.':'{n} contacts n’ont pas encore de lieu. Ajoutez une ville ou le lieu de rencontre sur leur fiche.','Never':'Jamais','Every 2 weeks':'Toutes les 2 semaines','Every month':'Tous les mois','Every quarter':'Tous les trimestres','Every 6 months':'Tous les 6 mois','City':'Ville','Birthday':'Anniversaire','When we met':'Date de rencontre','Card':'Carte','Scan a business card':'Scanner une carte de visite','Open the world map':'Ouvrir la carte du monde','{n} reminders':'{n} rappels','{k} logged':'{k} noté','Undo':'Annuler','Log a contact':'Noter un échange','Log a {k} now':'Noter un {k} maintenant','Tomorrow':'Demain','Next week':'Semaine prochaine','In a month':'Dans un mois','Reminders':'Rappels','This browser cannot show notifications. Your reminders stay on the Today page.':'Ce navigateur ne peut pas afficher de notifications. Vos rappels restent sur la page Aujourd’hui.','Get a notification each day you open Mnemo with something due.':'Recevez une notification chaque jour où vous ouvrez Mnemo avec quelque chose à faire.','On':'Activées','Blocked in browser settings':'Bloquées dans le navigateur','Turn on':'Activer','{n} reminders for today':'{n} rappels pour aujourd’hui','SMS':'SMS','Your data':'Vos données','Everything is stored on this device. Export a backup regularly.':'Tout est stocké sur cet appareil. Exportez régulièrement une sauvegarde.','Export backup':'Exporter une sauvegarde','Restore backup':'Restaurer','Export CSV':'Exporter en CSV','Import CSV':'Importer un CSV','Remove sample data':'Supprimer les exemples','Open the classic version':'Ouvrir la version classique','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'Teams, Outlook, Gmail et les autres intégrations historiques s’y trouvent et partagent les mêmes données.','Saved':'Enregistré',
 'Storage is full — export a backup from Settings.':'Stockage plein — exportez une sauvegarde depuis les Réglages.','AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.':'IA injoignable. Vérifiez ANTHROPIC_API_KEY sur Netlify, ou ajoutez votre clé dans les Réglages.',
 'Relationship map':'Carte des relations','Find a person or a company':'Trouver une personne ou une société','Zoom out':'Dézoomer','Reset':'Recentrer','Zoom in':'Zoomer','No company':'Sans société','You':'Vous','people in Mnemo':'contacts dans Mnemo','LinkedIn connections':'relations LinkedIn','Overview':'Vue d’ensemble','Place in your circle':'Place dans votre cercle','of':'sur','Strength':'Force','closer than {p}% of your people':'plus proche que {p} % de vos contacts','your closest relationship':'votre relation la plus proche',
 'Conversations':'Échanges','On LinkedIn':'Sur LinkedIn','since':'depuis','Connected':'Connecté','Introductions':'Présentations','Around them at':'Autour, chez','See all':'Tout voir','Open profile':'Ouvrir la fiche','LinkedIn connection':'Relation LinkedIn','Connected since':'En relation depuis le','Not in Mnemo yet — no shared memory.':'Pas encore dans Mnemo — aucun souvenir partagé.','Warm path':'Chemin d’introduction',
@@ -526,7 +578,7 @@ const L={fr:{
 '{n} connections already imported. A new file replaces them.':'تم استيراد {n} من المعارف. الملف الجديد يستبدلها.','Sample connections are shown for now. Your file replaces them.':'تُعرض الآن معارف تجريبية. ملفك سيستبدلها.','Unzip the archive first, then drop Connections.csv.':'فكّ ضغط الأرشيف أولاً ثم أسقط Connections.csv.','This does not look like LinkedIn’s Connections.csv.':'هذا الملف لا يبدو ملف Connections.csv من LinkedIn.','{n} connections imported':'تم استيراد {n} من المعارف',
 'This is not a Mnemo backup.':'هذه ليست نسخة احتياطية من Mnemo.','Replace everything on this device with the backup ({n} people)?':'استبدال كل البيانات على هذا الجهاز بالنسخة الاحتياطية ({n} جهة اتصال)؟','Backup restored':'تمت استعادة النسخة','No rows found in this file.':'لا توجد صفوف في هذا الملف.','The file needs at least a name column.':'يجب أن يحتوي الملف على عمود للاسم.','{n} people imported':'تم استيراد {n} جهة اتصال',
 'Appearance':'المظهر','Auto':'تلقائي','Light':'فاتح','Dark':'داكن','Language':'اللغة','Currency':'العملة','Intelligence':'الذكاء','Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.':'التفريغ والذكاء الاصطناعي يعملان عبر وظائف Netlify الآمنة (OPENAI_API_KEY و ANTHROPIC_API_KEY). يمكنك اختياريًا استخدام مفتاح Anthropic شخصي يُحفظ على هذا الجهاز فقط.',
-'Access code':'رمز الوصول','The code you set as MNEMO_ACCESS_CODE in Netlify':'الرمز المحدد في MNEMO_ACCESS_CODE على Netlify','Personal Anthropic key (optional)':'مفتاح Anthropic شخصي (اختياري)','Enter your access code in Settings.':'أدخل رمز الوصول في الإعدادات.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'أدخل رمز الوصول في الإعدادات ثم أعد المحاولة. التسجيل محفوظ ما لم تُعد تحميل الصفحة.','Sync':'المزامنة','Stored on this device and synced to your account.':'محفوظة على هذا الجهاز ومُزامَنة مع حسابك.','Your session expired. Sign in again.':'انتهت الجلسة. سجّل الدخول مجددًا.','Offline — changes are kept on this device and will sync later.':'غير متصل — التغييرات محفوظة على هذا الجهاز وستتم مزامنتها لاحقًا.','Signed in as':'تم تسجيل الدخول باسم','Syncing…':'جارٍ المزامنة…','Last synced':'آخر مزامنة','Not synced yet':'لم تتم المزامنة بعد','Sync now':'مزامنة الآن','Sign out':'تسجيل الخروج','Sign in to keep your people, memories and deals in sync across your devices.':'سجّل الدخول لمزامنة جهات اتصالك وذكرياتك وصفقاتك بين أجهزتك.','Password':'كلمة المرور','Supabase project':'مشروع Supabase','Project URL':'رابط المشروع','Publishable (anon) key':'المفتاح العام (anon)','Sign in':'تسجيل الدخول','Create account':'إنشاء حساب','Enter your Supabase project URL and publishable key.':'أدخل رابط مشروع Supabase ومفتاحه العام.','Enter an email and a password of at least 6 characters.':'أدخل بريدًا إلكترونيًا وكلمة مرور من 6 أحرف على الأقل.','Account created. Confirm it from the email you just received, then sign in.':'تم إنشاء الحساب. أكّده من البريد الذي وصلك ثم سجّل الدخول.','Signed in':'تم تسجيل الدخول','Could not reach Supabase. Check the project URL.':'تعذّر الوصول إلى Supabase. تحقق من رابط المشروع.','Sign out? Your data stays on this device.':'تسجيل الخروج؟ بياناتك تبقى على هذا الجهاز.','phone contacts':'جهة اتصال من الهاتف','Phone contacts':'جهات اتصال الهاتف','Phone contact':'جهة اتصال من الهاتف','more people you know at':'أشخاص آخرون تعرفهم في','not in Mnemo yet':'ليسوا في Mnemo بعد','Not in Mnemo yet':'ليس في Mnemo بعد','People you know there':'أشخاص تعرفهم هناك','Import contacts':'استيراد جهات الاتصال','Import phone contacts':'استيراد جهات اتصال الهاتف','Contacts':'جهات الاتصال','LinkedIn & contacts':'LinkedIn وجهات الاتصال','No contacts found.':'لم يُعثر على جهات اتصال.','{n} contacts imported':'تم استيراد {n} جهة اتصال','Profiles completed: {n}':'الملفات المستكملة: {n}','Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.':'ينضم دفتر عناوينك إلى الحلقة الخارجية في خريطتك. لا يصبح أحد ملفًا في Mnemo حتى تضيفه، ويُستكمل الهاتف والبريد الناقصان لمن هم في Mnemo.','Import from this phone':'استيراد من هذا الهاتف','Choose from this phone':'اختيار من هذا الهاتف','Drop a contacts file':'أسقط ملف جهات الاتصال','vCard (.vcf) or CSV — or click to choose':'vCard (.vcf) أو CSV — أو انقر للاختيار','How to export your contacts':'كيفية تصدير جهات اتصالك','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.':'تطبيق جهات الاتصال ← القوائم ← اضغط مطولاً على «كل جهات الاتصال» ← تصدير ← احفظ الملف.','Contacts app → Menu → Manage contacts → Import or export → Export.':'تطبيق جهات الاتصال ← القائمة ← إدارة جهات الاتصال ← استيراد أو تصدير ← تصدير.','contacts.google.com → Export → vCard.':'contacts.google.com ← تصدير ← vCard.','People → Manage contacts → Export contacts.':'الأشخاص ← إدارة جهات الاتصال ← تصدير جهات الاتصال.','{n} contacts already imported. A new file replaces them.':'تم استيراد {n} جهة اتصال. الملف الجديد يستبدلها.','This file is not a vCard or a contacts CSV.':'هذا الملف ليس vCard ولا ملف CSV لجهات الاتصال.','Allow Mnemo to access your contacts in the phone settings.':'اسمح لـ Mnemo بالوصول إلى جهات اتصالك من إعدادات الهاتف.','{n} connections in your network':'{n} علاقة في شبكتك','{n} in common':'{n} مشتركة','Knows them':'يعرفه','Mentioned in your notes':'مذكور في ملاحظاتك','Remove link':'إزالة الرابط','Link someone':'ربط شخص','Link someone they know':'ربط شخص يعرفه','How they know each other (optional)':'كيف يعرفان بعضهما (اختياري)','Link':'ربط','Best way in':'أفضل مدخل','{a} knows them and is in your {c}. Ask for an introduction.':'{a} يعرفه وهو ضمن {c}. اطلب منه تعريفًا.','Your connectors':'الموصِّلون في شبكتك','knows {n}':'يعرف {n}','Link to the people mentioned':'ربط بالأشخاص المذكورين','Your data':'بياناتك','Everything is stored on this device. Export a backup regularly.':'كل شيء محفوظ على هذا الجهاز. صدّر نسخة احتياطية بانتظام.','Export backup':'تصدير نسخة احتياطية','Restore backup':'استعادة','Export CSV':'تصدير CSV','Import CSV':'استيراد CSV','Remove sample data':'حذف البيانات التجريبية','Open the classic version':'فتح النسخة الكلاسيكية','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'تكاملات Teams و Outlook و Gmail وغيرها موجودة هناك وتشارك البيانات نفسها.','Saved':'تم الحفظ',
+'Access code':'رمز الوصول','The code you set as MNEMO_ACCESS_CODE in Netlify':'الرمز المحدد في MNEMO_ACCESS_CODE على Netlify','Personal Anthropic key (optional)':'مفتاح Anthropic شخصي (اختياري)','Enter your access code in Settings.':'أدخل رمز الوصول في الإعدادات.','Enter your access code in Settings, then try again. Your recording is kept until you reload the page.':'أدخل رمز الوصول في الإعدادات ثم أعد المحاولة. التسجيل محفوظ ما لم تُعد تحميل الصفحة.','Sync':'المزامنة','Stored on this device and synced to your account.':'محفوظة على هذا الجهاز ومُزامَنة مع حسابك.','Your session expired. Sign in again.':'انتهت الجلسة. سجّل الدخول مجددًا.','Offline — changes are kept on this device and will sync later.':'غير متصل — التغييرات محفوظة على هذا الجهاز وستتم مزامنتها لاحقًا.','Signed in as':'تم تسجيل الدخول باسم','Syncing…':'جارٍ المزامنة…','Last synced':'آخر مزامنة','Not synced yet':'لم تتم المزامنة بعد','Sync now':'مزامنة الآن','Sign out':'تسجيل الخروج','Sign in to keep your people, memories and deals in sync across your devices.':'سجّل الدخول لمزامنة جهات اتصالك وذكرياتك وصفقاتك بين أجهزتك.','Password':'كلمة المرور','Supabase project':'مشروع Supabase','Project URL':'رابط المشروع','Publishable (anon) key':'المفتاح العام (anon)','Sign in':'تسجيل الدخول','Create account':'إنشاء حساب','Enter your Supabase project URL and publishable key.':'أدخل رابط مشروع Supabase ومفتاحه العام.','Enter an email and a password of at least 6 characters.':'أدخل بريدًا إلكترونيًا وكلمة مرور من 6 أحرف على الأقل.','Account created. Confirm it from the email you just received, then sign in.':'تم إنشاء الحساب. أكّده من البريد الذي وصلك ثم سجّل الدخول.','Signed in':'تم تسجيل الدخول','Could not reach Supabase. Check the project URL.':'تعذّر الوصول إلى Supabase. تحقق من رابط المشروع.','Sign out? Your data stays on this device.':'تسجيل الخروج؟ بياناتك تبقى على هذا الجهاز.','phone contacts':'جهة اتصال من الهاتف','Phone contacts':'جهات اتصال الهاتف','Phone contact':'جهة اتصال من الهاتف','more people you know at':'أشخاص آخرون تعرفهم في','not in Mnemo yet':'ليسوا في Mnemo بعد','Not in Mnemo yet':'ليس في Mnemo بعد','People you know there':'أشخاص تعرفهم هناك','Import contacts':'استيراد جهات الاتصال','Import phone contacts':'استيراد جهات اتصال الهاتف','Contacts':'جهات الاتصال','LinkedIn & contacts':'LinkedIn وجهات الاتصال','No contacts found.':'لم يُعثر على جهات اتصال.','{n} contacts imported':'تم استيراد {n} جهة اتصال','Profiles completed: {n}':'الملفات المستكملة: {n}','Your address book joins the outer ring of your map. Nothing becomes a Mnemo profile until you add it, and people already in Mnemo get their missing phone and email filled in.':'ينضم دفتر عناوينك إلى الحلقة الخارجية في خريطتك. لا يصبح أحد ملفًا في Mnemo حتى تضيفه، ويُستكمل الهاتف والبريد الناقصان لمن هم في Mnemo.','Import from this phone':'استيراد من هذا الهاتف','Choose from this phone':'اختيار من هذا الهاتف','Drop a contacts file':'أسقط ملف جهات الاتصال','vCard (.vcf) or CSV — or click to choose':'vCard (.vcf) أو CSV — أو انقر للاختيار','How to export your contacts':'كيفية تصدير جهات اتصالك','Contacts app → Lists → press and hold “All Contacts” → Export → save the file.':'تطبيق جهات الاتصال ← القوائم ← اضغط مطولاً على «كل جهات الاتصال» ← تصدير ← احفظ الملف.','Contacts app → Menu → Manage contacts → Import or export → Export.':'تطبيق جهات الاتصال ← القائمة ← إدارة جهات الاتصال ← استيراد أو تصدير ← تصدير.','contacts.google.com → Export → vCard.':'contacts.google.com ← تصدير ← vCard.','People → Manage contacts → Export contacts.':'الأشخاص ← إدارة جهات الاتصال ← تصدير جهات الاتصال.','{n} contacts already imported. A new file replaces them.':'تم استيراد {n} جهة اتصال. الملف الجديد يستبدلها.','This file is not a vCard or a contacts CSV.':'هذا الملف ليس vCard ولا ملف CSV لجهات الاتصال.','Allow Mnemo to access your contacts in the phone settings.':'اسمح لـ Mnemo بالوصول إلى جهات اتصالك من إعدادات الهاتف.','{n} connections in your network':'{n} علاقة في شبكتك','{n} in common':'{n} مشتركة','Knows them':'يعرفه','Mentioned in your notes':'مذكور في ملاحظاتك','Remove link':'إزالة الرابط','Link someone':'ربط شخص','Link someone they know':'ربط شخص يعرفه','How they know each other (optional)':'كيف يعرفان بعضهما (اختياري)','Link':'ربط','Best way in':'أفضل مدخل','{a} knows them and is in your {c}. Ask for an introduction.':'{a} يعرفه وهو ضمن {c}. اطلب منه تعريفًا.','Your connectors':'الموصِّلون في شبكتك','knows {n}':'يعرف {n}','Link to the people mentioned':'ربط بالأشخاص المذكورين','Overdue by {n} days':'متأخر {n} أيام','Due today':'مستحق اليوم','Due in {n} days':'بعد {n} أيام','Coming up':'قريبًا','Birthday today':'عيد ميلاد اليوم','Birthday in {n} days':'عيد ميلاد بعد {n} أيام','Write a birthday message':'كتابة تهنئة بعيد الميلاد','Reconnect':'للتواصل','Mark as contacted':'تم التواصل','Reached out':'تواصل','Logged. Next reminder in {n} days.':'تم التسجيل. التذكير التالي بعد {n} أيام.','Logged.':'تم التسجيل.','To reconnect':'للتواصل','Year':'السنة','All years':'كل السنوات','Group':'المجموعة','e.g. Atlas deal, Riyadh investors':'مثال: صفقة أطلس، مستثمرو الرياض','Where and when':'أين ومتى','Staying in touch':'البقاء على تواصل','Keep in touch':'وتيرة التواصل','Happy birthday {name}! Wishing you a wonderful year ahead.':'عيد ميلاد سعيد يا {name}! أتمنى لك عامًا رائعًا.','Take a photo of a business card':'صوّر بطاقة عمل','Mnemo reads it and fills in the profile.':'يقرأها Mnemo ويملأ الملف.','Choose a photo':'اختيار صورة','Add manually':'إضافة يدوية','Try another photo':'تجربة صورة أخرى','Reading the card…':'جارٍ قراءة البطاقة…','This image could not be read. Try a JPEG or PNG photo.':'تعذّرت قراءة الصورة. جرّب صورة JPEG أو PNG.','No contact details found on this image.':'لم يُعثر على بيانات اتصال في هذه الصورة.','{name} is already in Mnemo — details added from the card.':'{name} موجود في Mnemo — أُضيفت البيانات من البطاقة.','{name} is already in Mnemo.':'{name} موجود في Mnemo.','Business card scanned on {d}':'بطاقة عمل ممسوحة في {d}','World map of your people':'خريطة العالم لجهات اتصالك','Map':'الخريطة','The map could not load. Check your connection — your places are listed on the right.':'تعذّر تحميل الخريطة. تحقق من اتصالك — أماكنك مدرجة في القائمة.','people in {n} places':'جهة اتصال في {n} أماكن','All places':'كل الأماكن','{n} people':'{n} جهة اتصال','Your world':'عالمك','Where you met the people in Mnemo, or the city they are based in.':'حيث التقيت بجهات اتصالك، أو المدينة التي يقيمون فيها.','Places':'الأماكن','No one placed on the map for {y}.':'لا أحد على الخريطة في {y}.','No places yet.':'لا أماكن بعد.','{n} people have no place yet. Add a city or where you met on their profile.':'{n} جهة اتصال بلا مكان بعد. أضف مدينة أو مكان اللقاء في ملفاتهم.','Never':'أبدًا','Every 2 weeks':'كل أسبوعين','Every month':'كل شهر','Every quarter':'كل ثلاثة أشهر','Every 6 months':'كل ستة أشهر','City':'المدينة','Birthday':'عيد الميلاد','When we met':'تاريخ اللقاء','Card':'بطاقة','Scan a business card':'مسح بطاقة عمل','Open the world map':'فتح خريطة العالم','{n} reminders':'{n} تذكيرات','{k} logged':'تم تسجيل {k}','Undo':'تراجع','Log a contact':'تسجيل تواصل','Log a {k} now':'تسجيل {k} الآن','Tomorrow':'غدًا','Next week':'الأسبوع القادم','In a month':'بعد شهر','Reminders':'التذكيرات','This browser cannot show notifications. Your reminders stay on the Today page.':'هذا المتصفح لا يعرض الإشعارات. تذكيراتك تبقى في صفحة اليوم.','Get a notification each day you open Mnemo with something due.':'احصل على إشعار في كل يوم تفتح فيه Mnemo ولديك ما يستحق.','On':'مفعّلة','Blocked in browser settings':'محظورة في إعدادات المتصفح','Turn on':'تفعيل','{n} reminders for today':'{n} تذكيرات لليوم','SMS':'رسالة نصية','Your data':'بياناتك','Everything is stored on this device. Export a backup regularly.':'كل شيء محفوظ على هذا الجهاز. صدّر نسخة احتياطية بانتظام.','Export backup':'تصدير نسخة احتياطية','Restore backup':'استعادة','Export CSV':'تصدير CSV','Import CSV':'استيراد CSV','Remove sample data':'حذف البيانات التجريبية','Open the classic version':'فتح النسخة الكلاسيكية','Teams, Outlook, Gmail and other legacy integrations live there and share the same data.':'تكاملات Teams و Outlook و Gmail وغيرها موجودة هناك وتشارك البيانات نفسها.','Saved':'تم الحفظ',
 'Storage is full — export a backup from Settings.':'التخزين ممتلئ — صدّر نسخة احتياطية من الإعدادات.','AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.':'تعذّر الوصول إلى الذكاء الاصطناعي. تحقق من ANTHROPIC_API_KEY في Netlify أو أضف مفتاحك في الإعدادات.',
 'Relationship map':'خريطة العلاقات','Find a person or a company':'ابحث عن شخص أو شركة','Zoom out':'تصغير','Reset':'إعادة ضبط','Zoom in':'تكبير','No company':'بدون شركة','You':'أنت','people in Mnemo':'جهة اتصال في Mnemo','LinkedIn connections':'معارف LinkedIn','Overview':'نظرة عامة','Place in your circle':'موقعه في دائرتك','of':'من','Strength':'القوة','closer than {p}% of your people':'أقرب من {p}٪ من جهات اتصالك','your closest relationship':'أقرب علاقاتك',
 'Conversations':'المحادثات','On LinkedIn':'على LinkedIn','since':'منذ','Connected':'متصل','Introductions':'التعريفات','Around them at':'من حوله في','See all':'عرض الكل','Open profile':'فتح الملف','LinkedIn connection':'معرفة على LinkedIn','Connected since':'على اتصال منذ','Not in Mnemo yet — no shared memory.':'ليس في Mnemo بعد — لا ذكريات مشتركة.','Warm path':'طريق التعريف',
@@ -542,10 +594,11 @@ function t(s,v){let o=(L[S.cfg.lang]||{})[s]||s;if(v)for(const k in v)o=o.split(
 
 // ═══ Shell: navigation, routing, sheets ══════════════════════════════════
 const V={},A={},I={};
-const TABS=[['today','Today'],['people','People'],['network','Network'],['deals','Deals']];
+const TABS=[['today','Today'],['people','People'],['network','Network'],['map','Map'],['deals','Deals']];
 function nav(){
-  $('#tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab ${S.view===k?'on':''}" data-a="go" data-v="${k}">${t(l)}</button>`).join('');
-  $('#tabbar').innerHTML=TABS.map(([k,l])=>`<button class="${S.view===k?'on':''}" data-a="go" data-v="${k}">${ic(k,22)}${t(l)}</button>`).join('');
+  const n=remindersDue(),bd=k=>k==='today'&&n?`<span class="badge" aria-label="${t('{n} reminders',{n})}">${n}</span>`:'';
+  $('#tabs').innerHTML=TABS.map(([k,l])=>`<button class="tab ${S.view===k?'on':''}" data-a="go" data-v="${k}">${t(l)}${bd(k)}</button>`).join('');
+  $('#tabbar').innerHTML=TABS.map(([k,l])=>`<button class="${S.view===k?'on':''}" data-a="go" data-v="${k}">${ic(k,22)}${t(l)}${bd(k)}</button>`).join('');
   $('#search-btn').innerHTML=`${ic('search',15)}<span>${t('Search or ask')}</span><kbd>${/Mac|iPhone|iPad/.test(navigator.platform)?'⌘K':'Ctrl K'}</kbd>`;
   $('#capture-btn').innerHTML=`${ic('plus',15)}${t('Capture')}`;
   $('#settings-btn').innerHTML=ic('gear');syncBadge();
@@ -562,12 +615,14 @@ function render(fresh){
   const keep=fresh?null:[...document.querySelectorAll('.pdetail,.plist-scroll')].map(e=>e.scrollTop),top=$('#view').scrollTop;
   nav();
   if(S.view!=='network')netStop();
+  if(S.view!=='map')mapStop();
   $('#view').innerHTML=V[S.view]();
   if(S.view==='network')netStart();
+  if(S.view==='map')mapStart();
   if(keep){document.querySelectorAll('.pdetail,.plist-scroll').forEach((e,i)=>e.scrollTop=keep[i]||0);$('#view').scrollTop=top}else $('#view').scrollTop=0;
 }
 let toastT;
-function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on'),3200)}
+function toast(msg,act){const el=$('#toast');el.textContent=msg;el.classList.toggle('act',!!act);if(act){const b=document.createElement('button');b.textContent=act.label;b.onclick=()=>{el.classList.remove('on','act');act.run()};el.appendChild(b)}el.classList.add('on');clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove('on','act'),act?5000:3200)}
 function sheet(title,body,cls=''){
   $('#scrim').innerHTML=`<div class="sheet ${cls}" role="dialog" aria-modal="true"><div class="sheet-h"><h2>${esc(title)}</h2><button class="icon-btn" data-a="close" aria-label="Close">${ic('x')}</button></div><div class="sheet-b">${body}</div></div>`;
   $('#scrim').classList.add('on');
@@ -579,13 +634,49 @@ A.go=el=>go(el.dataset.v,el.dataset.id);
 const sampleBanner=()=>hasSample()?`<div class="banner"><span>${t('You are exploring Mnemo with sample data.')}</span><button class="btn sm" data-a="li-import">${t('Import LinkedIn')}</button><button class="btn sm" data-a="clear-sample">${t('Start fresh')}</button></div>`:'';
 A['clear-sample']=()=>{if(confirm(t('Remove all sample people, deals and connections?'))){clearSample();LIM=null;closeSheet();go('people')}};
 
+// ─── Staying in touch: cadence, birthdays, the years you were in touch, groups ───
+const CADENCES=[[0,'Never'],[14,'Every 2 weeks'],[30,'Every month'],[90,'Every quarter'],[180,'Every 6 months']];
+const cadenceName=n=>t((CADENCES.find(x=>x[0]===+n)||CADENCES[0])[1]);
+const nowLocal=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
+const isoDay=s=>/^\d{4}-\d\d-\d\d/.test(String(s||''))?String(s).slice(0,10):'';
+const dayDiff=(a,b)=>Math.round((Date.parse(a)-Date.parse(b))/864e5);
+// Days until the next reconnect is due (negative = overdue); null when no cadence is set.
+function dueIn(c){
+  if(!+c.cadence)return null;
+  const last=isoDay(lastTouch(c));if(!last)return 0;
+  const d=new Date(last+'T00:00:00Z');d.setUTCDate(d.getUTCDate()+(+c.cadence));
+  return dayDiff(d.toISOString().slice(0,10),todayISO());
+}
+const dueText=d=>d<0?t('Overdue by {n} days',{n:-d}):d===0?t('Due today'):t('Due in {n} days',{n:d});
+function nextBirthday(c){
+  const m=String(c.birthday||'').match(/^\d{4}-(\d\d)-(\d\d)$/);if(!m)return null;
+  const today=todayISO(),y=+today.slice(0,4);
+  for(const yy of[y,y+1]){const d=new Date(Date.UTC(yy,+m[1]-1,+m[2])).toISOString().slice(0,10);const n=dayDiff(d,today);if(n>=0)return n}
+  return null;
+}
+const bdayLabel=s=>{const d=new Date(isoDay(s)+'T00:00:00Z');return isNaN(d)?'':d.toLocaleDateString(locale(),{day:'numeric',month:'long',timeZone:'UTC'})};
+// The years a person was part of your life: when you met, and every conversation since.
+function yearsOf(c){const y=new Set;const m=isoDay(c.metOn);if(m)y.add(m.slice(0,4));for(const e of events(c)){const d=isoDay(e.date);if(d)y.add(d.slice(0,4))}return y}
+const allYears=()=>[...new Set(S.clients.flatMap(c=>[...yearsOf(c)]))].sort().reverse();
+const groupsAll=()=>{const m=new Map;for(const c of S.clients){const g=String(c.group||'').trim();if(g)m.set(g,(m.get(g)||0)+1)}return[...m].sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0]))};
+const inYear=c=>!S.year||yearsOf(c).has(S.year);
+const CHANNELS=['call','email','sms','whatsapp','meeting'];
+const lastBy=(c,k)=>events(c).find(e=>e.kind===k)?.date||null;
+// What needs you today: follow-ups due, reconnects due, birthdays today.
+function remindersDue(){const d=todayISO();let n=0;for(const c of S.clients){for(const x of c.tasks||[])if(!x.done&&x.due&&x.due<=d)n++;const r=dueIn(c);if(r!==null&&r<=0)n++;if(nextBirthday(c)===0)n++}return n}
+A.qlog=el=>{const c=person(el.dataset.id),k=el.dataset.k;if(!c||!KINDS[k])return;const it={id:uid(),title:t(KINDS[k]),date:nowLocal(),src:k,tr:'',sum:''};c.ints.push(it);save();render();
+  toast(t('{k} logged',{k:t(KINDS[k])}),{label:t('Undo'),run:()=>{c.ints=c.ints.filter(x=>x!==it);save();render()}})};
+A['due-preset']=el=>{const d=new Date();d.setDate(d.getDate()+(+el.dataset.d));const i=$('#task-due');if(i)i.value=new Date(d-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);$('#task-in')?.focus()};
 // ═══ Today ═══════════════════════════════════════════════════════════════
 const dueChip=d=>{if(!d)return'';const n=Math.round((new Date(d)-new Date(todayISO()))/864e5);return`<span class="chip ${n<0?'red':n===0?'orange':''}">${n<0?t('Overdue'):n===0?t('Today'):fmtDate(d)}</span>`};
 const taskRow=(c,x)=>`<div class="hov"><button class="check ${x.done?'on':''}" data-a="task-toggle" data-id="${c.id}" data-t="${x.id}" aria-label="${t('Done')}">${ic('check',13)}</button><button class="row-main" data-a="go" data-v="people" data-id="${c.id}" style="text-align:start"><b>${esc(x.title)}</b><span>${esc(fn(c))}${c.company?' · '+esc(c.company):''}</span></button>${dueChip(x.due)}</div>`;
 V.today=()=>{
   const h=new Date().getHours(),greet=h<12?'Good morning.':h<18?'Good afternoon.':'Good evening.';
   const open=allTasks().filter(o=>!o.x.done).sort((a,b)=>(a.x.due||'9999')<(b.x.due||'9999')?-1:1);
-  const quiet=S.clients.map(c=>({c,d:daysSince(lastTouch(c)),n:events(c).length})).filter(o=>o.c.status!=='inactive'&&o.d!==null&&o.d>=21&&o.d<=240).sort((a,b)=>b.n-a.n||a.d-b.d).slice(0,4);
+  const due=S.clients.map(c=>({c,due:dueIn(c)})).filter(o=>o.due!==null&&o.due<=3).sort((a,b)=>a.due-b.due);
+  const quiet=S.clients.filter(c=>!+c.cadence&&c.status!=='inactive').map(c=>({c,d:daysSince(lastTouch(c)),n:events(c).length})).filter(o=>o.d!==null&&o.d>=21&&o.d<=240).sort((a,b)=>b.n-a.n||a.d-b.d);
+  const reco=[...due.slice(0,8),...quiet].slice(0,Math.max(5,Math.min(8,due.length)));
+  const bdays=S.clients.map(c=>({c,d:nextBirthday(c)})).filter(o=>o.d!==null&&o.d<=14).sort((a,b)=>a.d-b.d);
   const recent=S.clients.flatMap(c=>events(c).map(e=>({c,e}))).sort((a,b)=>new Date(b.e.date)-new Date(a.e.date)).slice(0,6);
   const st=S.clients.map(strength),month=S.clients.flatMap(events).filter(e=>daysSince(e.date)<=30).length;
   const pipe=S.deals.filter(d=>!['won','lost'].includes(d.stage)).reduce((s,d)=>s+(+d.value||0),0);
@@ -599,19 +690,24 @@ V.today=()=>{
     </div>
     <section class="section"><div class="section-h"><h2>${t('Follow-ups')}</h2><span>${open.length||''}</span></div>
       <div class="card rows">${open.length?open.slice(0,7).map(o=>taskRow(o.c,o.x)).join(''):`<div class="empty" style="display:block"><b>${t('All clear.')}</b>${t('Nothing is waiting on you.')}</div>`}</div></section>
-    ${quiet.length?`<section class="section"><div class="section-h"><h2>${t('Going quiet')}</h2><span>${t('Relationships worth a nudge')}</span></div>
-      <div class="card rows">${quiet.map(o=>`<div class="hov">${av(fn(o.c))}<button class="row-main" data-a="go" data-v="people" data-id="${o.c.id}" style="text-align:start"><b>${esc(fn(o.c))}</b><span>${t('Last spoke')} ${rel(lastTouch(o.c))}${o.c.company?' · '+esc(o.c.company):''}</span></button><button class="btn sm" data-a="draft" data-id="${o.c.id}">${ic('spark',14)}${t('Draft a message')}</button></div>`).join('')}</div></section>`:''}
+    ${bdays.length?`<section class="section"><div class="section-h"><h2>${t('Coming up')}</h2></div>
+      <div class="card rows">${bdays.map(o=>`<div class="hov"><span class="tl-ic">${ic('gift',16)}</span><button class="row-main" data-a="go" data-v="people" data-id="${o.c.id}" style="text-align:start"><b>${esc(fn(o.c))}</b><span>${o.d===0?t('Birthday today'):t('Birthday in {n} days',{n:o.d})} · ${esc(bdayLabel(o.c.birthday))}</span></button><button class="btn sm" data-a="draft" data-id="${o.c.id}" data-why="birthday" aria-label="${t('Write a birthday message')}">${ic('spark',14)}<span class="lbl">${t('Write a birthday message')}</span></button></div>`).join('')}</div></section>`:''}
+    ${reco.length?`<section class="section"><div class="section-h"><h2>${t('Reconnect')}</h2><span>${t('Relationships worth a nudge')}</span></div>
+      <div class="card rows">${reco.map(o=>`<div class="hov">${av(fn(o.c))}<button class="row-main" data-a="go" data-v="people" data-id="${o.c.id}" style="text-align:start"><b>${esc(fn(o.c))}</b><span>${o.due!==undefined?`<span style="color:${o.due<0?'var(--red)':'var(--orange)'}">${dueText(o.due)}</span> · ${cadenceName(o.c.cadence)}`:t('Last spoke')+' '+rel(lastTouch(o.c))}${o.c.company?' · '+esc(o.c.company):''}</span></button><button class="btn sm" data-a="draft" data-id="${o.c.id}" aria-label="${t('Draft a message')}">${ic('spark',14)}<span class="lbl">${t('Draft a message')}</span></button><button class="icon-btn" data-a="touched" data-id="${o.c.id}" aria-label="${t('Mark as contacted')}" title="${t('Mark as contacted')}">${ic('check',16)}</button></div>`).join('')}</div></section>`:''}
     <section class="section"><div class="section-h"><h2>${t('Recent memory')}</h2></div>
       <div class="card rows">${recent.length?recent.map(o=>`<button data-a="go" data-v="people" data-id="${o.c.id}"><span class="tl-ic">${ic(o.e.kind,16)}</span><span class="row-main"><b>${esc(o.e.title||t(KINDS[o.e.kind]))}</b><span>${esc(fn(o.c))}${o.e.sum?' — '+esc(o.e.sum):''}</span></span><span class="row-meta">${rel(o.e.date)}</span></button>`).join(''):`<div class="empty" style="display:block"><b>${t('No memories yet.')}</b>${t('Record your first conversation.')}<br><button class="btn primary" data-a="capture">${t('Capture')}</button></div>`}</div></section>
   </div>`;
 };
 
+A.touched=el=>{const c=person(el.dataset.id);if(!c)return;c.ints.push({id:uid(),title:t('Reached out'),date:nowLocal(),src:'note',tr:'',sum:''});save();render();toast(+c.cadence?t('Logged. Next reminder in {n} days.',{n:+c.cadence}):t('Logged.'))};
 // ═══ People ══════════════════════════════════════════════════════════════
 function peopleList(){
   const q=norm(S.q);
   return S.clients.map(c=>({c,s:strength(c),last:lastTouch(c)}))
     .filter(o=>S.filter==='all'||circleOf(o.s)===+S.filter)
-    .filter(o=>!q||norm([fn(o.c),o.c.company,o.c.role,o.c.project,(o.c.tags||[]).join(' ')].join(' ')).includes(q))
+    .filter(o=>!S.chip||(S.chip==='#due'?(dueIn(o.c)!==null&&dueIn(o.c)<=0):String(o.c.group||'').trim()===S.chip))
+    .filter(o=>inYear(o.c))
+    .filter(o=>!q||norm([fn(o.c),o.c.company,o.c.role,o.c.project,o.c.group,o.c.city,o.c.location,(o.c.tags||[]).join(' ')].join(' ')).includes(q))
     .sort((a,b)=>b.s-a.s||fn(a.c).localeCompare(fn(b.c)));
 }
 const plistRows=list=>list.length?list.map(o=>`<button class="prow ${String(S.sel)===String(o.c.id)?'on':''}" data-a="go" data-v="people" data-id="${o.c.id}">${av(fn(o.c))}<span class="row-main"><b>${esc(fn(o.c))}</b><span>${esc([o.c.role,o.c.company].filter(Boolean).join(' · ')||'—')}</span></span>${ring(o.s,26)}</button>`).join(''):`<div class="empty">${t('No one found.')}</div>`;
@@ -622,12 +718,21 @@ V.people=()=>{
   return`<div class="people ${c?'has-sel':''}">
     <aside class="plist"><div class="plist-top">
       <h1>${t('People')}<button class="icon-btn" data-a="new-person" aria-label="${t('New person')}">${ic('plus')}</button></h1>
-      <input class="input" style="border-radius:99px;background:var(--fill2);border-color:transparent" placeholder="${t('Search')}" value="${esc(S.q)}" data-i="pq">
+      <input class="input" style="border-radius:99px;background:var(--fill2);border-color:transparent" placeholder="${t('Search')}" aria-label="${t('Search')}" value="${esc(S.q)}" data-i="pq">
       <div class="seg" style="align-self:flex-start">${[['all','All'],['1','Inner'],['2','Active'],['3','Outer']].map(([k,l])=>`<button class="${S.filter===k?'on':''}" data-a="pfilter" data-f="${k}">${t(l)}</button>`).join('')}</div>
+      ${peopleChips()}
     </div><div class="plist-scroll" id="plist">${plistRows(list)}</div></aside>
     <section class="pdetail">${c?personDetail(c):`<div class="empty" style="margin-top:20vh"><b>${t('No one here yet.')}</b>${t('Add the first person you want to remember.')}<br><button class="btn primary" data-a="new-person">${t('New person')}</button></div>`}</section>
   </div>`;
 };
+function peopleChips(){
+  const nd=S.clients.filter(c=>{const d=dueIn(c);return d!==null&&d<=0}).length,gs=groupsAll(),ys=allYears();
+  const chip=(k,label)=>`<button class="chip ${S.chip===k?'accent':''}" data-a="pchip" data-k="${esc(k)}" aria-pressed="${S.chip===k}">${label}</button>`;
+  if(!nd&&!gs.length&&!ys.length)return'';
+  return`<div class="chips">${nd||S.chip==='#due'?chip('#due',`${ic('check',13)}${t('To reconnect')} · ${nd}`):''}${gs.map(([g,n])=>chip(g,`${esc(g)} · ${n}`)).join('')}${ys.length?`<select class="chip" data-c="pyear" aria-label="${t('Year')}" style="border:0;padding-inline-end:6px"><option value="">${t('All years')}</option>${ys.map(y=>`<option ${S.year===y?'selected':''}>${y}</option>`).join('')}</select>`:''}</div>`;
+}
+A.pchip=el=>{S.chip=S.chip===el.dataset.k?'':el.dataset.k;render()};
+document.addEventListener('change',e=>{if(e.target.dataset.c==='pyear'){S.year=e.target.value;render()}});
 I.pq=el=>{S.q=el.value;$('#plist').innerHTML=plistRows(peopleList())};
 A.pfilter=el=>{S.filter=el.dataset.f;render()};
 function around(c){
@@ -683,36 +788,38 @@ function personDetail(c){
   const lkm=linksOf(c),lk=[...lkm].map(([id,e])=>[person(id),e]).filter(x=>x[0]).sort((a,b)=>strength(b[0])-strength(a[0])),others=S.clients.filter(o=>o!==c&&!lkm.has(String(o.id))).sort((a,b)=>fn(a).localeCompare(fn(b))),intro=introducer(c);
   const s=strength(c),ev=events(c),last=ev[0]?.date,ar=around(c),li=liOf(c),tasks=(c.tasks||[]).slice().sort((a,b)=>a.done-b.done||((a.due||'9')<(b.due||'9')?-1:1));
   const url=safeUrl(c.linkedin||li?.url),phone=String(c.phone||'').replace(/[^\d+]/g,'');
-  const kv=[['Project',c.project],['Target',c.target],['Next step',c.followon],['Where we met',c.location],['Email',c.email],['Phone',c.phone]].filter(x=>x[1]);
-  const pill=(p,label)=>`<button class="chip" style="height:30px;padding-inline:4px 12px" data-a="go" data-v="people" data-id="${p.id}">${av(fn(p),'sm')}${esc(fn(p))}${label?` <span style="color:var(--text3)">· ${label}</span>`:''}</button>`;
+  const kv=[['Project',c.project],['Target',c.target],['Next step',c.followon],['Where we met',[c.location,isoDay(c.metOn)?fmtDate(c.metOn):''].filter(Boolean).join(' · ')],['City',c.city],['Birthday',c.birthday?bdayLabel(c.birthday):''],['Email',c.email],['Phone',c.phone]].filter(x=>x[1]);
+  const pill=(p,label)=>`<button class="chip" style="height:30px;padding-inline:4px 12px" data-a="go" data-v="people" data-id="${p.id}">${av(fn(p),'sm')}${esc(fn(p))}${label?` <span style="color:var(--text2)">· ${label}</span>`:''}</button>`;
   return`<div class="pd enter">
     <div><button class="btn ghost back" data-a="go" data-v="people">${ic('back',16)}${t('People')}</button>
-    <div class="pd-head">${av(fn(c),'lg')}<div style="min-width:0;flex:1"><h1>${esc(fn(c))}</h1><p>${esc([c.role,c.company].filter(Boolean).join(' · '))}</p></div><button class="icon-btn" data-a="edit-person" data-id="${c.id}" aria-label="${t('Edit')}">${ic('edit')}</button></div>
+    <div class="pd-head">${av(fn(c),'lg')}<div style="min-width:0;flex:1"><h1>${esc(fn(c))}</h1><p>${esc([c.role,c.company].filter(Boolean).join(' · '))}</p>${c.group?`<button class="chip accent" style="margin-top:10px" data-a="pgroup" data-k="${esc(c.group)}">${esc(c.group)}</button>`:''}</div><button class="icon-btn" data-a="edit-person" data-id="${c.id}" aria-label="${t('Edit')}">${ic('edit')}</button></div>
     <div class="pd-actions"><button class="btn primary" data-a="capture" data-tab="voice" data-id="${c.id}">${ic('mic',16)}${t('Record')}</button><button class="btn" data-a="capture" data-tab="note" data-id="${c.id}">${ic('note',16)}${t('Add note')}</button>
       ${c.email?`<a class="btn" href="mailto:${esc(c.email)}">${ic('email',16)}${t('Email')}</a>`:''}${phone?`<a class="btn" href="https://wa.me/${esc(phone.replace('+',''))}" target="_blank" rel="noopener">${ic('whatsapp',16)}WhatsApp</a>`:''}${url?`<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">${ic('in',16)}LinkedIn</a>`:''}</div></div>
-    <button class="card strength" data-a="see-map" data-id="${c.id}" style="width:100%;text-align:start">${ring(s,58,true)}<span class="row-main"><b>${t(CIRCLES[circleOf(s)])}</b><span>${last?t('Last spoke')+' '+rel(last)+' · ':''}${ev.length} ${t('conversations')}${li?.on?' · '+t('Connected on LinkedIn since')+' '+new Date(li.on).getFullYear():''}</span></span><span class="btn ghost sm map-link">${t('See on the map')}</span></button>
+    <button class="card strength" data-a="see-map" data-id="${c.id}" style="width:100%;text-align:start">${ring(s,58,true)}<span class="row-main"><b>${t(CIRCLES[circleOf(s)])}</b><span>${last?t('Last spoke')+' '+rel(last)+' · ':''}${ev.length} ${t('conversations')}${+c.cadence?' · '+cadenceName(c.cadence)+', '+dueText(dueIn(c)).toLowerCase():''}${li?.on?' · '+t('Connected on LinkedIn since')+' '+new Date(li.on).getFullYear():''}</span></span><span class="btn ghost sm map-link">${t('See on the map')}</span></button>
+    <div class="touch" role="group" aria-label="${t('Log a contact')}">${CHANNELS.map(k=>{const d=lastBy(c,k);return`<button data-a="qlog" data-id="${c.id}" data-k="${k}" title="${t('Log a {k} now',{k:t(KINDS[k]).toLowerCase()})}">${ic(k,20)}<b>${t(KINDS[k])}</b><span>${d?rel(d):t('Never')}</span></button>`}).join('')}</div>
     <section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Brief')}</h2><button class="btn ghost sm" data-a="brief" data-id="${c.id}">${ic('spark',14)}${c.brief?t('Refresh'):t('Brief me')}</button></div>
       <div class="card answer" id="brief" style="margin:0">${c.brief?esc(c.brief.text):`<span class="muted">${c.context?esc(c.context):t('One tap before a meeting: who they are, what matters to them, where you left off.')}</span>`}</div></section>
     ${kv.length?`<section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('About')}</h2></div><div class="card kv">${kv.map((x,i)=>`<div class="${kv.length%2&&i===kv.length-1?'full':''}"><small>${t(x[0])}</small><p>${esc(x[1])}</p></div>`).join('')}</div></section>`:''}
     <section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Follow-ups')}</h2></div><div class="card rows">
       ${tasks.map(x=>`<div><button class="check ${x.done?'on':''}" data-a="task-toggle" data-id="${c.id}" data-t="${x.id}" aria-label="${t('Done')}">${ic('check',13)}</button><span class="row-main"><b style="${x.done?'color:var(--text3);text-decoration:line-through':''}">${esc(x.title)}</b></span>${x.done?'':dueChip(x.due)}<button class="icon-btn" style="width:28px;height:28px" data-a="task-del" data-id="${c.id}" data-t="${x.id}" aria-label="${t('Delete')}">${ic('x',14)}</button></div>`).join('')}
-      <div class="addrow" style="padding-block:6px">${ic('plus',16)}<input id="task-in" placeholder="${t('Add a follow-up')}" data-enter="task-add" data-id="${c.id}"><input type="date" id="task-due" aria-label="${t('Due date')}"></div></div></section>
+      <div class="addrow" style="padding-block:6px">${ic('plus',16)}<input id="task-in" aria-label="${t('Add a follow-up')}" placeholder="${t('Add a follow-up')}" data-enter="task-add" data-id="${c.id}"><input type="date" id="task-due" aria-label="${t('Due date')}"></div><div class="presets">${[[1,'Tomorrow'],[7,'Next week'],[30,'In a month']].map(([d,l])=>`<button data-a="due-preset" data-d="${d}">${t(l)}</button>`).join('')}</div></div></section>
     <section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Memory')}</h2><span>${ev.length||''}</span></div><div class="card tl">
       ${ev.length?ev.map(e=>{const long=e.text&&e.text!==e.sum;return`<div class="tl-item"><span class="tl-ic">${ic(e.kind,16)}</span><div class="tl-body"><b>${esc(e.title||t(KINDS[e.kind]))}</b><time>${fmtDate(e.date)}${e.dur?' · '+esc(e.dur):''}</time>${e.sum?`<p>${esc(e.sum)}</p>`:long?`<p class="clamp">${esc(e.text)}</p>`:''}${long?`<p hidden style="color:var(--text);margin-top:10px">${esc(e.text)}</p><button class="tl-more" data-a="tl-more">${t('Show full notes')}</button> <button class="tl-more" style="color:var(--text3);margin-inline-start:12px" data-a="ev-del" data-id="${c.id}" data-e="${e.id}" data-src="${e.src}" hidden>${t('Delete')}</button>`:`<button class="tl-more" style="color:var(--text3)" data-a="ev-del" data-id="${c.id}" data-e="${e.id}" data-src="${e.src}">${t('Delete')}</button>`}</div></div>`}).join(''):`<div class="empty"><b>${t('No memories yet.')}</b>${t('Record a voice note right after you meet — Mnemo does the rest.')}</div>`}</div></section>
     <section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Circle')}</h2><span>${lk.length?t('{n} connections in your network',{n:lk.length}):''}</span></div>
       <div class="card rows">${lk.map(([o,e])=>{const n=inCommon(c,o);return`<div class="hov">${av(fn(o))}<button class="row-main" data-a="go" data-v="people" data-id="${o.id}" style="text-align:start"><b>${esc(fn(o))}</b><span>${esc(linkLabel(c,o,e))}${n?' · '+t('{n} in common',{n}):''}</span></button>${ring(strength(o),26)}${e.src.has('intro')&&e.src.size===1?'':`<button class="icon-btn" style="width:28px;height:28px" data-a="unlink" data-id="${c.id}" data-o="${o.id}" aria-label="${t('Remove link')}">${ic('x',14)}</button>`}</div>`}).join('')}
-      ${others.length?`<div class="addrow" style="flex-wrap:wrap;padding-block:6px">${ic('plus',16)}<select class="select" id="link-pick" style="flex:1 1 200px;width:auto;border-color:transparent;background:none;padding-inline:0" aria-label="${t('Link someone')}"><option value="">${t('Link someone they know')}</option>${others.map(o=>`<option value="${o.id}">${esc(fn(o))}${o.company?' — '+esc(o.company):''}</option>`).join('')}</select><input id="link-why" placeholder="${t('How they know each other (optional)')}" data-enter="link-add" data-id="${c.id}" style="flex:1 1 200px"><button class="btn sm" data-a="link-add" data-id="${c.id}">${t('Link')}</button></div>`:''}</div>
+      ${others.length?`<div class="addrow" style="flex-wrap:wrap;padding-block:6px">${ic('plus',16)}<select class="select" id="link-pick" style="flex:1 1 200px;width:auto;border-color:transparent;background:none;padding-inline:0" aria-label="${t('Link someone')}"><option value="">${t('Link someone they know')}</option>${others.map(o=>`<option value="${o.id}">${esc(fn(o))}${o.company?' — '+esc(o.company):''}</option>`).join('')}</select><input id="link-why" aria-label="${t('How they know each other (optional)')}" placeholder="${t('How they know each other (optional)')}" data-enter="link-add" data-id="${c.id}" style="flex:1 1 200px"><button class="btn sm" data-a="link-add" data-id="${c.id}">${t('Link')}</button></div>`:''}</div>
       ${intro&&strength(c)<60?`<div class="path">${t('Best way in')}: <b>${t('You')}</b>${ic('arrow',14)}<button data-a="go" data-v="people" data-id="${intro.o.id}" style="color:var(--accent);font-weight:600">${esc(fn(intro.o))}</button>${ic('arrow',14)}<b>${esc(first(c))}</b></div>`:''}
       ${ar.peers.length||ar.li.length?`<div class="card" style="padding:16px 20px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:12px">${ar.peers.map(p=>pill(p,t('same company'))).join('')}
       ${ar.li.length?`<button class="chip accent" style="height:30px" data-a="see-map" data-id="${c.id}">${ic('network',14)}${ar.li.length} ${t('more people you know at')} ${esc(c.company)}</button>`:''}</div>`:''}</section>
     <section class="section" style="margin-top:36px"><div class="section-h"><h2>${t('Ask')}</h2></div>
-      <div class="ask"><input id="ask-in" placeholder="${t('What did we agree on? What does {name} care about?',{name:esc(first(c))})}" data-enter="ask" data-id="${c.id}"><button class="btn primary sm" data-a="ask" data-id="${c.id}">${t('Ask')}</button></div><div id="ask-out"></div></section>
+      <div class="ask"><input id="ask-in" aria-label="${t('Ask')}" placeholder="${t('What did we agree on? What does {name} care about?',{name:esc(first(c))})}" data-enter="ask" data-id="${c.id}"><button class="btn primary sm" data-a="ask" data-id="${c.id}">${t('Ask')}</button></div><div id="ask-out"></div></section>
   </div>`;
 }
 A['link-add']=el=>{const c=person(el.dataset.id),id=$('#link-pick')?.value;if(!c)return;if(!id){toast(t('Choose a person'));return}linkPeople(c,id,$('#link-why').value.trim());save();render()};
 A['unlink']=el=>{const c=person(el.dataset.id),o=person(el.dataset.o);if(!c||!o)return;
   for(const[x,y]of[[c,o],[o,c]]){x.links=(x.links||[]).filter(l=>String(l.id)!==String(y.id));x.unlinks=[...new Set([...(x.unlinks||[]),String(y.id)])]}
   save();render()};
+A.pgroup=el=>{S.chip=el.dataset.k;S.sel=null;go('people')};
 A['see-map']=el=>{NET.sel='c'+el.dataset.id;NET.grp=null;go('network')};
 A['tl-more']=el=>{const p=el.previousElementSibling,d=el.nextElementSibling;p.hidden=!p.hidden;if(d)d.hidden=p.hidden;el.textContent=p.hidden?t('Show full notes'):t('Hide')};
 A['ev-del']=el=>{const c=person(el.dataset.id);if(!c||!confirm(t('Delete this memory?')))return;c[el.dataset.src]=(c[el.dataset.src]||[]).filter(x=>String(x.id)!==el.dataset.e);save();render()};
@@ -724,8 +831,11 @@ function personForm(c){
   const f=(k,l,x='')=>`<label class="field"><span>${t(l)}</span><input class="input" name="${k}" value="${esc(c?.[k]??'')}" ${x}></label>`;
   const others=S.clients.filter(x=>x.id!==c?.id).sort((a,b)=>fn(a).localeCompare(fn(b)));
   return`<form id="pf" class="sheet-b" style="padding:0" onsubmit="return false"><div class="grid2">${f('firstname','First name','autofocus')}${f('name','Last name')}</div><div class="grid2">${f('role','Role')}${f('company','Company')}</div><div class="grid2">${f('email','Email','type="email"')}${f('phone','Phone','type="tel"')}</div>${f('linkedin','LinkedIn','placeholder="linkedin.com/in/…"')}
-    <h5>${t('What matters')}</h5>${f('project','Project')}${f('target','Target')}${f('followon','Next step')}${f('location','Where we met')}
+    <label class="field"><span>${t('Group')}</span><input class="input" name="group" value="${esc(c?.group||'')}" list="groups-dl" placeholder="${t('e.g. Atlas deal, Riyadh investors')}" autocomplete="off"><datalist id="groups-dl">${groupsAll().map(([g])=>`<option value="${esc(g)}">`).join('')}</datalist></label>
+    <h5>${t('What matters')}</h5>${f('project','Project')}${f('target','Target')}${f('followon','Next step')}
+    <h5>${t('Where and when')}</h5><div class="grid2">${f('location','Where we met')}${f('metOn','When we met','type="date"')}</div>${f('city','City','placeholder="Dubai, Riyadh, Paris…"')}
     <label class="field"><span>${t('Context')}</span><textarea class="textarea" name="context" style="min-height:70px">${esc(c?.context||'')}</textarea></label>
+    <h5>${t('Staying in touch')}</h5><div class="grid2"><label class="field"><span>${t('Keep in touch')}</span><select class="select" name="cadence">${CADENCES.map(([n,l])=>`<option value="${n}" ${+(c?.cadence||0)===n?'selected':''}>${t(l)}</option>`).join('')}</select></label>${f('birthday','Birthday','type="date"')}</div>
     <label class="field"><span>${t('Introduced by')}</span><select class="select" name="introBy"><option value="">—</option>${others.map(x=>`<option value="${x.id}" ${String(c?.introBy)===String(x.id)?'selected':''}>${esc(fn(x))}</option>`).join('')}</select></label>
     <div class="sheet-f">${c?.id?`<button class="btn danger" type="button" data-a="del-person" data-id="${c.id}">${t('Delete')}</button>`:''}<button class="btn" type="button" data-a="close">${t('Cancel')}</button><button class="btn primary" type="button" data-a="save-person" data-id="${c?.id||''}">${t('Save')}</button></div></form>`;
 }
@@ -737,6 +847,9 @@ A['save-person']=el=>{
   if(!d.firstname&&!d.name){toast(t('A name is required.'));return}
   if(d.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(d.email)){toast(t('That email does not look right.'));return}
   d.introBy=d.introBy?(person(d.introBy)?.id??''):'';
+  d.cadence=CADENCES.some(x=>x[0]===+d.cadence)?+d.cadence:0;
+  for(const k of['metOn','birthday'])d[k]=/^\d{4}-\d\d-\d\d$/.test(d[k]||'')?d[k]:'';
+  d.group=String(d.group||'').replace(/\s+/g,' ').slice(0,60);
   let c=el.dataset.id&&person(el.dataset.id);
   if(c)Object.assign(c,d);else{c={id:uid(),status:'prospect',category:'',tags:[],ints:[],tasks:[],createdAt:new Date().toISOString(),...(DRAFT||{}),...d};S.clients.unshift(c)}
   DRAFT=null;save();closeSheet();go('people',c.id);
@@ -765,8 +878,9 @@ A.draft=async el=>{
   const c=person(el.dataset.id);
   sheet(t('Message for {name}',{name:first(c)}),'<div class="rec"><div class="spin"></div></div>');
   let text;
-  try{text=await ai(`Write a short, warm, specific check-in message from me to ${fn(c)} to revive the relationship. 3 sentences max, no subject line, no placeholders, reference one concrete thing from our history, end with a light concrete proposal. Suitable for WhatsApp. Write in ${aiLang()}.\n\n${dossier(c,5000)}`,{max:300,fast:true})}
-  catch(e){text=t('Hi {name}, it has been a while — I was thinking about our last conversation. Do you have 20 minutes next week to catch up?',{name:first(c)})}
+  const bday=el.dataset.why==='birthday';
+  try{text=await ai(bday?`Write a short, warm birthday message from me to ${fn(c)}. 2 sentences max, no placeholders, personal but not overfamiliar, optionally a light nod to one concrete thing from our history. Suitable for WhatsApp. Write in ${aiLang()}.\n\n${dossier(c,3000)}`:`Write a short, warm, specific check-in message from me to ${fn(c)} to revive the relationship. 3 sentences max, no subject line, no placeholders, reference one concrete thing from our history, end with a light concrete proposal. Suitable for WhatsApp. Write in ${aiLang()}.\n\n${dossier(c,5000)}`,{max:300,fast:true})}
+  catch(e){text=bday?t('Happy birthday {name}! Wishing you a wonderful year ahead.',{name:first(c)}):t('Hi {name}, it has been a while — I was thinking about our last conversation. Do you have 20 minutes next week to catch up?',{name:first(c)})}
   if(!$('#scrim').classList.contains('on'))return;
   const phone=String(c.phone||'').replace(/[^\d]/g,'');
   sheet(t('Message for {name}',{name:first(c)}),`<textarea class="textarea" id="draft-t" style="min-height:150px">${esc(text)}</textarea><div class="sheet-f">${phone?`<button class="btn" data-a="draft-wa" data-p="${phone}">${ic('whatsapp',16)}WhatsApp</button>`:''}${c.email?`<button class="btn" data-a="draft-mail" data-m="${esc(c.email)}">${ic('email',16)}${t('Email')}</button>`:''}<button class="btn primary" data-a="draft-copy">${t('Copy')}</button></div>`);
@@ -783,19 +897,20 @@ A.capture=el=>{recAbort();if(CAP.state==='error'&&REC.blobs.length&&(el.dataset.
 A['cap-tab']=el=>{if(CAP.state==='live')return;CAP.tab=el.dataset.tab;CAP.state='idle';capture()};
 const mmss=s=>String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');
 function capture(){
-  const seg=`<div class="seg" style="align-self:center">${[['voice','Voice'],['note','Note'],['person','Person']].map(([k,l])=>`<button class="${CAP.tab===k?'on':''}" data-a="cap-tab" data-tab="${k}">${t(l)}</button>`).join('')}</div>`;
+  const seg=`<div class="seg" style="align-self:center">${[['voice','Voice'],['note','Note'],['card','Card'],['person','Person']].map(([k,l])=>`<button class="${CAP.tab===k?'on':''}" data-a="cap-tab" data-tab="${k}">${t(l)}</button>`).join('')}</div>`;
   let body='';
   if(CAP.tab==='person'){DRAFT=null;body=personForm(null)}
+  else if(CAP.tab==='card'&&CAP.state==='idle')body=`<label class="drop" id="card-drop">${ic('card',26).replace('<svg','<svg style="margin:0 auto 8px"')}<b>${t('Take a photo of a business card')}</b><br><span class="hint">${t('Mnemo reads it and fills in the profile.')}</span><input type="file" accept="image/*" capture="environment" hidden data-c="card-file"></label><label class="btn" style="align-self:center">${t('Choose a photo')}<input type="file" accept="image/*" hidden data-c="card-file"></label>`;
   else if(CAP.tab==='note'){
     const now=new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,16);
-    body=`${personSelect()}<div class="grid2"><label class="field"><span>${t('Type')}</span><select class="select" id="n-kind">${['note','meeting','call','email','whatsapp'].map(k=>`<option value="${k}">${t(KINDS[k])}</option>`).join('')}</select></label><label class="field"><span>${t('When')}</span><input class="input" type="datetime-local" id="n-date" value="${now}"></label></div>
+    body=`${personSelect()}<div class="grid2"><label class="field"><span>${t('Type')}</span><select class="select" id="n-kind">${['note','meeting','call','email','sms','whatsapp'].map(k=>`<option value="${k}">${t(KINDS[k])}</option>`).join('')}</select></label><label class="field"><span>${t('When')}</span><input class="input" type="datetime-local" id="n-date" value="${now}"></label></div>
       <label class="field"><span>${t('Title')}</span><input class="input" id="n-title" placeholder="${t('Lunch at DIFC')}"></label>
       <label class="field"><span>${t('Notes')}</span><textarea class="textarea" id="n-text" placeholder="${t('What was said, what they care about, what you promised…')}"></textarea></label>
       <div class="sheet-f"><button class="btn" data-a="close">${t('Cancel')}</button><button class="btn primary" data-a="note-save">${t('Save')}</button></div>`;
   }else if(CAP.state==='idle')body=`${personSelect()}<div class="rec"><button class="rec-btn" data-a="rec-start" aria-label="${t('Record')}"><i></i></button><p class="hint" style="text-align:center;max-width:340px">${t('Tap to record. Mnemo transcribes, summarises, and files it under the right person.')}</p></div>`;
   else if(CAP.state==='live')body=`<div class="rec"><div class="rec-time" id="rec-time">${mmss(REC.secs)}</div><button class="rec-btn live" data-a="rec-stop" aria-label="${t('Stop')}"><i></i></button><p class="hint">${t('Listening… tap to finish.')}</p></div>`;
   else if(CAP.state==='busy')body=`<div class="rec" style="padding:40px 0"><div class="spin"></div><p class="hint">${esc(CAP.msg)}</p></div>`;
-  else if(CAP.state==='error')body=`<div class="rec"><p style="text-align:center">${esc(CAP.msg)}</p><div class="sheet-f">${CAP.code?`<button class="btn" data-a="settings">${t('Settings')}</button>`:''}<button class="btn" data-a="cap-tab" data-tab="note">${t('Type it instead')}</button>${REC.blobs.length?`<button class="btn primary" data-a="rec-retry">${t('Try again')}</button>`:''}</div></div>`;
+  else if(CAP.state==='error')body=`<div class="rec"><p style="text-align:center">${esc(CAP.msg)}</p><div class="sheet-f">${CAP.code?`<button class="btn" data-a="settings">${t('Settings')}</button>`:''}${CAP.tab==='card'?`<button class="btn" data-a="cap-tab" data-tab="person">${t('Add manually')}</button><button class="btn primary" data-a="cap-tab" data-tab="card">${t('Try another photo')}</button>`:`<button class="btn" data-a="cap-tab" data-tab="note">${t('Type it instead')}</button>`}${CAP.tab==='voice'&&REC.blobs.length?`<button class="btn primary" data-a="rec-retry">${t('Try again')}</button>`:''}</div></div>`;
   else{const r=CAP.review;body=`${personSelect()}<label class="field"><span>${t('Title')}</span><input class="input" id="r-title" value="${esc(r.title)}"></label><label class="field"><span>${t('Summary')}</span><textarea class="textarea" id="r-sum" style="min-height:76px">${esc(r.sum)}</textarea></label>
       ${r.people.length?`<div><h5 style="margin-bottom:8px">${t('Link to the people mentioned')}</h5>${r.people.map((x,i)=>`<label style="display:flex;gap:10px;align-items:center;padding:6px 0;font-size:14.5px"><input type="checkbox" checked data-rp="${i}" style="width:17px;height:17px;accent-color:var(--accent)">${esc(fn(x))}${x.company?` <span class="muted">· ${esc(x.company)}</span>`:''}</label>`).join('')}</div>`:''}${r.tasks.length?`<div><h5 style="margin-bottom:8px">${t('Follow-ups')}</h5>${r.tasks.map((x,i)=>`<label style="display:flex;gap:10px;align-items:center;padding:6px 0;font-size:14.5px"><input type="checkbox" checked data-rt="${i}" style="width:17px;height:17px;accent-color:var(--accent)">${esc(x.title)}${x.due?` <span class="muted">· ${fmtDate(x.due)}</span>`:''}</label>`).join('')}</div>`:''}
       <label class="field"><span>${t('Transcript')}</span><textarea class="textarea" id="r-tr" style="min-height:120px">${esc(r.tr)}</textarea></label>
@@ -824,6 +939,28 @@ function recHalt(){clearInterval(REC.tick);clearInterval(REC.rot);REC.stream?.ge
 function recAbort(){if(CAP.state==='live'){try{REC.mr.onstop=null;REC.mr.stop()}catch(e){}recHalt();CAP.state='idle'}}
 A['rec-stop']=async()=>{const mr=REC.mr;clearInterval(REC.tick);clearInterval(REC.rot);mr.stop();await Promise.all([...REC.pending,mr.done]);recHalt();recProcess()};
 A['rec-retry']=()=>recProcess();
+async function cardFile(file){
+  if(!file)return;
+  CAP.tab='card';CAP.code=false;CAP.state='busy';CAP.msg=t('Reading the card…');capture();
+  let data;
+  try{
+    const bmp=await createImageBitmap(file),k=Math.min(1,1600/Math.max(bmp.width,bmp.height)),cv=document.createElement('canvas');
+    cv.width=Math.round(bmp.width*k);cv.height=Math.round(bmp.height*k);cv.getContext('2d').drawImage(bmp,0,0,cv.width,cv.height);
+    data=cv.toDataURL('image/jpeg',.85).split(',')[1];
+  }catch(e){CAP.state='error';CAP.msg=t('This image could not be read. Try a JPEG or PNG photo.');return capture()}
+  let r=null;
+  try{r=parseJSON(await ai([{type:'image',source:{type:'base64',media_type:'image/jpeg',data}},{type:'text',text:'This is a photo of a business card. Return ONLY JSON: {"firstname":"","name":"","company":"","role":"","email":"","phone":"","linkedin":"","city":""}. Use empty strings for anything not printed on the card. If a name appears in two scripts, use the Latin one. Keep phone numbers with their country code. If the image is not a business card, return {"error":"not a card"}.'}],{max:400}))}
+  catch(e){console.warn(e);CAP.state='error';CAP.code=needCode(e);CAP.msg=CAP.code?t('Enter your access code in Settings.'):t('AI is not reachable. Check ANTHROPIC_API_KEY on Netlify, or add your own key in Settings.');return capture()}
+  if(!$('#scrim').classList.contains('on'))return;
+  if(!r||r.error||!(r.firstname||r.name)){CAP.state='error';CAP.msg=t('No contact details found on this image.');return capture()}
+  const x={};for(const k of['firstname','name','company','role','email','phone','linkedin','city'])x[k]=String(r[k]||'').trim().slice(0,200);
+  if(x.email&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(x.email))x.email='';
+  CAP.state='idle';
+  const m=S.clients.find(c=>(x.email&&String(c.email||'').toLowerCase()===x.email.toLowerCase())||norm(fn(c))===norm(fn(x)));
+  if(m){let n=0;for(const k in x)if(x[k]&&!m[k]){m[k]=x[k];n++}save();closeSheet();toast(n?t('{name} is already in Mnemo — details added from the card.',{name:fn(m)}):t('{name} is already in Mnemo.',{name:fn(m)}));go('people',m.id);return}
+  x.context=t('Business card scanned on {d}',{d:fmtDate(todayISO())});x.metOn=todayISO();DRAFT=null;
+  sheet(t('New person'),personForm(x));
+}
 async function transcribe(blob){
   const audioBase64=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(blob)});
   const res=await fetch(API+'/.netlify/functions/whisper',{method:'POST',headers:{'Content-Type':'application/json',...(S.cfg.code?{'X-Mnemo-Code':S.cfg.code}:{})},body:JSON.stringify({audioBase64,mimeType:blob.type.split(';')[0]||'audio/webm',language:S.cfg.lang})});
@@ -863,12 +1000,12 @@ A['note-save']=()=>{
 
 // ═══ Search & ask (⌘K) ═══════════════════════════════════════════════════
 const PAL={open:false,items:[],idx:0};
-A.palette=()=>{PAL.open=true;$('#scrim').innerHTML=`<div class="sheet pal"><div class="pal-in">${ic('search',20)}<input id="pal-q" placeholder="${t('Search people and memories, or ask a question')}" data-i="pal" autocomplete="off"><button class="icon-btn" data-a="close" aria-label="Close">${ic('x')}</button></div><div class="pal-list" id="pal-list"></div></div>`;$('#scrim').classList.add('on');I.pal($('#pal-q'));$('#pal-q').focus()};
+A.palette=()=>{PAL.open=true;$('#scrim').innerHTML=`<div class="sheet pal"><div class="pal-in">${ic('search',20)}<input id="pal-q" aria-label="${t('Search people and memories, or ask a question')}" placeholder="${t('Search people and memories, or ask a question')}" data-i="pal" autocomplete="off"><button class="icon-btn" data-a="close" aria-label="Close">${ic('x')}</button></div><div class="pal-list" id="pal-list"></div></div>`;$('#scrim').classList.add('on');I.pal($('#pal-q'));$('#pal-q').focus()};
 const mark=(text,q)=>{const s=esc(text),w=q.trim().split(/\s+/).filter(x=>x.length>1).map(x=>esc(x).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'));return w.length?s.replace(new RegExp('('+w.join('|')+')','gi'),'<mark>$1</mark>'):s};
 function snippet(text,q){const i=norm(text).indexOf(norm(q).split(/\s+/)[0]);const a=Math.max(0,i-40);return(a>0?'…':'')+text.slice(a,a+140)}
 I.pal=el=>{
   const q=el.value.trim(),nq=norm(q),it=[];
-  const acts=[['New person','plus',()=>A['new-person']()],['Record a voice note','mic',()=>A.capture({dataset:{tab:'voice'}})],['Add a note','note',()=>A.capture({dataset:{tab:'note'}})],['Open the relationship map','network',()=>{closeSheet();go('network')}],['Import LinkedIn connections','in',()=>A['li-import']()],['Import phone contacts','call',()=>A['ab-import']()],['Settings','gear',()=>A.settings()]];
+  const acts=[['New person','plus',()=>A['new-person']()],['Record a voice note','mic',()=>A.capture({dataset:{tab:'voice'}})],['Add a note','note',()=>A.capture({dataset:{tab:'note'}})],['Open the relationship map','network',()=>{closeSheet();go('network')}],['Import LinkedIn connections','in',()=>A['li-import']()],['Import phone contacts','call',()=>A['ab-import']()],['Scan a business card','card',()=>A.capture({dataset:{tab:'card'}})],['Open the world map','map',()=>{closeSheet();go('map')}],['Settings','gear',()=>A.settings()]];
   if(!nq){
     S.clients.map(c=>({c,d:lastTouch(c)||''})).sort((a,b)=>a.d<b.d?1:-1).slice(0,5).forEach(o=>it.push({h:'Recent',av:fn(o.c),title:esc(fn(o.c)),sub:esc(o.c.company||''),run:()=>{closeSheet();go('people',o.c.id)}}));
     acts.forEach(a=>it.push({h:'Actions',icon:a[1],title:t(a[0]),run:a[2]}));
@@ -886,7 +1023,7 @@ A['pal-run']=el=>PAL.items[+el.dataset.n]?.run();
 async function askAll(q){
   const list=$('#pal-list');list.innerHTML='<div class="rec" style="padding:36px"><div class="spin"></div></div>';
   const hits=localSearch(q,S.clients).slice(0,30);
-  const roster=S.clients.map(c=>`${fn(c)} | ${c.role||''} | ${c.company||''} | project: ${c.project||'-'} | target: ${c.target||'-'} | next: ${c.followon||'-'} | last contact: ${String(lastTouch(c)||'never').slice(0,10)} | strength ${strength(c)}/100${linksOf(c).size?' | knows: '+[...linksOf(c).keys()].slice(0,10).map(id=>person(id)).filter(Boolean).map(fn).join(', '):''}`).join('\n');
+  const roster=S.clients.map(c=>`${fn(c)} | ${c.role||''} | ${c.company||''} | project: ${c.project||'-'} | target: ${c.target||'-'} | next: ${c.followon||'-'} | last contact: ${String(lastTouch(c)||'never').slice(0,10)} | strength ${strength(c)}/100${c.group?' | group: '+c.group:''}${c.city||c.location?' | place: '+(c.city||c.location):''}${yearsOf(c).size?' | years: '+[...yearsOf(c)].sort().join(', '):''}${linksOf(c).size?' | knows: '+[...linksOf(c).keys()].slice(0,10).map(id=>person(id)).filter(Boolean).map(fn).join(', '):''}`).join('\n');
   const mem=(hits.length?hits:S.clients.flatMap(c=>events(c).slice(0,2).map(e=>({c,e})))).slice(0,30).map(o=>`[${String(o.e.date).slice(0,10)} · ${fn(o.c)} · ${o.e.kind}] ${o.e.title}\n${(o.e.text||o.e.sum).slice(0,1200)}`).join('\n\n');
   try{const a=await ai(`You are Mnemo, the relational memory of a dealmaker. Answer the question using only the data below. Be direct and brief, name the people and dates. If the data does not say, say so. Answer in ${aiLang()}.\n\nQuestion: ${q}\n\nPEOPLE\n${roster.slice(0,20000)}\n\nMEMORIES\n${mem.slice(0,40000)}`,{max:700});if(PAL.open)list.innerHTML=`<div class="answer">${esc(a)}</div>`}
   catch(e){if(PAL.open){aiFail(e);I.pal($('#pal-q'))}}
@@ -920,6 +1057,109 @@ document.addEventListener('dragstart',e=>{const d=e.target.closest?.('.deal');if
 document.addEventListener('dragover',e=>{const c=e.target.closest?.('.col');if(c&&dragId){e.preventDefault();document.querySelectorAll('.col.over').forEach(x=>x!==c&&x.classList.remove('over'));c.classList.add('over')}});
 document.addEventListener('drop',e=>{const c=e.target.closest?.('.col'),d=S.deals.find(x=>String(x.id)===dragId);if(c&&d){e.preventDefault();d.stage=c.dataset.stage;save();render()}dragId=null});
 document.addEventListener('dragend',()=>{dragId=null;document.querySelectorAll('.col.over').forEach(x=>x.classList.remove('over'))});
+
+// ═══ Map — where your people are ═════════════════════════════════════════
+// Places come from a person's City, else from "Where we met". Common cities are resolved
+// on the device; anything else is looked up once on OpenStreetMap and cached.
+const GAZ=[['Dubai',25.2048,55.2708,'difc|jafza|dubai marina|internet city|media city|jumeirah|downtown dubai|business bay|gitex|دبي'],['Abu Dhabi',24.4539,54.3773,'abou dabi|abu dhabi|adgm|saadiyat|أبوظبي|ابوظبي'],['Sharjah',25.3463,55.4209,'charjah|الشارقة'],['Ras Al Khaimah',25.8007,55.9762,'rak|ras al khaimah'],['Al Ain',24.2075,55.7447,''],
+['Riyadh',24.7136,46.6753,'riyad|ryad|riad|fii|الرياض'],['Jeddah',21.4858,39.1925,'jeddah|djeddah|jiddah|جدة'],['Doha',25.2854,51.531,'qatar|الدوحة'],['Kuwait City',29.3759,47.9774,'kuwait|koweit|الكويت'],['Manama',26.2285,50.586,'bahrain|bahreïn|المنامة'],['Muscat',23.588,58.3829,'mascate|oman|مسقط'],
+['Cairo',30.0444,31.2357,'le caire|القاهرة'],['Beirut',33.8938,35.5018,'beyrouth|بيروت'],['Amman',31.9454,35.9284,'عمان'],['Istanbul',41.0082,28.9784,''],['Tel Aviv',32.0853,34.7818,''],['Casablanca',33.5731,-7.5898,''],['Tunis',36.8065,10.1815,''],['Algiers',36.7538,3.0588,'alger'],['Karachi',24.8607,67.0011,''],
+['London',51.5074,-0.1278,'londres|mayfair|canary wharf'],['Paris',48.8566,2.3522,'la defense'],['Geneva',46.2044,6.1432,'geneve|genève|genf'],['Zurich',47.3769,8.5417,'zürich'],['Lausanne',46.5197,6.6323,''],['Lyon',45.764,4.8357,''],['Marseille',43.2965,5.3698,''],['Nice',43.7102,7.262,''],['Monaco',43.7384,7.4246,'monte carlo'],['Brussels',50.8503,4.3517,'bruxelles'],['Luxembourg',49.6116,6.1319,''],['Amsterdam',52.3676,4.9041,''],['Frankfurt',50.1109,8.6821,'francfort'],['Berlin',52.52,13.405,''],['Munich',48.1351,11.582,'münchen|muenchen'],['Milan',45.4642,9.19,'milano'],['Rome',41.9028,12.4964,'roma'],['Madrid',40.4168,-3.7038,''],['Barcelona',41.3874,2.1686,'barcelone'],['Lisbon',38.7223,-9.1393,'lisbonne|lisboa'],['Dublin',53.3498,-6.2603,''],['Stockholm',59.3293,18.0686,''],['Copenhagen',55.6761,12.5683,'copenhague'],['Vienna',48.2082,16.3738,'vienne|wien'],['Athens',37.9838,23.7275,'athenes|athènes'],['Moscow',55.7558,37.6173,'moscou'],
+['New York',40.7128,-74.006,'nyc|manhattan'],['Boston',42.3601,-71.0589,''],['Miami',25.7617,-80.1918,''],['Washington',38.9072,-77.0369,''],['Chicago',41.8781,-87.6298,''],['San Francisco',37.7749,-122.4194,'silicon valley|palo alto'],['Los Angeles',34.0522,-118.2437,''],['Toronto',43.6532,-79.3832,''],['Montreal',45.5017,-73.5673,'montréal'],['Sao Paulo',-23.5505,-46.6333,'são paulo'],['Mexico City',19.4326,-99.1332,'mexico'],
+['Mumbai',19.076,72.8777,'bombay'],['Delhi',28.6139,77.209,'new delhi'],['Bangalore',12.9716,77.5946,'bengaluru'],['Singapore',1.3521,103.8198,'singapour'],['Hong Kong',22.3193,114.1694,''],['Shanghai',31.2304,121.4737,''],['Beijing',39.9042,116.4074,'pekin|pékin'],['Tokyo',35.6762,139.6503,''],['Seoul',37.5665,126.978,'séoul'],['Sydney',-33.8688,151.2093,''],['Johannesburg',-26.2041,28.0473,''],['Lagos',6.5244,3.3792,''],['Nairobi',-1.2921,36.8219,'']];
+const gazKey=s=>' '+norm(s).replace(/[^\p{L}\p{N}]+/gu,' ').trim()+' ';
+const GAZI=GAZ.flatMap(([name,lat,lng,al])=>[name,...al.split('|')].filter(Boolean).map(a=>[gazKey(a),{key:'g:'+name,name,lat,lng}]));
+let GEO={};try{GEO=JSON.parse(localStorage.getItem('mnemo_geo')||'{}')}catch(e){}
+function placeOf(c){
+  const raw=String(c.city||c.location||'').trim();if(!raw)return null;
+  const k=gazKey(raw);let best=null,at=1e9;
+  for(const[a,g]of GAZI){const i=k.indexOf(a);if(i>=0&&i<at){at=i;best=g}}
+  if(best)return best;
+  const q=(c.city||raw.split(/[—–|·,/(]| - /)[0]).trim();if(q.length<2)return null;
+  const hit=GEO[q.toLowerCase()];
+  if(hit)return{key:'q:'+hit[2],name:hit[2],lat:hit[0],lng:hit[1]};
+  if(hit===undefined)geoAsk(q);
+  return null;
+}
+// OpenStreetMap's Nominatim allows one request per second; results are kept on the device.
+const GEOQ=[];let geoBusy=false,geoLeft=30;
+function geoAsk(q){const k=q.toLowerCase();if(GEOQ.includes(k)||geoLeft<=0)return;GEOQ.push(k);geoPump()}
+async function geoPump(){
+  if(geoBusy||!GEOQ.length)return;geoBusy=true;
+  const q=GEOQ.shift();geoLeft--;
+  try{const r=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&q='+encodeURIComponent(q)+'&accept-language='+S.cfg.lang);const d=await r.json();
+    GEO[q]=d&&d[0]?[+d[0].lat,+d[0].lon,String(d[0].display_name||q).split(',')[0].trim()]:0;try{localStorage.setItem('mnemo_geo',JSON.stringify(GEO))}catch(e){}
+    if(S.view==='map')mapDraw();
+  }catch(e){}
+  setTimeout(()=>{geoBusy=false;geoPump()},1100);
+}
+const MAP={m:null,layer:null,sel:null,fit:true};
+function places(){
+  const m=new Map;let none=0;
+  for(const c of S.clients){if(!inYear(c))continue;const p=placeOf(c);if(!p){none++;continue}let e=m.get(p.key);if(!e)m.set(p.key,e={...p,people:[]});e.people.push(c)}
+  for(const e of m.values())e.people.sort((a,b)=>strength(b)-strength(a));
+  return{list:[...m.values()].sort((a,b)=>b.people.length-a.people.length),none};
+}
+V.map=()=>`<div class="net mapv"><div id="map" role="region" aria-label="${t('World map of your people')}"></div>
+  <div class="map-box glass"><h1>${t('Map')}</h1><p id="map-sub"></p><div class="chips" id="map-years"></div></div>
+  <aside class="net-panel glass" id="map-panel"></aside></div>`;
+let LFP=null;
+function leaflet(){
+  if(window.leaflet&&window.leaflet.map)return Promise.resolve(window.leaflet);
+  return LFP||(LFP=new Promise((res,rej)=>{
+    const css=document.createElement('link');css.rel='stylesheet';css.href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css';document.head.appendChild(css);
+    const s=document.createElement('script');s.src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js';
+    s.onload=()=>res(window.leaflet||window.L);s.onerror=()=>{LFP=null;rej(new Error('Leaflet'))};document.head.appendChild(s);
+  }));
+}
+async function mapStart(){
+  MAP.sel=null;MAP.fit=true;mapDraw();
+  let Lf;try{Lf=await leaflet()}catch(e){const el=$('#map');if(el)el.innerHTML=`<div class="map-msg">${t('The map could not load. Check your connection — your places are listed on the right.')}</div>`;return}
+  const el=$('#map');if(!el||S.view!=='map'||MAP.m)return;
+  const dark=document.documentElement.dataset.theme==='dark';
+  MAP.m=Lf.map(el,{zoomControl:false,worldCopyJump:true,minZoom:2}).setView([25,30],2);
+  Lf.control.zoom({position:'bottomleft'}).addTo(MAP.m);
+  Lf.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark?'dark_all':'light_all'}/{z}/{x}/{y}{r}.png`,{subdomains:'abcd',maxZoom:19,attribution:'&copy; OpenStreetMap contributors &copy; CARTO'}).addTo(MAP.m);
+  MAP.layer=Lf.layerGroup().addTo(MAP.m);
+  MAP.m.on('click',()=>{if(MAP.sel){MAP.sel=null;mapDraw()}});
+  MAP.m.on('zoomend',()=>mapDraw());
+  mapDraw();
+}
+function mapStop(){if(MAP.m){MAP.m.remove();MAP.m=null;MAP.layer=null}}
+function mapDraw(){
+  const{list,none}=places(),ys=allYears(),Lf=window.leaflet||null,n=list.reduce((s,e)=>s+e.people.length,0);
+  const sub=$('#map-sub');if(sub)sub.textContent=`${n} ${t('people in {n} places',{n:list.length})}${S.year?' · '+S.year:''}`;
+  const yb=$('#map-years');if(yb)yb.innerHTML=ys.length?[['',t('All years')],...ys.map(y=>[y,y])].map(([k,l])=>`<button class="chip ${S.year===k?'accent':''}" data-a="map-year" data-k="${k}" aria-pressed="${S.year===k}">${l}</button>`).join(''):'';
+  if(MAP.sel&&!list.some(e=>e.key===MAP.sel))MAP.sel=null;
+  if(MAP.m&&Lf){
+    MAP.layer.clearLayers();
+    // Places too close to tell apart at this zoom share one pin; tapping it zooms in on them.
+    const size=k=>Math.round(26+Math.min(30,Math.sqrt(k)*7)),groups=[];
+    for(const e of list){const pt=MAP.m.latLngToLayerPoint([e.lat,e.lng]),k=e.people.length;
+      const g=groups.find(g=>g.pt.distanceTo(pt)<(size(g.n)+size(k))/2+4);
+      if(g){g.items.push(e);g.n+=k}else groups.push({pt,items:[e],n:k})}
+    for(const g of groups){const e=g.items[0],s=size(g.n),one=g.items.length===1,names=g.items.map(x=>x.name).join(', ');
+      const mk=Lf.marker([e.lat,e.lng],{title:names,alt:names,keyboard:true,zIndexOffset:g.n*10,icon:Lf.divIcon({className:'',html:`<div class="pin ${g.items.some(x=>x.key===MAP.sel)?'on':''}" style="width:${s}px;height:${s}px">${g.n}</div>`,iconSize:[s,s],iconAnchor:[s/2,s/2]})});
+      mk.on('click',ev=>{Lf.DomEvent.stopPropagation(ev);if(one){MAP.sel=e.key;mapDraw()}else MAP.m.flyToBounds(g.items.map(x=>[x.lat,x.lng]),{padding:[90,90],maxZoom:Math.min(12,MAP.m.getZoom()+4),duration:.6})});mk.addTo(MAP.layer)}
+    if(MAP.fit&&list.length){MAP.fit=false;const wide=innerWidth>860;MAP.m.fitBounds(list.map(e=>[e.lat,e.lng]),{paddingTopLeft:[40,wide?150:130],paddingBottomRight:[wide?380:40,60],maxZoom:list.length===1?6:5})}
+  }
+  mapPanel(list,none);
+}
+function mapPanel(list,none){
+  const el=$('#map-panel');if(!el)return;
+  const e=list.find(x=>x.key===MAP.sel);
+  el.hidden=innerWidth<=860&&!e;
+  const row=c=>`<button class="line" data-a="go" data-v="people" data-id="${c.id}"><span style="display:flex;gap:10px;align-items:center;min-width:0">${av(fn(c),'sm')}<span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${esc(fn(c))}</span></span><span>${esc(c.company||'')}</span></button>`;
+  if(e)el.innerHTML=`<button class="btn ghost sm" data-a="map-clear" style="margin:-6px 0 10px -10px">${ic('back',15)}${t('All places')}</button><h3>${esc(e.name)}</h3><p class="muted">${t('{n} people',{n:e.people.length})}${S.year?' · '+S.year:''}</p><div style="margin-top:14px">${e.people.map(row).join('')}</div>`;
+  else el.innerHTML=`<h3>${t('Your world')}</h3><p class="muted" style="margin-top:2px">${t('Where you met the people in Mnemo, or the city they are based in.')}</p>
+    ${list.length?`<h4>${t('Places')}</h4>${list.map(x=>`<button class="line" data-a="map-sel" data-k="${esc(x.key)}"><span>${esc(x.name)}</span><span>${x.people.length}</span></button>`).join('')}`:`<p class="hint" style="margin-top:14px">${S.year?t('No one placed on the map for {y}.',{y:S.year}):t('No places yet.')}</p>`}
+    ${none?`<p class="hint" style="margin-top:14px">${t('{n} people have no place yet. Add a city or where you met on their profile.',{n:none})}</p>`:''}`;
+  el.scrollTop=0;
+}
+A['map-year']=el=>{S.year=el.dataset.k;MAP.sel=null;MAP.fit=true;mapDraw()};
+A['map-sel']=el=>{MAP.sel=el.dataset.k;const e=places().list.find(x=>x.key===MAP.sel);if(MAP.m&&e)MAP.m.flyTo([e.lat,e.lng],Math.max(MAP.m.getZoom(),5),{duration:.6});mapDraw()};
+A['map-clear']=()=>{MAP.sel=null;mapDraw()};
+window.addEventListener('resize',()=>{if(S.view==='map'){MAP.m?.invalidateSize();mapDraw()}});
 
 // ═══ LinkedIn & data ═════════════════════════════════════════════════════
 let LIM=null;
@@ -1059,10 +1299,10 @@ async function liFile(file){
   S.li=mergeBooks(list,S.li.filter(x=>isAb(x)&&!x.sample));save();closeSheet();NET.sel=null;NET.grp=null;
   toast(t('{n} connections imported',{n:list.length}));if(S.view==='network')render(true);else go('network');
 }
-document.addEventListener('change',e=>{const k=e.target.dataset.c;if(k==='li-file')liFile(e.target.files[0]);if(k==='ab-file')abFile(e.target.files[0]);if(k==='backup-file')restore(e.target.files[0]);if(k==='csv-file')importContacts(e.target.files[0])});
+document.addEventListener('change',e=>{const k=e.target.dataset.c;if(k==='li-file')liFile(e.target.files[0]);if(k==='card-file')cardFile(e.target.files[0]);if(k==='ab-file')abFile(e.target.files[0]);if(k==='backup-file')restore(e.target.files[0]);if(k==='csv-file')importContacts(e.target.files[0])});
 document.addEventListener('dragover',e=>{const d=e.target.closest?.('.drop');if(d){e.preventDefault();d.classList.add('over')}});
 document.addEventListener('dragleave',e=>e.target.closest?.('.drop')?.classList.remove('over'));
-document.addEventListener('drop',e=>{const d=e.target.closest?.('.drop');if(d){e.preventDefault();d.classList.remove('over');if(d.id==='li-drop')liFile(e.dataTransfer.files[0]);if(d.id==='ab-drop')abFile(e.dataTransfer.files[0])}});
+document.addEventListener('drop',e=>{const d=e.target.closest?.('.drop');if(d){e.preventDefault();d.classList.remove('over');if(d.id==='li-drop')liFile(e.dataTransfer.files[0]);if(d.id==='card-drop')cardFile(e.dataTransfer.files[0]);if(d.id==='ab-drop')abFile(e.dataTransfer.files[0])}});
 function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)}
 A.backup=()=>download('mnemo-backup-'+todayISO()+'.json',JSON.stringify({app:'mnemo',version:2,exportedAt:new Date().toISOString(),clients:S.clients,deals:S.deals,li:S.li}),'application/json');
 async function restore(file){
@@ -1093,6 +1333,7 @@ A.settings=()=>{
     <h5>${t('Intelligence')}</h5><p class="hint">${t('Transcription and AI run through your secure Netlify functions (OPENAI_API_KEY and ANTHROPIC_API_KEY). Optionally, use a personal Anthropic key stored only on this device.')}</p>
     <label class="field"><span>${t('Access code')}</span><input class="input" type="password" placeholder="${t('The code you set as MNEMO_ACCESS_CODE in Netlify')}" value="${esc(S.cfg.code||'')}" data-c="set-code" autocomplete="off"></label>
     <label class="field"><span>${t('Personal Anthropic key (optional)')}</span><input class="input" type="password" id="set-ak" placeholder="sk-ant-…" value="${esc(S.cfg.ak||'')}" data-c="set-ak" autocomplete="off"></label>
+    <h5>${t('Reminders')}</h5>${notifRow()}
     <h5>${t('Sync')}</h5>${syncPanel()}
     <h5>${t('Your data')}</h5><p class="hint">${SYNC.s?t('Stored on this device and synced to your account.'):t('Everything is stored on this device. Export a backup regularly.')}</p>
     <div style="display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" data-a="li-import">${ic('in',15)}${t('Import LinkedIn')}</button><button class="btn sm" data-a="ab-import">${ic('call',15)}${t('Import contacts')}</button><button class="btn sm" data-a="backup">${t('Export backup')}</button><label class="btn sm">${t('Restore backup')}<input type="file" accept=".json,application/json" hidden data-c="backup-file"></label><button class="btn sm" data-a="csv-export">${t('Export CSV')}</button><label class="btn sm">${t('Import CSV')}<input type="file" accept=".csv,text/csv" hidden data-c="csv-file"></label>${hasSample()?`<button class="btn sm" data-a="clear-sample">${t('Remove sample data')}</button>`:''}</div>
@@ -1127,7 +1368,7 @@ const PALETTE=['#0a84ff','#bf5af2','#ff9f0a','#30b0c7','#ff375f','#34c759','#5e5
 V.network=()=>`<div class="net"><canvas id="net-canvas" aria-label="${t('Relationship map')}"></canvas>
   <div class="net-top"><h1>${t('Network')}</h1><p id="net-sub"></p></div>
   <div class="net-tools">
-    <div class="net-search">${ic('search',16)}<input placeholder="${t('Find a person or a company')}" data-i="netq" data-enter="net-find" value="${esc(NET.q)}"></div>
+    <div class="net-search">${ic('search',16)}<input aria-label="${t('Find a person or a company')}" placeholder="${t('Find a person or a company')}" data-i="netq" data-enter="net-find" value="${esc(NET.q)}"></div>
     <div class="net-ctl"><div class="seg glass" id="net-mode"></div><button class="chip" id="net-li" data-a="net-li" style="height:30px"></button></div>
   </div>
   <aside class="net-panel glass" id="net-panel"></aside>
@@ -1332,6 +1573,17 @@ function netPanel(){
 }
 window.addEventListener('resize',()=>{if(S.view==='network'){netFit();netPanel();netAsk()}});
 
+// Reminders as a system notification: once a day, when Mnemo is opened, if allowed.
+const notifOK=()=>'Notification' in window;
+function notifRow(){if(!notifOK())return`<p class="hint">${t('This browser cannot show notifications. Your reminders stay on the Today page.')}</p>`;
+  const p=Notification.permission;return`<div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap"><span class="hint">${t('Get a notification each day you open Mnemo with something due.')}</span>${p==='granted'?`<span class="chip green">${t('On')}</span>`:p==='denied'?`<span class="chip">${t('Blocked in browser settings')}</span>`:`<button class="btn sm" data-a="notif-on">${t('Turn on')}</button>`}</div>`}
+A['notif-on']=async()=>{try{await Notification.requestPermission()}catch(e){}A.settings();notifyToday(true)};
+function notifyToday(force){
+  if(!notifOK()||Notification.permission!=='granted')return;
+  const d=todayISO();let last='';try{last=localStorage.getItem('mnemo_notified')||''}catch(e){}
+  if(!force&&last===d)return;const n=remindersDue();if(!n)return;
+  try{new Notification('Mnemo',{body:t('{n} reminders for today',{n}),icon:'icon.svg',tag:'mnemo-today'});localStorage.setItem('mnemo_notified',d)}catch(e){}
+}
 // ═══ Cloud sync (Supabase) ═══════════════════════════════════════════════
 // Local-first: the app always works from localStorage. When signed in, every person,
 // deal and the LinkedIn list is mirrored as one row each; the newest edit of a record wins.
@@ -1440,7 +1692,7 @@ function syncBoot(){
 }
 
 // ═══ Boot ════════════════════════════════════════════════════════════════
-load();applyTheme();syncLoad();route();syncBoot();
+load();applyTheme();syncLoad();route();syncBoot();setTimeout(notifyToday,1500);
 
 </script>
 </body>

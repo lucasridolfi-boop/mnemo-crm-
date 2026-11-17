@@ -88,6 +88,27 @@ La vérification d'origine seule arrête les autres sites web, pas un script qui
 
 `S.li` contient tout le réseau hors Mnemo : relations LinkedIn et contacts du carnet d'adresses (`src:'ab'`). Sources : fichier vCard ou CSV (Google, Outlook), sélecteur de contacts du navigateur (Android), carnet natif dans l'app. Ils apparaissent dans l'anneau extérieur de la carte ; « Add to Mnemo » en fait une fiche. Les fiches existantes sont complétées (téléphone, e-mail, société, poste) sans rien écraser. `mergeBooks` évite les doublons LinkedIn/carnet.
 
+## Garder le contact (inspiré de Dex, Clay, Salesforce)
+
+- **Rythme** `c.cadence` (0, 14, 30, 90, 180 jours) → `dueIn(c)` ; la page Today liste « À relancer » (dus d'abord, puis les relations qui s'éteignent), bouton ✓ « Marquer comme contacté ».
+- **Historique en un geste** : 5 tuiles sur la fiche (Appel, E-mail, SMS, WhatsApp, Réunion) qui notent un échange daté sans détails, avec Annuler ; `sms` est un canal à part entière.
+- **Rappels** : relances avec dates rapides (demain, semaine prochaine, dans un mois) ; pastille rouge sur l'onglet Today (`remindersDue()`) ; notification système une fois par jour si autorisée dans Settings.
+- **Anniversaires** `c.birthday` → section « À venir » (14 jours) et message rédigé par l'IA.
+- **Groupes** `c.group` (un nom libre, suggestions existantes) → pastilles de filtre sur People et sur la fiche.
+- **Années** : `yearsOf(c)` = année de rencontre (`c.metOn`) + années des échanges ; filtre `S.year` partagé par People et la carte.
+- **Scan de carte de visite** (onglet Card de Capture) : photo réduite à 1600 px JPEG → Claude (vision) → fiche pré-remplie ; si la personne existe (e-mail ou nom), elle est complétée sans doublon.
+
+## Carte du monde (onglet Map)
+
+- Leaflet 1.9.4 chargé à la demande depuis cdnjs, fonds CARTO (clair/sombre). **À vérifier avant un usage commercial : conditions d'utilisation des fonds CARTO et de Nominatim.**
+- Lieu = `c.city`, sinon « Where we met ». ~75 villes (et quartiers : DIFC, JAFZA, ADGM…) résolues sur l'appareil (`GAZ`) ; le reste via Nominatim (1 requête/s, 30 par session, cache `mnemo_geo`).
+- Pastilles regroupées quand elles se chevauchent ; un toucher zoome. Panneau des lieux, filtre par année, fonctionne même si la carte ne charge pas.
+- Leaflet définit `window.L` : toujours y accéder par `window.leaflet` ; `L` reste la table de traductions.
+
+## Accessibilité (audit du 17/11/2026)
+
+Contraste AA vérifié automatiquement (texte secondaire `#5f5f64`, tertiaire `#6e6e73`, surfaces bleues `--accent-fill` sous texte blanc, couleurs d'avatar foncées), libellés sur tous les champs, zones tactiles ≥ 34 px sur téléphone (cases à cocher : cercle 22 px, zone 44 px). Script : audit en boîte noire sur 5 configurations (ordinateur/téléphone, clair/sombre, EN/FR/AR).
+
 ## Qui connaît qui (liens entre contacts)
 
 - `linkMap()` réunit trois sources, lues dans les deux sens : liens déclarés (`c.links=[{id,why,via}]`), présentations (`introBy`), et personnes nommées dans les notes (nom complet n'importe où, ou prénom seul s'il est unique dans Mnemo, écrit avec sa majuscule et pas en début de phrase). `c.unlinks` supprime une mention détectée à tort. Cache `LKM`, vidé à chaque `save()`.
