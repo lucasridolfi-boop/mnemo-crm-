@@ -110,7 +110,7 @@ La vérification d'origine seule arrête les autres sites web, pas un script qui
 Une tâche programmée « Mnemo — développement continu » relance cette session toutes les 4 h (minute 35) pour avancer sur le backlog, tester, mettre en ligne et faire un compte rendu. Backlog, dans l'ordre :
 - [x] a) Deals : probabilité par étape (modifiable), pipeline pondéré, jours dans l'étape (orange > 30 j), date de clôture dépassée, deals sur la fiche contact.
 - [x] b) Modèles de messages (e-mail/WhatsApp) avec variables, et relances en série. Modèles dans `S.cfg.tpls` (local à l'appareil, non synchronisés ; 4 modèles par défaut traduits tant que l'utilisateur n'en modifie aucun), variables {first} {name} {company} {project} {city} {last}. Envoi WhatsApp/e-mail = interaction `out:true` sur la fiche ; relances = tâches `seq/seqAt/step/of` ; `seqSweep()` (dans save) les coche (`auto:'reply'`) dès qu'une interaction non envoyée par Mnemo arrive après l'envoi ; renvoyer un message depuis Mnemo coche la relance suivante.
-- [ ] c) Résumé hebdomadaire des relations sur Today.
+- [x] c) Résumé hebdomadaire des relations sur Today. Carte « Votre semaine » (7 jours glissants) : échanges vs semaine précédente, personnes (+ nouvelles via createdAt), relances faites (`doneAt` posé au cochage), deals avancés (`stageAt`) et gagnés, « Le plus de temps avec », « Ça refroidit » (≥ 3 échanges, silence 4 à 10 semaines). Bilan IA facultatif stocké dans localStorage `mnemo_week` (gardé 7 jours).
 - [ ] d) Export PDF d'une fiche.
 - [ ] e) Bouton micro dans « Dites-le à Mnemo ».
 - [ ] f) Premier lancement guidé (sans données d'exemple).
