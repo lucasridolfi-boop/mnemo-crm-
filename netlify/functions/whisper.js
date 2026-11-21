@@ -48,7 +48,7 @@ async function handle(event) {
 
   // Whisper detects the format from the file extension: iPhone/Safari records audio/mp4, not webm.
   const type = /^audio\/[\w.+-]+$/.test(mimeType || '') ? mimeType : 'audio/webm';
-  const ext = { 'audio/mp4': 'mp4', 'audio/x-m4a': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/ogg': 'ogg' }[type] || 'webm';
+  const ext = { 'audio/mp4': 'mp4', 'audio/x-m4a': 'm4a', 'audio/mpeg': 'mp3', 'audio/wav': 'wav', 'audio/x-wav': 'wav', 'audio/ogg': 'ogg', 'audio/opus': 'ogg', 'audio/webm': 'webm' }[type.split(';')[0]] || 'webm';
 
   try {
     const boundary = '----MnemoBoundary' + crypto.randomBytes(12).toString('hex');

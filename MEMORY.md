@@ -100,10 +100,19 @@ La vérification d'origine seule arrête les autres sites web, pas un script qui
 
 ## Carte du monde (onglet Map)
 
-- Leaflet 1.9.4 chargé à la demande depuis cdnjs, fonds CARTO (clair/sombre). **À vérifier avant un usage commercial : conditions d'utilisation des fonds CARTO et de Nominatim.**
-- Lieu = `c.city`, sinon « Where we met ». ~75 villes (et quartiers : DIFC, JAFZA, ADGM…) résolues sur l'appareil (`GAZ`) ; le reste via Nominatim (1 requête/s, 30 par session, cache `mnemo_geo`).
-- Pastilles regroupées quand elles se chevauchent ; un toucher zoome. Panneau des lieux, filtre par année, fonctionne même si la carte ne charge pas.
-- Leaflet définit `window.L` : toujours y accéder par `window.leaflet` ; `L` reste la table de traductions.
+- **Aucune dépendance externe** : silhouette des terres Natural Earth 1:50m (domaine public, via `world-atlas` ISC), projection Equal Earth, intégrée dans `WORLD_D` (~128 Ko). Générée par un script (topojson → chemin SVG, découpage à l'antiméridien) ; pour la régénérer : `npm pack world-atlas@2`, décoder `land-50m.json`, simplifier à 1 unité.
+- SVG avec `viewBox` : glisser, molette, pincement, double-clic, boutons +/−/recadrer ; pastilles à taille constante regroupées quand elles se chevauchent ; `eqEarth(lat,lng)` donne les coordonnées.
+- Lieu = `c.city`, sinon « Where we met » ; ~75 villes résolues sur l'appareil (`GAZ`), le reste via Nominatim (1 req/s, 30 par session, cache `mnemo_geo`).
+- Le clic sur une pastille est mémorisé à l'appui (`MAP.down`) car la capture du pointeur redirige le relâchement vers le SVG.
+
+## Nouveautés du 21/11/2026
+
+- **Import audio** (Capture → Voice → Import an audio file) : notes vocales WhatsApp `.opus`, mémos iPhone, MP3… Au-delà de 4 Mo ou format non accepté par Whisper : décodage sur l'appareil, 16 kHz mono, morceaux WAV de 100 s.
+- **Rendez-vous à venir** : un échange daté dans le futur est « Upcoming », n'entre pas dans le dernier contact ni la force (`pastEvents`), apparaît dans « Coming up » avec « Brief me ». Bouton « Plan a meeting » sur la fiche.
+- **Dites-le à Mnemo** (champ sur Today) : une phrase → l'IA identifie la personne (ou en propose une nouvelle), le type, la date, les relances et les personnes mentionnées → écran de validation.
+- **Doublons** : même e-mail, téléphone ou nom ; fusion qui conserve tout (échanges, relances, deals, présentations, liens) ; « Pas la même personne » mémorisé (`notDup`).
+- **Enregistrer dans les contacts** : export vCard d'une fiche.
+- **Hors ligne** : `sw.js` (réseau d'abord, cache ensuite), enregistré seulement sur le site en HTTPS, jamais dans l'app native.
 
 ## Accessibilité (audit du 17/11/2026)
 
