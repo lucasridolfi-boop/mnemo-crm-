@@ -733,7 +733,7 @@ A['week-ai']=async()=>{
     'Follow-ups completed:',...w.done.map(o=>`- ${o.x.title} (${fn(o.c)})`),'Deals that changed stage:',...w.moved.map(d=>`- ${d.title}: now ${d.stage}, ${money(+d.value||0)}`),
     'Open follow-ups due in the next 7 days:',...soon.slice(0,20).map(o=>`- ${o.x.due} ${o.x.title} (${fn(o.c)})`),'Close relationships going quiet:',...cool.map(o=>`- ${fn(o.c)}: last spoke ${o.d} days ago`),
     'Upcoming meetings:',...upcoming(7).map(o=>`- ${isoDay(o.e.date)} ${o.e.title} with ${fn(o.c)}`)];
-  try{const text=await ai(`Write my weekly relationship review from these facts only. 3 to 5 short lines, each starting with "• ": what moved this week, who needs my attention next week and why, and one priority. Use names, be concrete, no filler. If the week was empty, say so in one line and suggest who to reach out to. Write in ${aiLang()}.\n\n${lines.join('\n')}`,{max:600});
+  try{const text=(await ai(`Write my weekly relationship review from these facts only. 3 to 5 short lines, each starting with "• ": what moved this week, who needs my attention next week and why, and one priority. Use names, be concrete, no filler. Plain text only: no markdown, no bold, no headings. If the week was empty, say so in one line and suggest who to reach out to. Write in ${aiLang()}.\n\n${lines.join('\n')}`,{max:600})).replace(/\*\*|__|^#+\s*/gm,'');
     try{localStorage.setItem(WK,JSON.stringify({at:new Date().toISOString(),text}))}catch(e){}render()}
   catch(e){aiFail(e);render()}
 };
