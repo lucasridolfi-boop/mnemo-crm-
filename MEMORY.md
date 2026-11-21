@@ -105,6 +105,23 @@ La vérification d'origine seule arrête les autres sites web, pas un script qui
 - Lieu = `c.city`, sinon « Where we met » ; ~75 villes résolues sur l'appareil (`GAZ`), le reste via Nominatim (1 req/s, 30 par session, cache `mnemo_geo`).
 - Le clic sur une pastille est mémorisé à l'appui (`MAP.down`) car la capture du pointeur redirige le relâchement vers le SVG.
 
+## Sessions programmées (développement continu)
+
+Une tâche programmée « Mnemo — développement continu » relance cette session toutes les 4 h (minute 35) pour avancer sur le backlog, tester, mettre en ligne et faire un compte rendu. Backlog, dans l'ordre :
+- [x] a) Deals : probabilité par étape (modifiable), pipeline pondéré, jours dans l'étape (orange > 30 j), date de clôture dépassée, deals sur la fiche contact.
+- [ ] b) Modèles de messages (e-mail/WhatsApp) avec variables, et relances en série.
+- [ ] c) Résumé hebdomadaire des relations sur Today.
+- [ ] d) Export PDF d'une fiche.
+- [ ] e) Bouton micro dans « Dites-le à Mnemo ».
+- [ ] f) Premier lancement guidé (sans données d'exemple).
+- [ ] g) Audit indépendant et corrections.
+
+Bloqué en attente de Lucas : compte Apple Developer + Mac/service de build (iOS), compte Google Play, identifiants OAuth Google/Microsoft (sync e-mails/agenda), compte Stripe (abonnements), suppression des projets Netlify `mnemodeals` et `crmlucasridolfi`, crochets du deck, identifiant d'app.
+
+## IA : réflexion des modèles
+
+Les modèles Claude actuels réfléchissent avant de répondre, et cette réflexion compte dans `max_tokens`. `ai()` envoie `output_config.effort` (low pour l'extraction rapide, medium sinon), ajoute 3 000 jetons de marge, et lève une erreur si la réponse est vide ou coupée. Le proxy laisse passer `effort` (low/medium/high) et jusqu'à 8 000 jetons.
+
 ## Nouveautés du 21/11/2026
 
 - **Import audio** (Capture → Voice → Import an audio file) : notes vocales WhatsApp `.opus`, mémos iPhone, MP3… Au-delà de 4 Mo ou format non accepté par Whisper : décodage sur l'appareil, 16 kHz mono, morceaux WAV de 100 s.
