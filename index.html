@@ -469,15 +469,19 @@ matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>{applyT
 
 // ─── AI (server proxy by default; optional personal key) ───
 function parseJSON(text){const a=text.indexOf('{'),b=text.lastIndexOf('}');if(a<0||b<=a)return null;try{return JSON.parse(text.slice(a,b+1))}catch(e){return null}}
-async function ai(prompt,{system,max=800,fast=false}={}){
-  const body={model:fast?MODEL.fast:MODEL.smart,max_tokens:max,messages:[{role:'user',content:prompt}]};
+// Current Claude models think before answering, and thinking counts against max_tokens: keep effort low
+// for quick extraction, leave room for the thinking, and treat a cut-off answer as a failure.
+async function ai(prompt,{system,max=800,fast=false,effort}={}){
+  const body={model:fast?MODEL.fast:MODEL.smart,max_tokens:Math.min(8000,max+3000),output_config:{effort:effort||(fast?'low':'medium')},messages:[{role:'user',content:prompt}]};
   if(system)body.system=system;
   const direct=!!S.cfg.ak,headers={'Content-Type':'application/json'};
   if(direct)Object.assign(headers,{'x-api-key':S.cfg.ak,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'});else if(S.cfg.code)headers['X-Mnemo-Code']=S.cfg.code;
   const res=await fetch(direct?'https://api.anthropic.com/v1/messages':API+'/.netlify/functions/claude',{method:'POST',headers,body:JSON.stringify(body)});
   const d=await res.json().catch(()=>null);
   if(!res.ok||!d||d.error)throw Object.assign(new Error(d?.error?.message||'HTTP '+res.status),{code:d?.error?.code});
-  return(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+  const text=(d.content||[]).filter(b=>b.type==='text').map(b=>b.text).join('').trim();
+  if(!text||d.stop_reason==='max_tokens'&&!/[}\].!?…]\s*$/.test(text))throw new Error(d.stop_reason==='refusal'?'The AI declined this request.':'The AI answer was cut off.');
+  return text;
 }
 const aiLang=()=>({fr:'French',ar:'Arabic'}[S.cfg.lang]||'English');
 const needCode=e=>e?.code==='access_code';

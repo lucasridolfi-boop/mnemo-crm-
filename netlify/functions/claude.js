@@ -47,8 +47,11 @@ async function handle(event) {
   if (!body || typeof body.model !== 'string' || !/^claude-[a-z0-9.-]{1,60}$/.test(body.model) || !Array.isArray(body.messages)) return fail(400, 'Invalid request');
 
   // Forward only what the app uses, with a ceiling on output size.
-  const payload = { model: body.model, messages: body.messages, max_tokens: Math.min(4096, Math.max(1, Number(body.max_tokens) || 1024)) };
+  const payload = { model: body.model, messages: body.messages, max_tokens: Math.min(8000, Math.max(1, Number(body.max_tokens) || 1024)) };
   if (typeof body.system === 'string') payload.system = body.system;
+  // Effort steers how long current models think before answering; nothing else from output_config is passed on.
+  const effort = body.output_config && body.output_config.effort;
+  if (['low', 'medium', 'high'].includes(effort)) payload.output_config = { effort };
 
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
