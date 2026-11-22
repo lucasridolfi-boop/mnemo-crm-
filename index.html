@@ -184,7 +184,7 @@ svg{display:block;flex-shrink:0}
 .wk-row{margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
 .wk-link{color:var(--accent);font:inherit;min-height:32px}
 .wk-row h4{font-size:12.5px;font-weight:600;color:var(--text2);margin-bottom:8px}
-@media(max-width:640px){.wk-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:640px){.wk-grid{grid-template-columns:1fr 1fr}.wk .chip{height:36px!important}}
 .answer{padding:18px 22px;margin-top:12px;white-space:pre-wrap;font-size:15px;line-height:1.55}
 .addrow{display:flex;gap:10px;padding:10px 14px 10px 20px;align-items:center}
 .addrow input{flex:1;border:0;outline:0;background:none;height:34px;min-width:0}
@@ -976,7 +976,7 @@ ${sec('History',ev.length?`<ul>${ev.map(e=>{const body=(e.sum||e.text||'').trim(
 </body></html>`;
 }
 A.pdf=el=>{const c=person(el.dataset.id);if(!c)return;
-  if(window.Capacitor?.getPlatform?.()==='android'){toast(t('Printing is not available here.')+' '+t('Open Mnemo in the browser to export a PDF.'));return}
+  if(window.Capacitor?.isNativePlatform?.()){toast(t('Printing is not available here.')+' '+t('Open Mnemo in the browser to export a PDF.'));return}
   document.querySelector('#pdf-frame')?.remove();
   const f=document.createElement('iframe');f.id='pdf-frame';f.title='PDF';f.style.cssText='position:fixed;width:0;height:0;border:0;opacity:0;pointer-events:none';
   f.srcdoc=pdfHtml(c);document.body.appendChild(f);
