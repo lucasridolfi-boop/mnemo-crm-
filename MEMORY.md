@@ -123,7 +123,7 @@ Une tâche programmée « Mnemo — développement continu » relance cette sess
   - [x] l) Nouvel audit (22 nov., 21 h 35) : audit2.js étendu (feuille Filtrer, liste filtrée, liste enregistrée, activité du deal, raccourcis) × 5 configurations. Aucun nouveau défaut ; timings réalistes à 1 500 contacts (réseau 125 ms, carte 106 ms, People 78 ms). Restent acceptés : cases à cocher 22 px (zone 44 px), focus de « Dites-le » sur son conteneur.
 - Backlog suivant (proposé le 22 nov.), dans l'ordre :
   - [ ] m) Pages Société (à la Affinity) : une vue par entreprise avec ses contacts Mnemo, ses relations LinkedIn/téléphone, ses deals, le dernier échange et « qui me présente ». Accessible depuis la fiche, la recherche et le réseau.
-  - [ ] n) « Ajouter au calendrier » : fichier .ics pour un rendez-vous planifié ou une relance datée (fonctionne avec Apple, Google et Outlook sans OAuth).
+  - [x] n) « Ajouter au calendrier » (`icsText`, `A.ics`) : fichier .ics RFC 5545 (texte échappé, lignes pliées) pour un rendez-vous à venir (1 h, rappel 30 min, heure locale convertie en UTC) ou une relance datée (journée entière, rappel 9 h). Boutons sur les rendez-vous à venir de la fiche, dans « À venir » sur Today et sur chaque relance datée de la fiche. Indisponible dans l'app native (toast).
   - [ ] o) Liens et pièces sur un deal ou une fiche : data room, term sheet, deck (URL + libellé), affichés avec l'icône du service.
   - [ ] p) « Préparer ma journée » sur Today : un geste génère les briefs de tous les rendez-vous du jour, lisibles d'affilée.
   - [ ] q) Audit indépendant + corrections.
