@@ -126,7 +126,13 @@ Une tâche programmée « Mnemo — développement continu » relance cette sess
   - [x] n) « Ajouter au calendrier » (`icsText`, `A.ics`) : fichier .ics RFC 5545 (texte échappé, lignes pliées) pour un rendez-vous à venir (1 h, rappel 30 min, heure locale convertie en UTC) ou une relance datée (journée entière, rappel 9 h). Boutons sur les rendez-vous à venir de la fiche, dans « À venir » sur Today et sur chaque relance datée de la fiche. Indisponible dans l'app native (toast).
   - [x] o) Liens sur une fiche (section « Liens ») et sur un deal (fenêtre du deal) : `files:[{id,url,label,at}]` sur la personne ou le deal (synchronisés avec eux), `linksBlock`, service reconnu (`service()` : DocSend, Google Docs/Sheets/Slides/Drive, Dropbox, Box, OneDrive/SharePoint, Notion, Figma, Pitch, data rooms Datasite/Intralinks/Ansarada/Firmex/iDeals, Zoom, Teams…), `safeUrl` refuse ce qui n'est pas http(s), ouverture en nouvel onglet noopener. Liens inclus dans le PDF.
   - [x] p) « Préparer ma journée » : bouton dans « À venir » sur Today (rendez-vous et appels datés du jour ; après 17 h sans rendez-vous restant : « Préparer demain »). Fenêtre avec chaque rendez-vous dans l'ordre et son brief (`briefPrompt`, réutilisé si < 12 h, sinon généré un par un et enregistré sur la fiche), bouton « Ouvrir la fiche ».
-  - [ ] q) Audit indépendant + corrections.
+  - [x] q) Audit (23 nov., 13 h 35) étendu aux pages Société, liens et « Préparer ma journée ». Corrigé : nom de société et bouton « retirer le lien » trop petits au doigt sur mobile ; « 1 meetings » → singulier. Aucun autre défaut ; timings à 1 500 contacts ≤ 132 ms.
+- Backlog suivant (proposé le 23 nov.), dans l'ordre :
+  - [ ] r) Coller un fil d'e-mails dans « Dites-le à Mnemo » : l'IA repère toutes les personnes (signatures → nouveaux contacts avec téléphone/e-mail), les dates, les engagements, et classe le tout en une fois.
+  - [ ] s) Introductions à double accord : « Présenter A à B » → brouillons des deux messages (demande d'accord puis mise en relation), suivi demandée / acceptée / faite, lien automatique entre A et B.
+  - [ ] t) Tableau des deals filtrable par projet ou groupe (ex. une levée de fonds = un groupe d'investisseurs), avec totaux par groupe.
+  - [ ] u) Notes vocales hors ligne : enregistrer sans réseau, transcription automatique au retour de la connexion (file d'attente persistante).
+  - [ ] v) Audit indépendant + corrections.
   - Bloqué par Lucas : synchronisation des modèles de messages et des listes enregistrées (il faut ajouter 'cfg' au CHECK de `mnemo_items.kind` dans Supabase — une ligne SQL à exécuter).
 
 Bloqué en attente de Lucas : compte Apple Developer + Mac/service de build (iOS), compte Google Play, identifiants OAuth Google/Microsoft (sync e-mails/agenda), compte Stripe (abonnements), suppression des projets Netlify `mnemodeals` et `crmlucasridolfi`, crochets du deck, identifiant d'app.
