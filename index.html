@@ -1446,8 +1446,8 @@ async function voiceQueueRun(){
     for(const q of items){const c=person(q.pid),it=c?.ints.find(i=>String(i.id)===String(q.id));
       if(!c||!it){await vqTx('readwrite',st=>st.delete(q.id));continue}
       let tr='';try{for(const b of q.blobs)tr+=(tr?' ':'')+await transcribe(b)}catch(e){console.warn(e);if(netDown(e))break;continue}
-      let r=null;try{r=parseJSON(await ai(`You are the memory of a dealmaker's CRM. This is a voice note about ${fn(c)}${c.company?' ('+c.company+')':''}. Return ONLY JSON: {"title":"max 6 words","summary":"max 2 sentences: the facts that matter","tasks":[{"title":"concrete next action","due":"YYYY-MM-DD or empty"}]}. Today is ${todayISO()}. Write values in ${aiLang()}.\n\nTranscript:\n${tr.slice(0,24000)}`,{max:600,fast:true}))}catch(e){console.warn(e)}
-      Object.assign(it,{title:r?.title||t('Voice note'),tr,sum:r?.summary||tr.slice(0,160),pending:false});
+      let r=null;const words=tr.trim().split(/\s+/).filter(Boolean).length;if(words>=4)try{r=parseJSON(await ai(`You are the memory of a dealmaker's CRM. This is a voice note about ${fn(c)}${c.company?' ('+c.company+')':''}. Return ONLY JSON: {"title":"max 6 words","summary":"max 2 sentences: the facts that matter","tasks":[{"title":"concrete next action","due":"YYYY-MM-DD or empty"}]}. Today is ${todayISO()}. Write values in ${aiLang()}.\n\nTranscript:\n${tr.slice(0,24000)}`,{max:600,fast:true}))}catch(e){console.warn(e)}
+      Object.assign(it,{title:r?.title||t('Voice note'),tr,sum:r?.summary||(words>=4?tr.slice(0,160):''),pending:false});
       const tasks=Array.isArray(r?.tasks)?r.tasks.filter(x=>x&&x.title).slice(0,4):[];for(const x of tasks)c.tasks.push({id:uid(),title:String(x.title),due:/^\d{4}-\d\d-\d\d$/.test(x.due)?x.due:'',pri:'med',done:false});
       await vqTx('readwrite',st=>st.delete(q.id));save();render();
       toast(tasks.length?(tasks.length===1?t('Voice note for {name} transcribed — 1 follow-up added',{name:first(c)}):t('Voice note for {name} transcribed — {n} follow-ups added',{name:first(c),n:tasks.length})):t('Voice note for {name} transcribed',{name:first(c)}))}
