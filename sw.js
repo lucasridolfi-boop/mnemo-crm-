@@ -1,7 +1,7 @@
 // Mnemo offline support: the app shell is served from the network when possible,
 // from the cache when offline. AI, transcription and sync always go to the network.
-const CACHE = 'mnemo-shell-v2';
-const SHELL = ['./', 'index.html', 'icon.svg', 'manifest.webmanifest'];
+const CACHE = 'mnemo-shell-v3';
+const SHELL = ['./', 'index.html', 'world.js', 'icon.svg', 'manifest.webmanifest'];
 const LIBS = /^https:\/\/fonts\.(googleapis|gstatic)\.com\//;
 
 self.addEventListener('install', e => {

@@ -10,5 +10,5 @@ const www = join(here, '..', 'www');
 
 rmSync(www, { recursive: true, force: true });
 mkdirSync(www, { recursive: true });
-for (const file of ['index.html', 'icon.svg', 'manifest.webmanifest']) cpSync(join(root, file), join(www, file));
+for (const file of ['index.html', 'world.js', 'icon.svg', 'manifest.webmanifest']) cpSync(join(root, file), join(www, file));
 console.log('www/ ready');
