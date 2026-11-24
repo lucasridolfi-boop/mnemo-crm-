@@ -135,7 +135,7 @@ Une tâche programmée « Mnemo — développement continu » relance cette sess
   - [x] v) Audit (24 nov., 5 h 35) étendu aux e-mails collés, introductions, projets de deals et notes en attente. Corrigé : champs « coller un e-mail » et message d'introduction sans nom accessible ; bouton « Supprimer » de l'historique trop petit au doigt (surtout en arabe). Aucun autre défaut ; ≤ 113 ms à 1 500 contacts.
 - Backlog suivant (proposé le 24 nov.), dans l'ordre :
   - [ ] w) Recherche en langage naturel dans People : « investisseurs à Riyad sans nouvelles depuis l'été » → l'IA remplit les filtres existants (ville, silence, groupe, deal…), enregistrable comme liste.
-  - [ ] x) « Deals à surveiller » sur Today : deals sans prochaine étape, bloqués > 30 j dans l'étape ou à date de clôture dépassée, avec action en un geste.
+  - [x] x) « Deals à surveiller » sur Today (`dealsToWatch`) : deals ouverts avec date de clôture dépassée (rouge), > 30 j dans l'étape (orange) ou sans prochaine étape (aucune relance ouverte pour la personne) ; triés par gravité puis montant, 5 max, un geste ouvre le deal ; section masquée quand tout va bien.
   - [ ] y) Export du pipeline (CSV pour Excel + rapport PDF d'une page : par étape, par projet, pondéré) pour le reporting investisseurs/associés.
   - [ ] z) Assistant de nettoyage : noms en majuscules, sociétés écrites de plusieurs façons, villes manquantes déduites des notes — propositions à valider en lot.
   - [ ] aa) Audit indépendant + corrections.
