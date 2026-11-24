@@ -137,7 +137,7 @@ svg{display:block;flex-shrink:0}
 .keys>div{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px}
 .keys kbd{display:inline-grid;place-items:center;min-width:24px;height:24px;padding:0 6px;margin-inline-start:4px;border-radius:6px;background:var(--fill2);border:1px solid var(--line2);font:600 12px/1 ui-monospace,SFMono-Regular,Menlo,monospace;color:var(--text)}
 .co-link{font:inherit;color:var(--accent);padding:0;min-height:0}
-@media(max-width:640px){.co-link{display:inline-flex;align-items:center;min-height:34px}.lk-row .icon-btn{width:40px!important;height:40px!important}}.co-link:hover{text-decoration:underline}
+@media(max-width:640px){.tl-more{min-height:34px;min-width:44px;padding-inline:6px}.co-link{display:inline-flex;align-items:center;min-height:34px}.lk-row .icon-btn{width:40px!important;height:40px!important}}.co-link:hover{text-decoration:underline}
 .co-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-bottom:12px}.co-stats>div{background:var(--fill);border-radius:14px;padding:12px 14px;min-width:0}.co-stats b{display:block;font-size:clamp(17px,5vw,22px);font-weight:600;letter-spacing:-.02em;overflow-wrap:anywhere}.co-stats span{font-size:12.5px;color:var(--text2)}
 .co-in{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:12px;background:var(--accent-soft);font-size:14px;margin-bottom:8px}.co-in svg{color:var(--accent);flex-shrink:0;margin-top:3px}
 .co-row{display:flex;align-items:center;gap:12px;width:100%;text-align:start}
@@ -1040,8 +1040,8 @@ A.intro=el=>{
       <div class="sheet-f"><button class="btn primary" data-a="intro-new" data-id="${a.id}">${t('Continue')}</button></div>`);return}
   const o=introFind(iid);if(!o||!o.b)return;const{a,b,x}=o;
   const head=`<p class="hint" style="margin-bottom:10px">${esc(fn(a))} → ${esc(fn(b))} · <b>${t(ST_INTRO[x.status])}</b></p>`;
-  if(x.status==='asked')sheet(t('Ask {name} first',{name:first(b)}),`${head}<textarea class="textarea" id="in-t" style="min-height:130px">${esc(x.ask||introAsk(a,b,x.why))}</textarea>${introSendBtns(b,'',x.id,'ask')}<div class="sheet-f" style="margin-top:4px"><button class="btn" data-a="intro-st" data-iid="${x.id}" data-s="declined">${t('{name} declined',{name:first(b)})}</button><button class="btn" data-a="intro-st" data-iid="${x.id}" data-s="accepted">${t('{name} said yes',{name:first(b)})}</button></div>`);
-  else if(x.status==='accepted'){const both={...b,email:[a.email,b.email].filter(Boolean).join(','),phone:''};sheet(t('Introduce {a} and {b}',{a:first(a),b:first(b)}),`${head}<textarea class="textarea" id="in-t" style="min-height:130px">${esc(introMsg(a,b,x.why))}</textarea>${introSendBtns(both,'',x.id,'intro')}`)}
+  if(x.status==='asked')sheet(t('Ask {name} first',{name:first(b)}),`${head}<textarea class="textarea" id="in-t" aria-label="${t('Message')}" style="min-height:130px">${esc(x.ask||introAsk(a,b,x.why))}</textarea>${introSendBtns(b,'',x.id,'ask')}<div class="sheet-f" style="margin-top:4px"><button class="btn" data-a="intro-st" data-iid="${x.id}" data-s="declined">${t('{name} declined',{name:first(b)})}</button><button class="btn" data-a="intro-st" data-iid="${x.id}" data-s="accepted">${t('{name} said yes',{name:first(b)})}</button></div>`);
+  else if(x.status==='accepted'){const both={...b,email:[a.email,b.email].filter(Boolean).join(','),phone:''};sheet(t('Introduce {a} and {b}',{a:first(a),b:first(b)}),`${head}<textarea class="textarea" id="in-t" aria-label="${t('Message')}" style="min-height:130px">${esc(introMsg(a,b,x.why))}</textarea>${introSendBtns(both,'',x.id,'intro')}`)}
   else sheet(t('Introduction'),`${head}<p>${x.status==='made'?t('{a} and {b} were introduced on {d}. They are now linked in your network.',{a:esc(fn(a)),b:esc(fn(b)),d:esc(fmtDate(x.at))}):t('{name} preferred not to be introduced.',{name:esc(fn(b))})}</p>`);
 };
 A['intro-new']=el=>{const a=person(el.dataset.id),b=person($('#in-b').value);if(!a)return;if(!b){toast(t('Choose a person'));return}
@@ -1569,7 +1569,7 @@ function mailContacts(list,main){
   }
   return out;
 }
-A.mail=()=>sheet(t('Paste an e-mail'),`<p class="hint" style="margin-bottom:10px">${t('Paste a whole thread. Mnemo files it on the right person, adds the follow-ups, and picks up names, phones and e-mails from the signatures.')}</p><textarea class="textarea" id="mail-t" style="min-height:240px" placeholder="${t('From: … Subject: …')}">${esc(MAIL.text||'')}</textarea><div class="sheet-f"><button class="btn primary" data-a="tell" data-mail="1">${t('File it')}</button></div>`);
+A.mail=()=>sheet(t('Paste an e-mail'),`<p class="hint" style="margin-bottom:10px">${t('Paste a whole thread. Mnemo files it on the right person, adds the follow-ups, and picks up names, phones and e-mails from the signatures.')}</p><textarea class="textarea" id="mail-t" aria-label="${t('Paste an e-mail')}" style="min-height:240px" placeholder="${t('From: … Subject: …')}">${esc(MAIL.text||'')}</textarea><div class="sheet-f"><button class="btn primary" data-a="tell" data-mail="1">${t('File it')}</button></div>`);
 const MAIL={text:''};
 document.addEventListener('paste',e=>{if(e.target.id!=='tell-in')return;const txt=e.clipboardData?.getData('text')||'';if(txt.length>200&&/\n/.test(txt)){e.preventDefault();MAIL.text=txt;A.mail();setTimeout(()=>{MAIL.text=''},0)}});
 // ═══ Search & ask (⌘K) ═══════════════════════════════════════════════════
