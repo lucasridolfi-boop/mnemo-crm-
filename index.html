@@ -875,6 +875,9 @@ V.today=()=>{
 A.touched=el=>{const c=person(el.dataset.id);if(!c)return;c.ints.push({id:uid(),title:t('Reached out'),date:nowLocal(),src:'note',tr:'',sum:''});save();render();toast(+c.cadence?t('Logged. Next reminder in {n} days.',{n:+c.cadence}):t('Logged.'))};
 // ═══ People ══════════════════════════════════════════════════════════════
 // The People filters as one state, so a combination can be saved as a smart list and re-applied later.
+// The city of a person: the one typed, else the one recognised in where you met (as on the map).
+const cityOf=c=>String(c.city||'').trim()||(typeof placeOf==='function'&&placeOf(c)?.name)||'';
+const citiesAll=()=>[...new Set(S.clients.map(cityOf).filter(Boolean))].sort();
 const fState=()=>({filter:S.filter,chip:S.chip,year:S.year,q:S.q,...S.adv});
 const fActive=f=>f.filter!=='all'||!!(f.chip||f.year||f.q||f.city||f.quiet||f.deal||f.due);
 const openDeal=c=>S.deals.some(d=>String(d.contactId)===String(c.id)&&!['won','lost'].includes(d.stage));
@@ -885,7 +888,7 @@ function peopleList(f=fState()){
     .filter(o=>filter==='all'||circleOf(o.s)===+filter)
     .filter(o=>!f.chip||(f.chip==='#due'?(dueIn(o.c)!==null&&dueIn(o.c)<=0):String(o.c.group||'').trim()===f.chip))
     .filter(o=>!f.year||yearsOf(o.c).has(f.year))
-    .filter(o=>!f.city||norm(o.c.city||'')===norm(f.city))
+    .filter(o=>!f.city||norm(cityOf(o.c))===norm(f.city))
     .filter(o=>{if(!f.quiet)return true;const d=daysSince(o.last);return d===null||d>=+f.quiet})
     .filter(o=>!f.deal||openDeal(o.c))
     .filter(o=>!f.due||dueTask(o.c)||(dueIn(o.c)!==null&&dueIn(o.c)<=0))
@@ -1068,7 +1071,7 @@ function fSummary(f){const p=[];if(f.filter&&f.filter!=='all')p.push(t(CIRCLES[+
 // ── Natural-language filters: "investors in Riyadh I have not spoken to since summer" → the existing filters
 A['pq-ai']=async el=>{
   const q=String(el.value||'').trim();if(q.split(/\s+/).length<3)return; // short queries stay a plain search
-  const cities=[...new Set(S.clients.map(c=>String(c.city||'').trim()).filter(Boolean))],groups=groupsAll().map(x=>x[0]),years=allYears();
+  const cities=citiesAll(),groups=groupsAll().map(x=>x[0]),years=allYears();
   el.disabled=true;toast(t('Understanding…'));
   let r=null;
   try{r=parseJSON(await ai(`Turn this request about people in a CRM into filters. Map places to the closest name in CITIES even if spelled differently or in another language (e.g. Riyad → Riyadh). Return ONLY JSON:
@@ -1088,7 +1091,7 @@ REQUEST: ${q}`,{max:300,fast:true}))}catch(e){el.disabled=false;aiFail(e);return
     adv:Object.fromEntries(Object.entries({city:pick(r.city,cities),quiet,deal:r.deal===true,due:r.due===true}).filter(([,v])=>v))});
   render();toast(t('{n} people',{n:peopleList().length}));
 };
-A['f-open']=()=>{const a=S.adv,cities=[...new Set(S.clients.map(c=>String(c.city||'').trim()).filter(Boolean))].sort(),list=(S.cfg.lists||[]).find(l=>l.id===S.list);
+A['f-open']=()=>{const a=S.adv,cities=citiesAll(),list=(S.cfg.lists||[]).find(l=>l.id===S.list);
   const opt=(v,l,cur)=>`<option value="${esc(v)}" ${String(cur||'')===String(v)?'selected':''}>${esc(l)}</option>`;
   sheet(t('Filter people'),`<label class="field"><span>${t('City')}</span><select class="select" id="f-city">${opt('',t('Anywhere'),a.city)}${cities.map(c=>opt(c,c,a.city)).join('')}</select></label>
     <label class="field"><span>${t('Last contact')}</span><select class="select" id="f-quiet">${QUIET.map(([v,l])=>opt(v,t(l),a.quiet)).join('')}</select></label>
