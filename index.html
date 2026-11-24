@@ -1071,7 +1071,7 @@ A['pq-ai']=async el=>{
   const cities=[...new Set(S.clients.map(c=>String(c.city||'').trim()).filter(Boolean))],groups=groupsAll().map(x=>x[0]),years=allYears();
   el.disabled=true;toast(t('Understanding…'));
   let r=null;
-  try{r=parseJSON(await ai(`Turn this request about people in a CRM into filters. Return ONLY JSON:
+  try{r=parseJSON(await ai(`Turn this request about people in a CRM into filters. Map places to the closest name in CITIES even if spelled differently or in another language (e.g. Riyad → Riyadh). Return ONLY JSON:
 {"circle":"all|1|2|3 (1 = inner circle, closest; 2 = active; 3 = outer)","group":"one of GROUPS or empty","city":"one of CITIES or empty","quiet":"0|30|60|90|180 — minimum days since last contact","deal":true|false,"due":true|false,"year":"one of YEARS (year we met) or empty","text":"remaining words to search in names, companies, roles, projects — or empty"}
 Today is ${todayISO()}. "Since the summer" means about 90 days. Use only values from the lists.
 GROUPS: ${groups.join(' | ')||'-'}
@@ -1079,7 +1079,10 @@ CITIES: ${cities.join(' | ')||'-'}
 YEARS: ${years.join(' | ')||'-'}
 REQUEST: ${q}`,{max:300,fast:true}))}catch(e){el.disabled=false;aiFail(e);return}
   el.disabled=false;if(!r){toast(t('Nothing found.'));return}
-  const pick=(v,l)=>l.find(x=>norm(x)===norm(v||''))||'';
+  const near=(a,b)=>{a=norm(a);b=norm(b);if(!a||!b)return false;if(a===b)return true;const[s1,l1]=a.length<b.length?[a,b]:[b,a];return s1.length>=4&&l1.startsWith(s1)&&l1.length-s1.length<=2};
+  const pick=(v,l)=>l.find(x=>norm(x)===norm(v||''))||l.find(x=>near(x,v))||'';
+  // a city left in the free text (e.g. "Riyad" for Riyadh) becomes the city filter
+  if(!pick(r.city,cities)&&r.text){const w=String(r.text).split(/[\s,]+/),hit=cities.find(c=>w.some(x=>near(c,x)));if(hit){r.city=hit;r.text=w.filter(x=>!near(hit,x)).join(' ')}}
   const quiet=[30,60,90,180].includes(+r.quiet)?String(+r.quiet):'';
   Object.assign(S,{filter:['1','2','3'].includes(String(r.circle))?String(r.circle):'all',chip:pick(r.group,groups),year:pick(r.year,years),q:String(r.text||'').trim(),list:'',sel:null,
     adv:Object.fromEntries(Object.entries({city:pick(r.city,cities),quiet,deal:r.deal===true,due:r.due===true}).filter(([,v])=>v))});
