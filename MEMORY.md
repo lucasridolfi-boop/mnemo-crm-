@@ -144,7 +144,13 @@ Une tâche programmée « Mnemo — développement continu » relance cette sess
   - [x] ac) Actions groupées dans People : bouton « Sélectionner » (`S.pick`, `pickRows`, barre flottante `#pickbar`, sur une ligne défilante au-dessus des onglets sur mobile), « Tout sélectionner » sur la liste filtrée ; actions : Message (modèle au choix → une fenêtre par personne pré-remplie, « 2/3 », Passer, l'envoi enchaîne sur la suivante, Échap arrête — file `BULK`), Groupe (ou le retirer), Rythme de contact, CSV des sélectionnés. Quitter People termine la sélection.
   - [x] ad) Trames de rendez-vous (`MTPL`) dans l'onglet Note de la capture : Premier rendez-vous, Préparation du comité, Appel de due diligence, Appel de suivi — titres à remplir, type et titre pré-remplis, curseur sous la première question. À l'enregistrement d'une note issue d'une trame, l'IA (rapide) extrait jusqu'à 4 relances. NB : scratchpad/tr.py échappe désormais les retours à la ligne (une version antérieure les écrivait bruts).
   - [x] ae) « Ce jour-là » sur Today (`onThisDay`) : anniversaires de rencontre (date de rencontre, sinon premier échange) et de deals gagnés (`stageAt`) dans les 7 prochains jours, à partir d'un an ; 5 max ; bouton « Écrire un message » qui rédige un mot pour l'anniversaire (`A.draft` avec `data-years`).
-  - [ ] af) Audit indépendant + corrections.
+  - [x] af) Audit (25 nov., 13 h 35) étendu à la sélection groupée, au choix de modèle groupé, aux trames de note et à « Ce jour-là » : aucun nouveau défaut ; ≤ 138 ms à 1 500 contacts.
+- Backlog suivant (proposé le 25 nov.), dans l'ordre :
+  - [ ] ag) Mode voyage : « Je suis à Riyad la semaine prochaine » → qui voir là-bas (par priorité : deals ouverts, relances, silence), brouillons de messages, rendez-vous à planifier.
+  - [ ] ah) Annuler une suppression (fiche, deal, échange, relance) depuis le message de confirmation, comme sur iPhone.
+  - [ ] ai) Rythmes suggérés : pour les relations proches sans rythme de contact, proposer un rythme selon l'historique, à accepter en un geste.
+  - [ ] aj) Partager vers Mnemo depuis le téléphone (Web Share Target / intention Android) + raccourcis d'icône (Enregistrer, Dites-le à Mnemo, Nouvelle personne).
+  - [ ] ak) Audit indépendant + corrections.
   - Décision Lucas : espace d'équipe partagé (plusieurs utilisateurs sur les mêmes contacts/deals) — demande un changement du schéma Supabase et une gestion des invitations ; à valider avant de commencer.
   - Bloqué par Lucas : synchronisation des modèles de messages et des listes enregistrées (il faut ajouter 'cfg' au CHECK de `mnemo_items.kind` dans Supabase — une ligne SQL à exécuter).
 
