@@ -146,7 +146,7 @@ Une tâche programmée « Mnemo — développement continu » relance cette sess
   - [x] ae) « Ce jour-là » sur Today (`onThisDay`) : anniversaires de rencontre (date de rencontre, sinon premier échange) et de deals gagnés (`stageAt`) dans les 7 prochains jours, à partir d'un an ; 5 max ; bouton « Écrire un message » qui rédige un mot pour l'anniversaire (`A.draft` avec `data-years`).
   - [x] af) Audit (25 nov., 13 h 35) étendu à la sélection groupée, au choix de modèle groupé, aux trames de note et à « Ce jour-là » : aucun nouveau défaut ; ≤ 138 ms à 1 500 contacts.
 - Backlog suivant (proposé le 25 nov.), dans l'ordre :
-  - [ ] ag) Mode voyage : « Je suis à Riyad la semaine prochaine » → qui voir là-bas (par priorité : deals ouverts, relances, silence), brouillons de messages, rendez-vous à planifier.
+  - [x] ag) Mode voyage (`A.trip`, `tripPeople`, `TRIP`) : ville (correspondance approchée avec `citiesAll`) + dates → « {ville} : qui voir », classé par deal ouvert, relance due, silence > 60 j et force de la relation ; message prêt par personne (« je serai à {ville} du … au … ») ou « Écrire aux N, un par un » (file `BULK` avec `tpl:'__trip'`). Accès : ⌘K, carte (« Préparer un voyage », « Voyage à {lieu} » sur un lieu sélectionné).
   - [ ] ah) Annuler une suppression (fiche, deal, échange, relance) depuis le message de confirmation, comme sur iPhone.
   - [ ] ai) Rythmes suggérés : pour les relations proches sans rythme de contact, proposer un rythme selon l'historique, à accepter en un geste.
   - [ ] aj) Partager vers Mnemo depuis le téléphone (Web Share Target / intention Android) + raccourcis d'icône (Enregistrer, Dites-le à Mnemo, Nouvelle personne).
