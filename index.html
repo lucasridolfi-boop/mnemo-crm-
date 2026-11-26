@@ -350,7 +350,7 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 #tabbar .badge{position:absolute;top:5px;margin-inline-start:16px}
 #tabbar button{position:relative}
 #toast.on.act{pointer-events:auto}
-#toast button{color:var(--accent);font-weight:600;margin-inline-start:14px}
+#toast button{color:inherit;font-weight:600;margin-inline-start:12px;padding:6px 12px;min-height:34px;border-radius:99px;background:color-mix(in srgb,var(--bg) 18%,transparent);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:860px){
   .rows .btn .lbl{display:none}.rows .btn.sm{width:40px;padding:0}
   .pd .chip,.net-ctl .chip{height:34px!important}
@@ -381,6 +381,7 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 @media (max-width:860px){
   #nav .tabs,.search-btn span,.search-btn kbd{display:none}
   .search-btn{min-width:0;width:34px;padding:0;justify-content:center;background:none}
+  #toast{bottom:calc(72px + env(safe-area-inset-bottom))}
   #tabbar{display:flex;position:fixed;inset:auto 0 0 0;z-index:30;height:calc(58px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--nav);backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);border-top:1px solid var(--line)}
   #tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:10.5px;color:var(--text3)}
   #tabbar button.on{color:var(--accent)}
@@ -1156,7 +1157,7 @@ const TRIP={city:'',from:'',to:''};
 const tripDates=()=>{const f=TRIP.from&&new Date(TRIP.from+'T00:00:00'),e=TRIP.to&&new Date(TRIP.to+'T00:00:00'),o={day:'numeric',month:'long'};return f?(e&&TRIP.to!==TRIP.from?t('from {a} to {b}',{a:f.toLocaleDateString(locale(),o),b:e.toLocaleDateString(locale(),o)}):t('on {a}',{a:f.toLocaleDateString(locale(),{weekday:'long',...o})})):t('soon')};
 const tripMsg=c=>t('Hi {first}, I will be in {city} {dates}. Would you have time for a coffee? It would be great to catch up.',{first:first(c),city:TRIP.city,dates:tripDates()});
 function tripPeople(city){return S.clients.filter(c=>norm(cityOf(c))===norm(city)).map(c=>{const why=[],d=daysSince(lastTouch(c));let sc=strength(c)/20;
-  if(openDeal(c)){why.push([t('Open deal'),'accent']);sc+=4}
+  if(openDeal(c)){why.push([t('Open deal'),'green']);sc+=4}
   if(dueTask(c)||(dueIn(c)!==null&&dueIn(c)<=0)){why.push([t('Follow-up due'),'orange']);sc+=3}
   if(d===null||d>60){why.push([d===null?t('Never met since'):t('{n} weeks of silence',{n:Math.round(d/7)}),'']);sc+=Math.min(3,(d??120)/60)}
   return{c,why,sc}}).sort((a,b)=>b.sc-a.sc)}
@@ -1182,7 +1183,7 @@ function cadenceSuggestions(){const out=[];
   return out.sort((a,b)=>strength(b.c)-strength(a.c))}
 const everyLabel=d=>d<10?t('every few days'):d<21?t('every {n} days',{n:d}):d<70?t('every {n} weeks',{n:Math.round(d/7)}):t('every {n} months',{n:Math.round(d/30)});
 A.rhythms=()=>{const l=cadenceSuggestions();
-  sheet(t('Suggested rhythms'),l.length?`<p class="hint" style="margin-bottom:10px">${t('Based on how often you have actually been in touch. Mnemo will remind you when someone is due.')}</p><div class="tidy">${l.map((o,i)=>`<div class="tidy-row"><input type="checkbox" checked data-rh="${i}" aria-label="${esc(fn(o.c))}"><span class="row-main"><b>${esc(fn(o.c))}</b><span>${t('You speak about {every}',{every:everyLabel(o.med)})}</span></span><select class="select" data-rhc="${i}" style="width:auto;max-width:170px">${CADENCES.filter(x=>x[0]).map(([d,lb])=>`<option value="${d}" ${d===o.cad?'selected':''}>${t(lb)}</option>`).join('')}</select></div>`).join('')}</div><div class="sheet-f"><button class="btn primary" data-a="rhythms-ok">${t('Apply')}</button></div>`:`<div class="empty" style="display:block"><b>${t('Nothing to suggest.')}</b>${t('Everyone you see regularly already has a rhythm.')}</div>`,'wide')};
+  sheet(t('Suggested rhythms'),l.length?`<p class="hint" style="margin-bottom:10px">${t('Based on how often you have actually been in touch. Mnemo will remind you when someone is due.')}</p><div class="tidy">${l.map((o,i)=>`<div class="tidy-row"><input type="checkbox" checked data-rh="${i}" aria-label="${esc(fn(o.c))}"><span class="row-main"><b>${esc(fn(o.c))}</b><span>${t('You speak about {every}',{every:everyLabel(o.med)})}</span></span><select class="select" data-rhc="${i}" aria-label="${t('Keep in touch')} · ${esc(fn(o.c))}" style="width:auto;max-width:170px">${CADENCES.filter(x=>x[0]).map(([d,lb])=>`<option value="${d}" ${d===o.cad?'selected':''}>${t(lb)}</option>`).join('')}</select></div>`).join('')}</div><div class="sheet-f"><button class="btn primary" data-a="rhythms-ok">${t('Apply')}</button></div>`:`<div class="empty" style="display:block"><b>${t('Nothing to suggest.')}</b>${t('Everyone you see regularly already has a rhythm.')}</div>`,'wide')};
 A['rhythms-ok']=()=>{const l=cadenceSuggestions();let n=0;l.forEach((o,i)=>{const on=$(`[data-rh="${i}"]`)?.checked;if(on){o.c.cadence=+$(`[data-rhc="${i}"]`).value;n++}else o.c.cadenceAsked=true});save();closeSheet();render();toast(t('{n} rhythms set',{n}))};
 A['f-open']=()=>{const a=S.adv,cities=citiesAll(),list=(S.cfg.lists||[]).find(l=>l.id===S.list);
   const opt=(v,l,cur)=>`<option value="${esc(v)}" ${String(cur||'')===String(v)?'selected':''}>${esc(l)}</option>`;

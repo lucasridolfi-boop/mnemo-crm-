@@ -150,7 +150,13 @@ Une tâche programmée « Mnemo — développement continu » relance cette sess
   - [x] ah) Annuler au lieu de « Êtes-vous sûr ? » : suppression immédiate d'une fiche (avec ses deals), d'un deal, d'un souvenir, d'une relance, d'un lien, d'un modèle ou d'une liste, et bouton « Annuler » dans le message (7 s). `undoSnap`/`undoToast` restaurent clients+deals d'avant la suppression ; la synchro renvoie l'élément restauré (méta `x` réécrite). Les confirmations restent pour les actions de masse (exemples, sauvegarde, déconnexion).
   - [x] ai) Rythmes suggérés (`cadenceSuggestions`, `A.rhythms`) : personnes sans rythme, ≥ 3 échanges, dernier échange < 1 an → intervalle médian entre échanges arrondi au rythme le plus proche (2 sem./mois/trimestre/6 mois) ; bandeau « N rythmes suggérés » dans People + ⌘K ; rythme modifiable par personne ; décocher = ne plus proposer (`cadenceAsked`).
   - [x] aj) Partager vers Mnemo + raccourcis d'icône : manifest.webmanifest déclare `share_target` (GET `share_title/share_text/share_url`) et 3 `shortcuts` (`?do=record|tell|new`). Au démarrage (`incoming()`), un profil LinkedIn partagé ouvre « Nouvelle personne » pré-remplie, un long texte multi-ligne ouvre « Coller un e-mail », le reste va dans « Dites-le à Mnemo » ; paramètres retirés de l'adresse ; ignoré pendant le guide. Fonctionne pour la PWA installée (Android/Chrome ; iOS ne gère pas share_target). L'app native Capacitor demanderait un plugin d'intention (non fait).
-  - [ ] ak) Audit indépendant + corrections.
+  - [x] ak) Audit (26 nov., 5 h 35) étendu au mode voyage, aux rythmes suggérés et au message « Annuler ». Corrigé : bouton « Annuler » du message (contraste, taille 34 px, souligné), message qui chevauchait la barre d'onglets sur mobile (remonté au-dessus), sélecteur de rythme sans nom accessible, pastille « Deal ouvert » du mode voyage peu contrastée (verte). ≤ 155 ms à 1 500 contacts.
+- Backlog suivant (proposé le 26 nov.), dans l'ordre :
+  - [ ] al) Check-list par deal (due diligence, closing : documents, signatures, conditions) avec avancement sur la carte du deal.
+  - [ ] am) Devise par deal (USD, AED, SAR, EUR…) avec conversion vers la devise d'affichage (taux modifiables dans Réglages) pour des totaux justes.
+  - [ ] an) Importer un pipeline existant (CSV/Excel : titre, contact, montant, étape, date) avec correspondance des colonnes et des étapes.
+  - [ ] ao) « Pourquoi ce score ? » sur la fiche : détail de la force de la relation (récence, fréquence, deal, relances) et comment la remonter.
+  - [ ] ap) Audit indépendant + corrections.
   - Décision Lucas : espace d'équipe partagé (plusieurs utilisateurs sur les mêmes contacts/deals) — demande un changement du schéma Supabase et une gestion des invitations ; à valider avant de commencer.
   - Bloqué par Lucas : synchronisation des modèles de messages et des listes enregistrées (il faut ajouter 'cfg' au CHECK de `mnemo_items.kind` dans Supabase — une ligne SQL à exécuter).
 
