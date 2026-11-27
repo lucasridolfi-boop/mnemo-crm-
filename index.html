@@ -163,7 +163,7 @@ svg{display:block;flex-shrink:0}
 .deal-ck{margin:8px 0 2px}.deal-ck-t{display:flex!important;align-items:center;gap:4px;font-size:12px;color:var(--text2)}
 .rates summary{cursor:pointer;color:var(--accent);font-size:14px;padding:6px 0}.rates-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;margin-top:6px}
 .dmap{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:4px 12px}
-.rc-path{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.rc-arrow{color:var(--text3)}
+.rc-path{display:flex;flex-wrap:wrap;align-items:center;gap:6px}.rc-arrow{color:var(--text3);display:inline-block}[dir=rtl] .rc-arrow{transform:scaleX(-1)}
 .banner{display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:var(--r-sm);background:var(--accent-soft);font-size:13.5px;margin-bottom:28px;flex-wrap:wrap}
 .banner span{flex:1;min-width:200px}
 .seg{display:inline-flex;background:var(--fill2);border-radius:10px;padding:2px}
@@ -362,7 +362,7 @@ mark{background:color-mix(in srgb,var(--accent) 22%,transparent);color:inherit;b
 #toast button{color:inherit;font-weight:600;margin-inline-start:12px;padding:6px 12px;min-height:34px;border-radius:99px;background:color-mix(in srgb,var(--bg) 18%,transparent);text-decoration:underline;text-underline-offset:3px}
 @media (max-width:860px){
   .rows .btn .lbl{display:none}.rows .btn.sm{width:40px;padding:0}
-  .pd .chip,.net-ctl .chip{height:34px!important}
+  .pd .chip,.net-ctl .chip,.rc-path .chip{height:34px!important}
   .hint a{display:inline-block;padding:8px 0}
   .btn.sm{height:36px}.chip,.chips .chip{height:34px}.seg button{min-height:34px}.presets button{height:34px}
   .check{position:relative}.check::after{content:"";position:absolute;inset:-11px}
