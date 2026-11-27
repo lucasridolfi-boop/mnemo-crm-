@@ -1040,6 +1040,7 @@ function reachPath(q){
   while(heap.length){const[du,u]=pop();if(done.has(u)||du>dist.get(u))continue;done.add(u);if(targets.has(u))break;const cu=byId.get(u);if(!cu)continue;
     for(const v of nb(cu)){const pv=byId.get(v);if(!pv||done.has(v))continue;const d=du+cost(pv);if(d<(dist.get(v)??1e9)){dist.set(v,d);prev.set(v,u);push(d,v)}}}
   let best=null;for(const tId of targets)if(dist.has(tId)&&(!best||dist.get(tId)<dist.get(best)))best=tId;
+  if(!best&&targets.size)best=[...targets].sort((a,b)=>sc(byId.get(b))-sc(byId.get(a)))[0]; // known but no warm path: they are the way in
   const chain=[];for(let x=best;x;x=prev.get(x))chain.unshift(person(x));
   return{chain:best?chain:[],li:liHits.slice(0,5),target:best?person(best):null,label:q}}
 A.reach=el=>{const v=el?.dataset?.k||'';REACH.to=v;
